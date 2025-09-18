@@ -21,20 +21,83 @@
     <meta name="google-site-verification" content="mFxSLIXH4LddS1jntZICGshy-RcRRYLzU8hUFyZ279o" />
 
     <!-- Favicons -->
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/static/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/static/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/static/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/static/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/static/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/static/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/icons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffb870">
+    <meta name="msapplication-TileImage" content="/static/icons/ms-icon-144x144.png">
 
     <!-- Theme / Color Scheme -->
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#ffb870" />
     <meta name="color-scheme" content="light dark" />
 </head>
 
-<body class="responsive">
-    <main>
-        <h1>Hi Dear, I love you!</h1>
-        <p>This is your barebones starter template.</p>
+<header class="primary">
+    <nav>
+        <img class="circle" src="/static/icons/web-app-manifest-512x512.png" alt="Kuriki" />
+        <h6>Kuriki</h6>
+    </nav>
+</header>
+
+<body>
+    <main class="responsive">
+        <div class="grid">
+            <button class="s12 m12 l12 extra fill border left-align">
+                <i>search</i>
+                <span>One stop search</span>
+            </button>
+            <button class="s12 m12 l6 extra padding vertical transparent blue">
+                <nav class="row">
+                    <i class="min extra" style="--_size: 3rem;">calculate</i>
+                    <div class="max">
+                        <h6 class="small bold">Kindergarten to Grade 12 Mathematics</h6>
+                        <div>Manitoba Curriculum Framework of Outcomes</div>
+                    </div>
+                    <label class="min">2013-2014</label>
+                </nav>
+            </button>
+            <button class="s12 m12 l6 extra padding vertical transparent green">
+                <nav class="row">
+                    <i class="min extra" style="--_size: 3rem;">science</i>
+                    <div class="max">
+                        <h6 class="small bold">Kindergarten to Grade 8 Science</h6>
+                        <div>Manitoba Curriculum Framework of Outcomes</div>
+                    </div>
+                    <label class="min">1999-2000</label>
+                </nav>
+            </button>
+            <button class="s12 m12 l6 extra padding vertical transparent green">
+                <nav class="row">
+                    <i class="min extra" style="--_size: 3rem;">genetics</i>
+                    <div class="max">
+                        <h6 class="small bold">Grade 11 and Grade 12 Biology</h6>
+                        <div>Manitoba Curriculum Framework of Outcomes</div>
+                    </div>
+                    <label class="min">2010-2011</label>
+                </nav>
+            </button>
+            <button class="s12 m12 l6 extra padding vertical transparent orange">
+                <nav class="row">
+                    <i class="min extra" style="--_size: 3rem;">globe</i>
+                    <div class="max">
+                        <h6 class="small bold">Kindergarten to Grade 8 Social Studies</h6>
+                        <div>Manitoba Curriculum Framework of Outcomes</div>
+                    </div>
+                    <label class="min">2003</label>
+                </nav>
+            </button>
+        </div>
     </main>
 </body>
 
