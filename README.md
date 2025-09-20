@@ -1,5 +1,7 @@
-<img src="src/static/images/kuriki-logo-transparent.png">
 
+<p align="center">
+    <img src="src/static/images/kuriki-logo-transparent.png" width=250>
+</p>
 # Kuriki
 
 Organize Curriculum Outcomes for Teachers.
