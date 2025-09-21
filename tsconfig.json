@@ -17,6 +17,9 @@
     "sourceMap": true,
     "baseUrl": "src",
     "paths": {
+      "@api/*": [
+        "api/*"
+      ],
       "@interfaces/*": [
         "interfaces/*"
       ],
@@ -38,8 +41,8 @@
       "@config/*": [
         "config/*"
       ],
-      "@core/*": [
-        "core/*"
+      "@state/*": [
+        "state/*"
       ]
     },
     "declaration": true,
@@ -57,7 +60,7 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",

@@ -9,6 +9,7 @@
     <!-- Title & Description -->
     <title>Kuriki</title>
     <meta name="description" content="Organizing Curriculum Outcomes for Teachers" />
+    <link rel="canonical" href="https://kuriki.web.app">
 
     <!-- SEO / Social -->
     <meta name="author" content="Jared Gross" />
@@ -16,8 +17,8 @@
     <meta property="og:title" content="Kuriki" />
     <meta property="og:description" content="Organizing Curriculum Outcomes for Teachers" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://kuriki.web.app/" />
-    <meta property="og:image" content="https://kuriki.web.app/thumbnail.jpg" />
+    <meta property="og:url" content="https://kuriki.web.app" />
+    <meta property="og:image" content="https://kuriki.web.app/static/images/kuriki-logo-transparent.png" />
     <meta name="google-site-verification" content="mFxSLIXH4LddS1jntZICGshy-RcRRYLzU8hUFyZ279o" />
 
     <!-- Favicons -->
@@ -34,13 +35,20 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/static/icons/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
-    <link rel="manifest" href="/static/manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <meta name="msapplication-TileColor" content="#ffb870">
     <meta name="msapplication-TileImage" content="/static/icons/ms-icon-144x144.png">
 
     <!-- Theme / Color Scheme -->
     <meta name="theme-color" content="#ffb870" />
     <meta name="color-scheme" content="light dark" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
 </head>
 
 <body>
@@ -54,49 +62,50 @@
                 <label for="search">One stop search</label>
             </div>
             <div class="grid">
-                <button class="s12 m12 l6 padding vertical transparent blue">
-                <nav class="row">
-                    <i class="min extra" style="--_size: 2.56rem;">calculate</i>
-                    <div class="max">
-                        <h6 class="small bold">Kindergarten to Grade 12 Mathematics</h6>
-                        <div>Manitoba Curriculum Framework of Outcomes</div>
-                    </div>
-                    <label class="min">2013-2014</label>
-                </nav>
-            </button>
-                <button class="s12 m12 l6 padding vertical transparent green">
-                <nav class="row">
-                    <i class="min extra" style="--_size: 2.56rem;">science</i>
-                    <div class="max">
-                        <h6 class="small bold">Kindergarten to Grade 8 Science</h6>
-                        <div>Manitoba Curriculum Framework of Outcomes</div>
-                    </div>
-                    <label class="min">1999-2000</label>
-                </nav>
-            </button>
-                <button class="s12 m12 l6 padding vertical transparent green">
-                <nav class="row">
-                    <i class="min extra" style="--_size: 2.56rem;">genetics</i>
-                    <div class="max">
-                        <h6 class="small bold">Grade 11 and Grade 12 Biology</h6>
-                        <div>Manitoba Curriculum Framework of Outcomes</div>
-                    </div>
-                    <label class="min">2010-2011</label>
-                </nav>
-            </button>
-                <button class="s12 m12 l6 padding vertical transparent orange">
-                <nav class="row">
-                    <i class="min extra" style="--_size: 2.56rem;">globe</i>
-                    <div class="max">
-                        <h6 class="small bold">Kindergarten to Grade 8 Social Studies</h6>
-                        <div>Manitoba Curriculum Framework of Outcomes</div>
-                    </div>
-                    <label class="min">2003</label>
-                </nav>
-            </button>
+                <a href="/mathematics_2013-2014.html" class="s12 m12 l6 padding vertical transparent blue">
+                    <nav class="row">
+                        <i class="min extra" style="--_size: 2.56rem;">calculate</i>
+                        <div class="max">
+                            <h6 class="small bold">Kindergarten to Grade 12 Mathematics</h6>
+                            <div>Manitoba Curriculum Framework of Outcomes</div>
+                        </div>
+                        <label class="min">2013-2014</label>
+                    </nav>
+                </a>
+                <button class="s12 m12 l6 padding vertical transparent green" disabled>
+                    <nav class="row">
+                        <i class="min extra" style="--_size: 2.56rem;">science</i>
+                        <div class="max">
+                            <h6 class="small bold">Kindergarten to Grade 8 Science</h6>
+                            <div>Manitoba Curriculum Framework of Outcomes</div>
+                        </div>
+                        <label class="min">1999-2000</label>
+                    </nav>
+                </button>
+                <button class="s12 m12 l6 padding vertical transparent green" disabled>
+                    <nav class="row">
+                        <i class="min extra" style="--_size: 2.56rem;">genetics</i>
+                        <div class="max">
+                            <h6 class="small bold">Grade 11 and Grade 12 Biology</h6>
+                            <div>Manitoba Curriculum Framework of Outcomes</div>
+                        </div>
+                        <label class="min">2010-2011</label>
+                    </nav>
+                </button>
+                <button class="s12 m12 l6 padding vertical transparent orange" disabled>
+                    <nav class="row">
+                        <i class="min extra" style="--_size: 2.56rem;">globe</i>
+                        <div class="max">
+                            <h6 class="small bold">Kindergarten to Grade 8 Social Studies</h6>
+                            <div>Manitoba Curriculum Framework of Outcomes</div>
+                        </div>
+                        <label class="min">2003</label>
+                    </nav>
+                </button>
             </div>
         </article>
     </main>
+    <script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipYXnSU0ygqeac2q7CVYMbh84q0uHVRRxEtvFPiQYbXWUorga2aqZJ0z"></script>
 </body>
 
 </html>

@@ -1,0 +1,6 @@
+.outcome.selected {
+    background-color: var(--primary);
+    color: var(--on-primary);
+    outline: .125rem solid var(--primary);
+    outline-offset: 0.25rem;
+}

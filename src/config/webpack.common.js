@@ -73,6 +73,7 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
         alias: {
+            "@api": path.resolve(appRoot, "src/api"),
             "@interfaces": path.resolve(appRoot, "src/interfaces"),
             "@components": path.resolve(appRoot, "src/components"),
             "@types": path.resolve(appRoot, "src/types"),
@@ -80,7 +81,7 @@ module.exports = {
             "@static": path.resolve(appRoot, "src/static"),
             "@models": path.resolve(appRoot, "src/models"),
             "@config": path.resolve(appRoot, "src/config"),
-            "@core": path.resolve(appRoot, "src/core"),
+            "@state": path.resolve(appRoot, "src/state"),
         },
         fallback: {
             fs: false,
@@ -91,29 +92,29 @@ module.exports = {
 
     module: {
         rules: [{
-                test: /pdf\.worker(\.min)?\.m?js$/,
-                type: "asset/resource",
+            test: /pdf\.worker(\.min)?\.m?js$/,
+            type: "asset/resource",
+        },
+        {
+            test: /\.ts$/,
+            loader: "esbuild-loader",
+            options: {
+                loader: "ts",
+                target: "es2017",
             },
-            {
-                test: /\.ts$/,
-                loader: "esbuild-loader",
-                options: {
-                    loader: "ts",
-                    target: "es2017",
-                },
+        },
+        {
+            test: /\.js$/,
+            loader: "esbuild-loader",
+            options: {
+                loader: "js",
+                target: "es2017",
             },
-            {
-                test: /\.js$/,
-                loader: "esbuild-loader",
-                options: {
-                    loader: "js",
-                    target: "es2017",
-                },
-            },
-            {
-                test: /\.css$/i,
-                use: [MiniCssExtractPlugin.loader, "css-loader"],
-            },
+        },
+        {
+            test: /\.css$/i,
+            use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
         ],
     },
 
@@ -137,19 +138,27 @@ module.exports = {
         new NonBlockingCssPlugin(),
         new CopyWebpackPlugin({
             patterns: [{
-                    from: path.join(appRoot, "src/static"),
-                    to: path.join(appRoot, "dist/static"),
-                    noErrorOnMissing: true,
-                },
-                {
-                    from: path.join(appRoot, "src/manifest.json"),
-                    to: path.join(appRoot, "dist/manifest.json"),
-                },
-                {
-                    from: path.join(appRoot, "src/robots.txt"),
-                    to: path.join(appRoot, "dist/robots.txt"),
-                    noErrorOnMissing: true,
-                },
+                from: path.join(appRoot, "src/static"),
+                to: path.join(appRoot, "dist/static"),
+                noErrorOnMissing: true,
+            },
+            {
+                from: path.join(appRoot, "src/manifest.json"),
+                to: path.join(appRoot, "dist/manifest.json"),
+            },
+            {
+                from: path.join(appRoot, "src/sitemap.xml"),
+                to: path.join(appRoot, "dist/sitemap.xml"),
+            },
+            {
+                from: path.join(appRoot, "src/browserconfig.xml"),
+                to: path.join(appRoot, "dist/browserconfig.xml"),
+            },
+            {
+                from: path.join(appRoot, "src/robots.txt"),
+                to: path.join(appRoot, "dist/robots.txt"),
+                noErrorOnMissing: true,
+            },
             ],
         }),
     ],
