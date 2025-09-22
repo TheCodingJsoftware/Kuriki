@@ -54,12 +54,12 @@
         "deploy": "npm run build && firebase deploy --only hosting"
     },
     "dependencies": {
-        "beercss": "^3.12.7",
-        "firebase": "^12.2.1",
+        "beercss": "^3.12.8",
+        "firebase": "^12.3.0",
         "material-dynamic-colors": "^1.1.2"
     },
     "devDependencies": {
-        "@types/firebase": "^2.4.32",
+        "@types/firebase": "^3.2.3",
         "compression-webpack-plugin": "^11.1.0",
         "copy-webpack-plugin": "^13.0.1",
         "css-loader": "^7.1.2",
