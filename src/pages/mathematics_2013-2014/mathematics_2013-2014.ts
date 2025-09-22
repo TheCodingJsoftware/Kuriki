@@ -496,6 +496,11 @@ document.addEventListener("DOMContentLoaded", () => {
         updateMenusForGrade();
         loadResetFilterButton();
         loadSearch();
+
+        const loadingIndicator = document.getElementById("loading-indicator");
+        if (loadingIndicator) {
+            loadingIndicator.remove();
+        }
     });
 
 });
