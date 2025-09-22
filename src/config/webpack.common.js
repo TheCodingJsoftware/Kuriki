@@ -135,7 +135,6 @@ module.exports = {
                 mode: "write-references",
             },
         }),
-        new NonBlockingCssPlugin(),
         new CopyWebpackPlugin({
             patterns: [{
                 from: path.join(appRoot, "src/static"),

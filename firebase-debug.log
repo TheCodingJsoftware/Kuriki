@@ -1,0 +1,31 @@
+[debug] [2025-09-22T22:19:03.967Z] ----------------------------------------------------------------------
+[debug] [2025-09-22T22:19:03.969Z] Command:       /usr/bin/node /usr/bin/firebase deploy --only hosting
+[debug] [2025-09-22T22:19:03.969Z] CLI Version:   14.16.0
+[debug] [2025-09-22T22:19:03.969Z] Platform:      linux
+[debug] [2025-09-22T22:19:03.969Z] Node Version:  v24.7.0
+[debug] [2025-09-22T22:19:03.969Z] Time:          Mon Sep 22 2025 17:19:03 GMT-0500 (Central Daylight Saving Time)
+[debug] [2025-09-22T22:19:03.969Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-09-22T22:19:04.090Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-22T22:19:04.090Z] > authorizing via signed-in user (jaredgrozz@gmail.com)
+[debug] [2025-09-22T22:19:04.090Z] [iam] checking project kuriki-0 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-09-22T22:19:04.091Z] Checked if tokens are valid: true, expires at: 1758582959690
+[debug] [2025-09-22T22:19:04.091Z] Checked if tokens are valid: true, expires at: 1758582959690
+[debug] [2025-09-22T22:19:04.091Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/kuriki-0:testIamPermissions [none]
+[debug] [2025-09-22T22:19:04.092Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/kuriki-0:testIamPermissions x-goog-quota-user=projects/kuriki-0
+[debug] [2025-09-22T22:19:04.092Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/kuriki-0:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-09-22T22:19:05.022Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/kuriki-0:testIamPermissions 200
+[debug] [2025-09-22T22:19:05.023Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/kuriki-0:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-09-22T22:19:05.023Z] Checked if tokens are valid: true, expires at: 1758582959690
+[debug] [2025-09-22T22:19:05.023Z] Checked if tokens are valid: true, expires at: 1758582959690
+[debug] [2025-09-22T22:19:05.024Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/kuriki-0 [none]
+[debug] [2025-09-22T22:19:15.123Z] *** [apiv2] error from fetch(https://firebase.googleapis.com/v1beta1/projects/kuriki-0, {"headers":{},"method":"GET","signal":{}}): FetchError: request to https://firebase.googleapis.com/v1beta1/projects/kuriki-0 failed, reason: Client network socket disconnected before secure TLS connection was established
+[debug] [2025-09-22T22:19:15.124Z] Failed to make request to https://firebase.googleapis.com/v1beta1/projects/kuriki-0 (original: request to https://firebase.googleapis.com/v1beta1/projects/kuriki-0 failed, reason: Client network socket disconnected before secure TLS connection was established)
+[info] 
+[info] === Deploying to 'kuriki-0'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-09-22T22:19:15.127Z] Checked if tokens are valid: true, expires at: 1758582959690
+[debug] [2025-09-22T22:19:15.127Z] Checked if tokens are valid: true, expires at: 1758582959690
+[debug] [2025-09-22T22:19:15.127Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/kuriki/versions [none]
+[debug] [2025-09-22T22:19:15.127Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/kuriki/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}

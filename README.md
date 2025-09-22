@@ -21,10 +21,10 @@ First get firebase CLI:
 
     ```npm install```
 
-3. Then run:
+3. Then run dev:
 
-    ```npm run build```
+    ```npm run dev```
 
 4. To deply:
 
-    ```firebase deploy```
+    ```npm run deploy```

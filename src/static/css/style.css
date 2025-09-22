@@ -4,3 +4,33 @@
     outline: .125rem solid var(--primary);
     outline-offset: 0.25rem;
 }
+
+.light .blue {
+    background-color: #0061a4 !important;
+    color: #ffffff !important;
+}
+
+.dark .blue {
+    background-color: #9ecaff !important;
+    color: #003258 !important;
+}
+
+.light .green {
+    background-color: #006e1c !important;
+    color: #ffffff !important;
+}
+
+.dark .green {
+    background-color: #78dc77 !important;
+    color: #00390a !important;
+}
+
+.light .orange {
+    background-color: #8b5000 !important;
+    color: #ffffff !important;
+}
+
+.dark .orange {
+    background-color: #ffb870 !important;
+    color: #4a2800 !important;
+}
