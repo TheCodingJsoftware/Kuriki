@@ -10,6 +10,7 @@ interface ResourceData {
     category?: string;
     tags?: string[];
 }
+type ViewMode = "module" | "cozy" | "stream" | "list";
 
 const RESOURCES: ResourceData[] = [
     {
@@ -49,40 +50,30 @@ const RESOURCES: ResourceData[] = [
     }
 ];
 
-
-class Resource {
-    constructor(private data: ResourceData) { }
+class ResourceCard {
+    constructor(private data: ResourceData, private sizeClass: string) { }
 
     render(): HTMLElement {
         const article = document.createElement("article");
-        article.classList.add("round", "s12", "m6", "l4");
-
-        // title
+        article.classList.add("round", this.sizeClass); // dynamic size
+        // --- rest stays same ---
         const h6 = document.createElement("h6");
         h6.textContent = this.data.name;
         article.appendChild(h6);
 
-        // description
         if (this.data.description) {
             const p = document.createElement("p");
             p.textContent = this.data.description;
             article.appendChild(p);
         }
 
-        // link
         const a = document.createElement("a");
         a.href = this.data.url;
         a.target = "_blank";
         a.classList.add("button", "primary");
-        const span = document.createElement("span");
-        span.textContent = "Open Resource"
-        const icon = document.createElement("i");
-        icon.innerHTML = "open_in_new";
-        a.appendChild(span);
-        a.appendChild(icon);
+        a.innerHTML = `<span>Open</span><i>open_in_new</i>`;
         article.appendChild(a);
 
-        // tags (optional)
         if (this.data.tags?.length) {
             const tagDiv = document.createElement("nav");
             tagDiv.classList.add("row", "wrap", "no-space");
@@ -98,9 +89,44 @@ class Resource {
         return article;
     }
 }
+
+class ResourceList {
+    constructor(private data: ResourceData) { }
+
+    render(): HTMLElement {
+        const li = document.createElement("li");
+
+        const maxDiv = document.createElement("div");
+        maxDiv.classList.add("max");
+
+        const h6 = document.createElement("h6");
+        h6.classList.add("small");
+        h6.textContent = this.data.name;
+        maxDiv.appendChild(h6);
+
+        if (this.data.description) {
+            const desc = document.createElement("div");
+            desc.textContent = this.data.description;
+            maxDiv.appendChild(desc);
+        }
+        li.appendChild(maxDiv);
+
+        const a = document.createElement("a");
+        a.href = this.data.url;
+        a.target = "_blank";
+        a.classList.add("button", "primary");
+        a.innerHTML = `<span>Open</span><i>open_in_new</i>`;
+        li.appendChild(a);
+
+        return li;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const resourcesDiv = document.getElementById("resources") as HTMLDivElement;
     const searchInput = document.querySelector("#search input") as HTMLInputElement | null;
+
+    let viewMode: ViewMode = (localStorage.getItem("resourceViewMode") as ViewMode) || "list";
 
     const groupByCategory = (list: ResourceData[]) =>
         list.reduce<Record<string, ResourceData[]>>((acc, r) => {
@@ -111,31 +137,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function render(list: ResourceData[]) {
         resourcesDiv.innerHTML = "";
-
         const grouped = groupByCategory(list);
 
         for (const [category, items] of Object.entries(grouped)) {
             if (!items.length) continue;
-
-            // sort within category for stable UX
             const sorted = items.slice().sort((a, b) => a.name.localeCompare(b.name));
 
-            const section = document.createElement("secton");
-            section.classList.add("border", "round", "padding", "s12", "m12", "l12");
+            const section = document.createElement("section");
+            section.classList.add("border", "round", "padding", "s12");
+
+            if (viewMode === "list") {
+                section.classList.add("surface-container");
+            } else {
+                section.classList.remove("surface-container");
+            }
 
             const h5 = document.createElement("h5");
             h5.textContent = category;
             section.appendChild(h5);
 
-            const grid = document.createElement("div");
-            grid.classList.add("grid");
+            if (viewMode === "list") {
+                const ul = document.createElement("ul");
+                ul.classList.add("list", "border");
+                sorted.forEach(item => ul.appendChild(new ResourceList(item).render()));
+                section.appendChild(ul);
+            } else {
+                const grid = document.createElement("div");
+                grid.classList.add("grid");
 
-            sorted.forEach((item) => grid.appendChild(new Resource(item).render()));
+                const sizeClass =
+                    viewMode === "stream" ? "s12" :
+                        viewMode === "module" ? "s4" :
+                            "s6"; // cozy
 
-            section.appendChild(grid);
+                sorted.forEach(item => grid.appendChild(new ResourceCard(item, sizeClass).render()));
+                section.appendChild(grid);
+            }
+
             resourcesDiv.appendChild(section);
         }
-
         if (!resourcesDiv.hasChildNodes()) {
             const p = document.createElement("p");
             p.textContent = "No resources found.";
@@ -144,18 +184,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // search filter logic (unchanged)
     const filterResources = (q: string) => {
         const needle = q.trim().toLowerCase();
         if (!needle) return RESOURCES;
-
-        return RESOURCES.filter((r) => {
-            const hay =
-                `${r.name} ${r.description} ${(r.tags ?? []).join(" ")}`.toLowerCase();
+        return RESOURCES.filter(r => {
+            const hay = `${r.name} ${r.description} ${(r.tags ?? []).join(" ")}`.toLowerCase();
             return hay.includes(needle);
         });
     };
 
-    // Optional: small debounce for smoother typing
     const debounce = <T extends (...args: any[]) => void>(fn: T, ms = 150) => {
         let t: number | undefined;
         return (...args: Parameters<T>) => {
@@ -164,14 +202,29 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     };
 
-    // initial render
     render(RESOURCES);
 
-    // live search (DOM rebuilt each time; empty categories are skipped)
     if (searchInput) {
-        searchInput.addEventListener(
-            "input",
-            debounce(() => render(filterResources(searchInput.value)))
-        );
+        searchInput.addEventListener("input", debounce(() => render(filterResources(searchInput.value))));
     }
+
+    // nav buttons
+    function setView(mode: ViewMode) {
+        viewMode = mode;
+        localStorage.setItem("resourceViewMode", mode);
+        render(filterResources(searchInput?.value || ""));
+        document.querySelectorAll("nav.group button").forEach(b => b.classList.remove("active"));
+        const btnId =
+            mode === "stream" ? "grid-stream-button" :
+                mode === "module" ? "grid-module-button" :
+                    mode === "cozy" ? "grid-cozy-button" :
+                        "list-button";
+        document.getElementById(btnId)?.classList.add("active");
+    }
+
+    document.getElementById("grid-stream-button")?.addEventListener("click", () => setView("stream"));
+    document.getElementById("grid-module-button")?.addEventListener("click", () => setView("module"));
+    document.getElementById("grid-cozy-button")?.addEventListener("click", () => setView("cozy"));
+    document.getElementById("list-button")?.addEventListener("click", () => setView("list"));
+    setView(viewMode);
 });
