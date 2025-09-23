@@ -56,7 +56,8 @@
     "dependencies": {
         "beercss": "^3.12.8",
         "firebase": "^12.3.0",
-        "material-dynamic-colors": "^1.1.2"
+        "material-dynamic-colors": "^1.1.2",
+        "material-file-icons": "^2.4.0"
     },
     "devDependencies": {
         "@types/firebase": "^3.2.3",

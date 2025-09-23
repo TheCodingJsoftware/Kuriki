@@ -1,9 +1,12 @@
 import "@utils/theme";
 import "@utils/firebase";
+import "@static/css/style.css"
 import "beercss";
 import "material-dynamic-colors";
+import { getIcon } from 'material-file-icons';
 
 interface ResourceData {
+    icon: string,
     name: string;
     description: string;
     url: string;
@@ -14,6 +17,7 @@ type ViewMode = "module" | "cozy" | "stream" | "list";
 
 const RESOURCES: ResourceData[] = [
     {
+        icon: ".pdf",
         name: "K-8 Mathematics Framework (2013)",
         description: "Manitoba Curriculum Framework of Outcomes (2013).",
         url: "https://paperless.pinelandfarms.ca/share/B5cbfQBPG9rot0AoTK1tvCKUAyyz49RIRQa27snIZW1zY8Zk4h",
@@ -21,6 +25,7 @@ const RESOURCES: ResourceData[] = [
         tags: ["curriculum", "framework", "k-8", "2013"]
     },
     {
+        icon: ".pdf",
         name: "Grades 9-12 Mathematics Framework (2014)",
         description: "Manitoba Curriculum Framework of Outcomes (2014).",
         url: "https://paperless.pinelandfarms.ca/share/JM3UT0gO8glV7eX0RDpWXpKlnEUkg3OZtX1H7oIYpoVqKavYtB",
@@ -28,6 +33,7 @@ const RESOURCES: ResourceData[] = [
         tags: ["curriculum", "framework", "9-12", "2014"]
     },
     {
+        icon: ".pdf",
         name: "Grade 12 Calculus & Advanced Math (2019)",
         description: "Manitoba Curriculum of Outcomes (2019).",
         url: "https://paperless.pinelandfarms.ca/share/xNRkpi0JFHfLspWmrZv6bhEjiYtfobS1ahvLJw7S8PGQfE9S2O",
@@ -35,6 +41,7 @@ const RESOURCES: ResourceData[] = [
         tags: ["grade-12", "calculus", "advanced", "2019"]
     },
     {
+        icon: "",
         name: "All Documents",
         description: "Collection of official Manitoba government mathematics curriculum documents.",
         url: "https://netorg7317916-my.sharepoint.com/:f:/g/personal/jared_pinelandfarms_ca/EmhWCqwtChZEpXp2cD12wBYBThq7WNXv259tKX4JqSjpAQ?e=mHnast",
@@ -42,6 +49,7 @@ const RESOURCES: ResourceData[] = [
         tags: ["manitoba", "government", "math"]
     },
     {
+        icon: "",
         name: "Blackline Masters",
         description: "Support materials and reproducible masters for mathematics teaching.",
         url: "https://netorg7317916-my.sharepoint.com/:u:/g/personal/jared_pinelandfarms_ca/EaZp36jvPcZHgdY7HI9RYYsBDXtjioU3O4URyj7duDPGrw?e=0sEv3G",
@@ -56,10 +64,21 @@ class ResourceCard {
     render(): HTMLElement {
         const article = document.createElement("article");
         article.classList.add("round", "border", this.sizeClass); // dynamic size
-        // --- rest stays same ---
-        const h6 = document.createElement("h6");
+
+        const topNav = document.createElement("nav");
+        topNav.classList.add("row");
+        article.appendChild(topNav);
+
+        const iconData = getIcon(this.data.icon);
+        const iconDiv = document.createElement("div");
+        iconDiv.classList.add("file-icon", "tiny-margin");
+        iconDiv.innerHTML = iconData.svg;
+        topNav.appendChild(iconDiv);
+
+        const h6 = document.createElement("span");
+        h6.classList.add("large-text", "bold", "max");
         h6.textContent = this.data.name;
-        article.appendChild(h6);
+        topNav.appendChild(h6);
 
         if (this.data.description) {
             const p = document.createElement("p");
@@ -99,6 +118,14 @@ class ResourceList {
 
     render(): HTMLElement {
         const li = document.createElement("li");
+        li.classList.add("wave")
+        li.addEventListener("click", () => window.open(this.data.url, "_blank"));
+
+        const icon = getIcon(this.data.icon);
+        const iconDiv = document.createElement("div");
+        iconDiv.classList.add("file-icon");
+        iconDiv.innerHTML = icon.svg; // inject raw SVG
+        li.appendChild(iconDiv);
 
         const maxDiv = document.createElement("div");
         maxDiv.classList.add("max");
@@ -115,14 +142,6 @@ class ResourceList {
         //     maxDiv.appendChild(desc);
         // }
         li.appendChild(maxDiv);
-
-        const a = document.createElement("a");
-        a.href = this.data.url;
-        a.target = "_blank";
-        a.classList.add("button", "primary");
-        a.innerHTML = `<span>Open</span><i>open_in_new</i>`;
-        li.appendChild(a);
-
         return li;
     }
 }
