@@ -55,7 +55,7 @@ class ResourceCard {
 
     render(): HTMLElement {
         const article = document.createElement("article");
-        article.classList.add("round", this.sizeClass); // dynamic size
+        article.classList.add("round", "border", this.sizeClass); // dynamic size
         // --- rest stays same ---
         const h6 = document.createElement("h6");
         h6.textContent = this.data.name;
