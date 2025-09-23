@@ -13,7 +13,7 @@ interface ResourceData {
     category?: string;
     tags?: string[];
 }
-type ViewMode = "module" | "cozy" | "stream" | "list";
+type ViewMode = "grid" | "list";
 
 const RESOURCES: ResourceData[] = [
     {
@@ -59,11 +59,11 @@ const RESOURCES: ResourceData[] = [
 ];
 
 class ResourceCard {
-    constructor(private data: ResourceData, private sizeClass: string) { }
+    constructor(private data: ResourceData) { }
 
     render(): HTMLElement {
         const article = document.createElement("article");
-        article.classList.add("round", "border", this.sizeClass); // dynamic size
+        article.classList.add("round", "border", "s12", "m6", "l4"); // dynamic size
 
         const topNav = document.createElement("nav");
         topNav.classList.add("row");
@@ -189,12 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const grid = document.createElement("div");
                 grid.classList.add("grid");
 
-                const sizeClass =
-                    viewMode === "stream" ? "s12" :
-                        viewMode === "module" ? "s4" :
-                            "s6"; // cozy
-
-                sorted.forEach(item => grid.appendChild(new ResourceCard(item, sizeClass).render()));
+                sorted.forEach(item => grid.appendChild(new ResourceCard(item).render()));
                 section.appendChild(grid);
             }
 
@@ -239,16 +234,12 @@ document.addEventListener("DOMContentLoaded", () => {
         render(filterResources(searchInput?.value || ""));
         document.querySelectorAll("nav.group button").forEach(b => b.classList.remove("active"));
         const btnId =
-            mode === "stream" ? "grid-stream-button" :
-                mode === "module" ? "grid-module-button" :
-                    mode === "cozy" ? "grid-cozy-button" :
-                        "list-button";
+            mode === "grid" ? "grid-button" :
+                "list-button";
         document.getElementById(btnId)?.classList.add("active");
     }
 
-    document.getElementById("grid-stream-button")?.addEventListener("click", () => setView("stream"));
-    document.getElementById("grid-module-button")?.addEventListener("click", () => setView("module"));
-    document.getElementById("grid-cozy-button")?.addEventListener("click", () => setView("cozy"));
+    document.getElementById("grid-button")?.addEventListener("click", () => setView("grid"));
     document.getElementById("list-button")?.addEventListener("click", () => setView("list"));
     setView(viewMode);
 });

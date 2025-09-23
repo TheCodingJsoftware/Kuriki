@@ -57,24 +57,24 @@
         <h6>Resources</h6>
     </nav>
     <main class="responsive">
-        <div class="grid">
-            <div class="s12 m7 l9 field label prefix border fill round" id="search">
+        <div class="row wrap right-align">
+            <div class="max field label prefix border fill round" style="min-width: 256px;" id="search">
                 <i>search</i>
                 <input type="text">
                 <label for="search">Search</label>
             </div>
-            <nav class="s12 m5 l3 right-align group connected primary-container">
-                <button class="left-round" id="grid-module-button">
-                    <i>view_module</i>
-                </button>
-                <button class="no-round" id="grid-cozy-button">
+            <nav class="min right-align group connected primary-container">
+                <button class="left-round" id="grid-button">
                     <i>view_cozy</i>
-                </button>
-                <button class="no-round" id="grid-stream-button">
-                    <i>view_stream</i>
+                    <div class="tooltip bottom">
+                        <span>Grid view</span>
+                    </div>
                 </button>
                 <button class="right-round" id="list-button">
                     <i>view_list</i>
+                    <div class="tooltip bottom">
+                        <span>List view</span>
+                    </div>
                 </button>
             </nav>
         </div>
