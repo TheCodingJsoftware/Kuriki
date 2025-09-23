@@ -15,27 +15,27 @@ type ViewMode = "module" | "cozy" | "stream" | "list";
 const RESOURCES: ResourceData[] = [
     {
         name: "K-8 Mathematics Framework (2013)",
-        description: "Kindergarten to Grade 8 Mathematics – Manitoba Curriculum Framework of Outcomes (2013).",
+        description: "Manitoba Curriculum Framework of Outcomes (2013).",
         url: "https://paperless.pinelandfarms.ca/share/B5cbfQBPG9rot0AoTK1tvCKUAyyz49RIRQa27snIZW1zY8Zk4h",
         category: "Mathematics",
         tags: ["curriculum", "framework", "k-8", "2013"]
     },
     {
         name: "Grades 9-12 Mathematics Framework (2014)",
-        description: "Grades 9 to 12 Mathematics – Manitoba Curriculum Framework of Outcomes (2014).",
+        description: "Manitoba Curriculum Framework of Outcomes (2014).",
         url: "https://paperless.pinelandfarms.ca/share/JM3UT0gO8glV7eX0RDpWXpKlnEUkg3OZtX1H7oIYpoVqKavYtB",
         category: "Mathematics",
         tags: ["curriculum", "framework", "9-12", "2014"]
     },
     {
         name: "Grade 12 Calculus & Advanced Math (2019)",
-        description: "Grade 12 Introduction to Calculus and Grade 12 Advanced Mathematics – Manitoba Curriculum of Outcomes (2019).",
+        description: "Manitoba Curriculum of Outcomes (2019).",
         url: "https://paperless.pinelandfarms.ca/share/xNRkpi0JFHfLspWmrZv6bhEjiYtfobS1ahvLJw7S8PGQfE9S2O",
         category: "Mathematics",
         tags: ["grade-12", "calculus", "advanced", "2019"]
     },
     {
-        name: "All Manitoba Government Mathematics Documents",
+        name: "All Documents",
         description: "Collection of official Manitoba government mathematics curriculum documents.",
         url: "https://netorg7317916-my.sharepoint.com/:f:/g/personal/jared_pinelandfarms_ca/EmhWCqwtChZEpXp2cD12wBYBThq7WNXv259tKX4JqSjpAQ?e=mHnast",
         category: "Mathematics",
@@ -108,12 +108,12 @@ class ResourceList {
         h6.textContent = this.data.name;
         maxDiv.appendChild(h6);
 
-        if (this.data.description) {
-            const desc = document.createElement("div");
-            desc.classList.add("wrap", "no-line")
-            desc.textContent = this.data.description;
-            maxDiv.appendChild(desc);
-        }
+        // if (this.data.description) {
+        //     const desc = document.createElement("div");
+        //     desc.classList.add("wrap", "no-line")
+        //     desc.textContent = this.data.description;
+        //     maxDiv.appendChild(desc);
+        // }
         li.appendChild(maxDiv);
 
         const a = document.createElement("a");
