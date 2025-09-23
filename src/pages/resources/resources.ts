@@ -67,24 +67,28 @@ class ResourceCard {
             article.appendChild(p);
         }
 
+        // if (this.data.tags?.length) {
+        //     const tagDiv = document.createElement("nav");
+        //     tagDiv.classList.add("row", "wrap", "no-space");
+        //     this.data.tags.forEach(tag => {
+        //         const span = document.createElement("span");
+        //         span.textContent = tag;
+        //         span.classList.add("chip", "small", "tiny-margin");
+        //         tagDiv.appendChild(span);
+        //     });
+        //     article.appendChild(tagDiv);
+        // }
+
+        const actionNav = document.createElement("nav");
+        actionNav.classList.add("row", "no-space", "right-align");
+        article.appendChild(actionNav);
+
         const a = document.createElement("a");
         a.href = this.data.url;
         a.target = "_blank";
         a.classList.add("button", "primary");
         a.innerHTML = `<span>Open</span><i>open_in_new</i>`;
-        article.appendChild(a);
-
-        if (this.data.tags?.length) {
-            const tagDiv = document.createElement("nav");
-            tagDiv.classList.add("row", "wrap", "no-space");
-            this.data.tags.forEach(tag => {
-                const span = document.createElement("span");
-                span.textContent = tag;
-                span.classList.add("chip", "small", "tiny-margin");
-                tagDiv.appendChild(span);
-            });
-            article.appendChild(tagDiv);
-        }
+        actionNav.appendChild(a);
 
         return article;
     }
@@ -100,12 +104,13 @@ class ResourceList {
         maxDiv.classList.add("max");
 
         const h6 = document.createElement("h6");
-        h6.classList.add("small");
+        h6.classList.add("small", "wrap");
         h6.textContent = this.data.name;
         maxDiv.appendChild(h6);
 
         if (this.data.description) {
             const desc = document.createElement("div");
+            desc.classList.add("wrap", "no-line")
             desc.textContent = this.data.description;
             maxDiv.appendChild(desc);
         }
