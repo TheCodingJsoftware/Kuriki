@@ -12,7 +12,7 @@ function loadTheme(overideMode?: string) {
     ui("theme", localStorage.getItem("theme") || "#ffb870");
 }
 
-function invertImages() {
+export function invertImages() {
     let mode = ui("mode");
     const images = document.querySelectorAll<HTMLImageElement>('img:not(.ignore-invert)');
     if (images) {
@@ -36,4 +36,5 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
 
 document.addEventListener("DOMContentLoaded", () => {
     loadTheme();
+    invertImages();
 })
