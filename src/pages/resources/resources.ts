@@ -148,7 +148,9 @@ class ResourceList {
 
 document.addEventListener("DOMContentLoaded", () => {
     const resourcesDiv = document.getElementById("resources") as HTMLDivElement;
-    const searchInput = document.querySelector("#search input") as HTMLInputElement | null;
+    const searchInput = document.querySelector("#search input") as HTMLInputElement;
+    const gridButton = document.getElementById("grid-button") as HTMLButtonElement;
+    const listButton = document.getElementById("list-button") as HTMLButtonElement;
 
     let viewMode: ViewMode = (localStorage.getItem("resourceViewMode") as ViewMode) || "list";
 
@@ -203,7 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // search filter logic (unchanged)
     const filterResources = (q: string) => {
         const needle = q.trim().toLowerCase();
         if (!needle) return RESOURCES;
@@ -223,15 +224,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     render(RESOURCES);
 
-    if (searchInput) {
-        searchInput.addEventListener("input", debounce(() => render(filterResources(searchInput.value))));
-    }
+    searchInput.addEventListener("input", debounce(() => render(filterResources(searchInput.value))));
 
     // nav buttons
     function setView(mode: ViewMode) {
         viewMode = mode;
         localStorage.setItem("resourceViewMode", mode);
-        render(filterResources(searchInput?.value || ""));
+        render(filterResources(searchInput.value));
         document.querySelectorAll("nav.group button").forEach(b => b.classList.remove("active"));
         const btnId =
             mode === "grid" ? "grid-button" :
@@ -239,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById(btnId)?.classList.add("active");
     }
 
-    document.getElementById("grid-button")?.addEventListener("click", () => setView("grid"));
-    document.getElementById("list-button")?.addEventListener("click", () => setView("list"));
+    gridButton.addEventListener("click", () => setView("grid"));
+    listButton.addEventListener("click", () => setView("list"));
     setView(viewMode);
 });
