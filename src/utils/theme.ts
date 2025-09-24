@@ -9,8 +9,12 @@ function loadTheme(overideMode?: string) {
     } else {
         ui("mode", getPreferredMode());
     }
-    ui("theme", localStorage.getItem("theme") || "#ffb870");
+    const themeColor = localStorage.getItem("theme") || "#ffb870";
+    ui("theme", themeColor);
+
+    updateTileColor(themeColor);
 }
+
 
 export function invertImages() {
     let mode = ui("mode");
@@ -27,6 +31,16 @@ export function invertImages() {
             }
         }
     }
+}
+
+function updateTileColor(color: string) {
+    let metaTag = document.querySelector<HTMLMetaElement>('meta[name="msapplication-TileColor"]');
+    if (!metaTag) {
+        metaTag = document.createElement("meta");
+        metaTag.name = "msapplication-TileColor";
+        document.head.appendChild(metaTag);
+    }
+    metaTag.content = color;
 }
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
