@@ -16,7 +16,7 @@ function loadTheme(overideMode?: string) {
     const mode = localStorage.getItem("mode") || getPreferredMode();
     ui("mode", overideMode || mode);
 
-    const themeColor = localStorage.getItem("theme") || getPrimaryColor();
+    const themeColor = localStorage.getItem("theme") || "#ffb870";
     ui("theme", themeColor);
 
     // Update both theme-related meta tags
