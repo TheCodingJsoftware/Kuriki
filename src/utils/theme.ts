@@ -20,7 +20,7 @@ function loadTheme(overideMode?: string) {
     ui("theme", themeColor);
 
     // Update both theme-related meta tags
-    updateMetaColors(getPrimaryColor());
+    updateMetaColors(themeColor);
 }
 
 export function invertImages() {
@@ -61,7 +61,7 @@ export function updateMetaColors(color?: string) {
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
     const newTheme = e.matches ? "dark" : "light";
     ui("mode", newTheme);
-    updateMetaColors(getPrimaryColor()); // re-sync
+    updateMetaColors(); // re-sync
 });
 
 document.addEventListener("DOMContentLoaded", () => {

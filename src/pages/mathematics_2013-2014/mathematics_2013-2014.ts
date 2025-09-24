@@ -13,6 +13,7 @@ import { StrandElement } from "@components/mathematics/strand-element"
 import { DEFAULT_GRADE, GRADES } from "@state/grades";
 import { MathematicsRepo } from "@api/mathematics-repo";
 import { Storage } from "@utils/storage";
+import { updateMetaColors } from "@utils/theme";
 
 let searchQuery: string = "";
 let selectedGrade: string = "K";
@@ -475,6 +476,7 @@ function loadSearch() {
 
 document.addEventListener("DOMContentLoaded", () => {
     ui("theme", "#0061a4");
+    updateMetaColors("#0061a4");
     enhanceLinks();
 
     Promise.all([
