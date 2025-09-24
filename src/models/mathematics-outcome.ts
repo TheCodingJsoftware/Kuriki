@@ -2,6 +2,15 @@ import { Strand } from '@models/strand';
 import { Skills } from '@models/skills';
 import { Skill } from '@models/skill';
 
+export interface RawMathematicsOutcome {
+    outcome_id: string;
+    grade: string;
+    specific_learning_outcome: string;
+    general_learning_outcome: string[];
+    strand: Record<string, string>;
+    skills: Record<string, string>;
+}
+
 export class MathematicsOutcome {
     private _data: {
         outcomeId: string;
@@ -12,14 +21,7 @@ export class MathematicsOutcome {
         skills: Skills;
     };
 
-    constructor(data: {
-        outcome_id: string;
-        grade: string;
-        specific_learning_outcome: string;
-        general_learning_outcome: string[];
-        strand: Record<string, string>;
-        skills: Record<string, string>;
-    }) {
+    constructor(data: RawMathematicsOutcome) {
         const strandKey = Object.keys(data.strand)[0] as string;
         const strandValue = data.strand[strandKey] as string;
         const strand = new Strand(strandKey, strandValue);

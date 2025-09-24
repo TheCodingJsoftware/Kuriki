@@ -1,5 +1,12 @@
 import { SkillType } from '@models/skill-type';
 
+export interface RawSocialStudiesSkill {
+    outcome_id: string;
+    grade: string;
+    skill_type: Record<string, string>;
+    specific_learning_outcome: string;
+}
+
 export class SocialStudiesSkill {
     private _data: {
         outcomeId: string;
@@ -8,12 +15,7 @@ export class SocialStudiesSkill {
         specificLearningOutcome: string;
     };
 
-    constructor(data: {
-        outcome_id: string;
-        grade: string;
-        skill_type: Record<string, string>;
-        specific_learning_outcome: string;
-    }) {
+    constructor(data: RawSocialStudiesSkill) {
         const [id, name] = Object.entries(data.skill_type ?? {})[0] ?? ['', ''];
         const skillType = new SkillType(id, name);
 

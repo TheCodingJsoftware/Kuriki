@@ -3,6 +3,16 @@ import { OutcomeType } from '@models/outcome-type';
 import { GeneralLearningOutcome } from '@models/general-learning-outcome';
 import { DistinctiveLearningOutcome } from '@models/distinctive-learning-outcome';
 
+export interface RawSocialStudiesOutcome {
+    outcome_id: string;
+    grade: string;
+    cluster: Record<string, string>;
+    outcome_type: Record<string, string>;
+    specific_learning_outcome: string;
+    general_learning_outcome: Record<string, string>;
+    distinctive_learning_outcome: Record<string, string>;
+}
+
 export class SocialStudiesOutcome {
     private _data: {
         outcomeId: string;
@@ -14,15 +24,7 @@ export class SocialStudiesOutcome {
         distinctiveLearningOutcome: DistinctiveLearningOutcome;
     };
 
-    constructor(data: {
-        outcome_id: string;
-        grade: string;
-        cluster: Record<string, string>;
-        outcome_type: Record<string, string>;
-        specific_learning_outcome: string;
-        general_learning_outcome: Record<string, string>;
-        distinctive_learning_outcome: Record<string, string>;
-    }) {
+    constructor(data: RawSocialStudiesOutcome) {
         const [clusterId, clusterName] = Object.entries(data.cluster ?? {})[0] ?? ['', ''];
         const [outcomeTypeId, outcomeTypeName] = Object.entries(data.outcome_type ?? {})[0] ?? ['', ''];
         const [gloId, gloName] = Object.entries(data.general_learning_outcome ?? {})[0] ?? ['', ''];

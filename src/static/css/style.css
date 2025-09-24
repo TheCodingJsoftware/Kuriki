@@ -15,32 +15,42 @@
     outline-offset: 0.25rem;
 }
 
-.light .blue {
+.light .mathematics {
     background-color: #0061a4 !important;
     color: #ffffff !important;
 }
 
-.dark .blue {
+.dark .mathematics {
     background-color: #9ecaff !important;
     color: #003258 !important;
 }
 
-.light .green {
+.light .science {
     background-color: #006e1c !important;
     color: #ffffff !important;
 }
 
-.dark .green {
+.dark .science {
     background-color: #78dc77 !important;
     color: #00390a !important;
 }
 
-.light .yellow {
+.light .biology {
+    background-color: #3e6a00 !important;
+    color: #ffffff !important;
+}
+
+.dark .biology {
+    background-color: #9ed75b !important;
+    color: #1e3700 !important;
+}
+
+.light .social-studies {
     background-color: #695f00 !important;
     color: #ffffff !important;
 }
 
-.dark .yellow {
+.dark .social-studies {
     background-color: #dbc90a !important;
     color: #363100 !important;
 }
