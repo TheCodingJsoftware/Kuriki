@@ -31,7 +31,10 @@ export function invertImages() {
     });
 }
 
-function updateMetaColors(color: string) {
+export function updateMetaColors(color?: string) {
+    if (!color) {
+        color = getPrimaryColor();
+    }
     // Windows tile
     let tileMeta = document.querySelector<HTMLMetaElement>(
         'meta[name="msapplication-TileColor"]'

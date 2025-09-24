@@ -1,5 +1,5 @@
 import { DialogComponent } from "@components/common/dialogs/dialog-component";
-import { invertImages } from "@utils/theme";
+import { invertImages, updateMetaColors } from "@utils/theme";
 
 export class AppearanceDialog extends DialogComponent {
     constructor() {
@@ -61,6 +61,7 @@ export class AppearanceDialog extends DialogComponent {
             ui("mode", "light");
             localStorage.setItem("mode", "light")
             invertImages();
+            updateMetaColors();
         });
 
         const darkModeButton = this.element.querySelector("#dark-theme") as HTMLInputElement;
@@ -68,6 +69,7 @@ export class AppearanceDialog extends DialogComponent {
             ui("mode", "dark");
             localStorage.setItem("mode", "dark");
             invertImages();
+            updateMetaColors();
         });
 
         const sameAsDeviceButton = this.element.querySelector("#same-as-device") as HTMLInputElement;
@@ -75,6 +77,7 @@ export class AppearanceDialog extends DialogComponent {
             ui("mode", "auto");
             localStorage.setItem("mode", "auto");
             invertImages();
+            updateMetaColors();
         });
 
         const savedMode = localStorage.getItem("mode") || "auto";
@@ -92,6 +95,7 @@ export class AppearanceDialog extends DialogComponent {
                 const color = button.dataset.color as string;
                 localStorage.setItem("theme", color);
                 ui("theme", color);
+                updateMetaColors(color);
             });
         });
 
@@ -100,6 +104,7 @@ export class AppearanceDialog extends DialogComponent {
             const color = selectColorInput.value;
             localStorage.setItem("theme", color);
             ui("theme", color);
+            updateMetaColors(color);
         });
     }
 
