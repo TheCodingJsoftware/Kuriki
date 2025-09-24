@@ -1,37 +1,11 @@
 const path = require("path");
 const fs = require("fs");
-const globAll = require("glob-all");
 const appRoot = path.resolve(__dirname, "../..");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const { PurgeCSSPlugin } = require("purgecss-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-
-class NonBlockingCssPlugin {
-    apply(compiler) {
-        compiler.hooks.compilation.tap("NonBlockingCssPlugin", (compilation) => {
-            HtmlWebpackPlugin.getHooks(compilation).alterAssetTags.tap(
-                "NonBlockingCssPlugin",
-                (data) => {
-                    data.assetTags.styles = (data.assetTags.styles || []).map((tag) => {
-                        if (
-                            tag.tagName === "link" &&
-                            tag.attributes &&
-                            tag.attributes.rel === "stylesheet"
-                        ) {
-                            tag.attributes.media = "print";
-                            tag.attributes.onload = "this.media='all'";
-                        }
-                        return tag;
-                    });
-                    return data;
-                }
-            );
-        });
-    }
-}
 
 const pagesDir = path.join(appRoot, "src/pages");
 const entries = {};
