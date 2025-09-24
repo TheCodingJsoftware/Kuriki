@@ -6,7 +6,7 @@ function getPreferredMode() {
 }
 
 function getPrimaryColor(): string {
-    // Read from BeerCSS's CSS variable
+    // Read from BeerCSS variable
     return getComputedStyle(document.documentElement)
         .getPropertyValue("--primary")
         .trim() || "#ffb870"; // fallback
@@ -19,39 +19,31 @@ function loadTheme(overideMode?: string) {
     const themeColor = localStorage.getItem("theme") || getPrimaryColor();
     ui("theme", themeColor);
 
-    // Use the current --primary as tile color
-    updateTileColor(getPrimaryColor());
+    // Update both theme-related meta tags
+    updateMetaColors(getPrimaryColor());
 }
 
 export function invertImages() {
-    let mode = ui("mode");
+    const mode = ui("mode");
     const images = document.querySelectorAll<HTMLImageElement>('img:not(.ignore-invert)');
-    if (images) {
-        for (let i = 0; i < images.length; i++) {
-            const image = images[i];
-            if (image) {
-                if (mode === "light") {
-                    image.style.filter = "invert(0)";
-                } else {
-                    image.style.filter = "invert(0.9)";
-                }
-            }
-        }
-    }
+    images.forEach(image => {
+        image.style.filter = mode === "light" ? "invert(0)" : "invert(0.9)";
+    });
 }
 
-function updateTileColor(color: string) {
-    let metaTag = document.querySelector<HTMLMetaElement>(
+function updateMetaColors(color: string) {
+    // Windows tile
+    let tileMeta = document.querySelector<HTMLMetaElement>(
         'meta[name="msapplication-TileColor"]'
     );
-    if (!metaTag) {
-        metaTag = document.createElement("meta");
-        metaTag.name = "msapplication-TileColor";
-        document.head.appendChild(metaTag);
+    if (!tileMeta) {
+        tileMeta = document.createElement("meta");
+        tileMeta.name = "msapplication-TileColor";
+        document.head.appendChild(tileMeta);
     }
-    metaTag.content = color;
+    tileMeta.content = color;
 
-    // also update <meta name="theme-color"> for Chrome mobile address bar
+    // Browser address bar
     let themeMeta = document.querySelector<HTMLMetaElement>(
         'meta[name="theme-color"]'
     );
@@ -66,7 +58,7 @@ function updateTileColor(color: string) {
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
     const newTheme = e.matches ? "dark" : "light";
     ui("mode", newTheme);
-    updateTileColor(getPrimaryColor()); // reapply correct --primary
+    updateMetaColors(getPrimaryColor()); // re-sync
 });
 
 document.addEventListener("DOMContentLoaded", () => {
