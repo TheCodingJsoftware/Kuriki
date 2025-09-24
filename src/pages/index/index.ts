@@ -6,8 +6,8 @@ import "material-dynamic-colors"
 import { AppearanceDialog } from "@components/common/dialogs/appearance-dialog";
 
 document.addEventListener("DOMContentLoaded", () => {
-    const appearanceButton = document.getElementById("appearance-button");
-    appearanceButton?.addEventListener("click", () => {
+    const appearanceButton = document.getElementById("appearance-button") as HTMLButtonElement;
+    appearanceButton.addEventListener("click", () => {
         new AppearanceDialog();
     });
 })
