@@ -31,12 +31,12 @@
     color: #00390a !important;
 }
 
-.light .orange {
-    background-color: #8b5000 !important;
+.light .yellow {
+    background-color: #695f00 !important;
     color: #ffffff !important;
 }
 
-.dark .orange {
-    background-color: #ffb870 !important;
-    color: #4a2800 !important;
+.dark .yellow {
+    background-color: #dbc90a !important;
+    color: #363100 !important;
 }
