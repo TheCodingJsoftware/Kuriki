@@ -156,7 +156,6 @@ module.exports = {
             {
                 from: path.join(appRoot, "src/robots.txt"),
                 to: path.join(appRoot, "dist/robots.txt"),
-                noErrorOnMissing: true,
             },
             ],
         }),
