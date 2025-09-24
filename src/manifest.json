@@ -1,9 +1,18 @@
 {
     "name": "Kuriki",
     "short_name": "Kuriki",
+    "description": "Organizing Curriculum Outcomes for Teachers",
     "theme_color": "#ffb870",
     "background_color": "#ffffff",
+    "display_override": ["window-controls-overlay"],
     "display": "standalone",
+    "start_url": "/",
+    "screenshots": [{
+        "src": "/images/screenshot1.png",
+        "type": "image/png",
+        "sizes": "1080x2115",
+        "form_factor": "narrow"
+    }],
     "icons": [{
             "src": "/static/icons/web-app-manifest-192x192.png",
             "sizes": "192x192",
