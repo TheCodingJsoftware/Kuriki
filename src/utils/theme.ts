@@ -1,4 +1,4 @@
-function getPreferredMode() {
+export function getPreferredMode() {
     return window.matchMedia &&
         window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'

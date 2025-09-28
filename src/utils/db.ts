@@ -1,13 +1,20 @@
 // utils/db.ts
-import { openDB } from "idb";
+import { openDB, IDBPDatabase, DBSchema } from "idb";
 
 const DB_NAME = "kuriki-cache";
 const DB_VERSION = 1;
 
-export const dbPromise = openDB(DB_NAME, DB_VERSION, {
-    upgrade(db) {
-        // Instead of hardcoding, we just create one store for everything.
-        // We'll namespace keys as "subject:entity:key"
+// Schema definition
+interface KurikiCacheDB extends DBSchema {
+    cache: {
+        key: string;   // cache key
+        value: unknown; // value stored (use more specific type if you want)
+    };
+}
+
+// Create/open DB with schema
+export const dbPromise = openDB<KurikiCacheDB>(DB_NAME, DB_VERSION, {
+    upgrade(db: IDBPDatabase<KurikiCacheDB>) {
         if (!db.objectStoreNames.contains("cache")) {
             db.createObjectStore("cache");
         }
@@ -29,7 +36,7 @@ export async function getFromCache<T>(
     key: string = "all"
 ): Promise<T | undefined> {
     const db = await dbPromise;
-    return db.get("cache", namespaceKey(subject, entity, key));
+    return db.get("cache", namespaceKey(subject, entity, key)) as Promise<T | undefined>;
 }
 
 export async function saveToCache<T>(
