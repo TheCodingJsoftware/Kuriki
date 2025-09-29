@@ -6,6 +6,8 @@ import "material-dynamic-colors";
 import { AppearanceDialog } from "@components/common/dialogs/appearance-dialog";
 import Editor from "@toast-ui/editor";
 import Viewer from "@toast-ui/editor/dist/toastui-editor-viewer";
+import type { AssessmentRow } from "@models/assessment-row";
+import "@static/css/lesson.css";
 
 import "@toast-ui/editor/dist/toastui-editor.css"; // important
 import "@toast-ui/editor/dist/theme/toastui-editor-dark.css"; // if using dark theme
@@ -290,6 +292,7 @@ class GradeLevelSelect implements LessonField<string> {
         this.select.value = value;
     }
 }
+
 class TimeLengthSelect implements LessonField<string> {
     element: HTMLDivElement;
     select: HTMLSelectElement;
@@ -354,6 +357,7 @@ class TimeLengthSelect implements LessonField<string> {
         this.select.value = value;
     }
 }
+
 class DateField implements LessonField<string> {
     element: HTMLDivElement;
     input: HTMLInputElement;
@@ -395,11 +399,13 @@ class DateField implements LessonField<string> {
         this.input.value = value;
     }
 }
+
 class CurricularOutcomesSection implements LessonField<string[]> {
     element: HTMLDivElement;
     header: HTMLHeadingElement;
     list: HTMLDivElement;
     addButton: HTMLButtonElement;
+    onChange?: () => void;
 
     private outcomes: string[] = [];
 
@@ -434,22 +440,23 @@ class CurricularOutcomesSection implements LessonField<string[]> {
         if (outcome && outcome.trim() !== "") {
             this.outcomes.push(outcome.trim());
             this.renderList();
+            this.onChange?.();
         }
     }
 
     private renderList() {
         this.list.innerHTML = "";
         this.outcomes.forEach((outcome, index) => {
-            const chip = document.createElement("div");
-            chip.classList.add("chip");
+            const chip = document.createElement("button");
             chip.textContent = outcome;
 
             // delete button (small x)
             const removeBtn = document.createElement("button");
-            removeBtn.classList.add("link", "no-border", "circle");
+            removeBtn.classList.add("chip", "tiny", "error", "circle");
             removeBtn.innerHTML = `<i>close</i>`;
             removeBtn.addEventListener("click", () => {
                 this.outcomes.splice(index, 1);
+                this.onChange?.();
                 this.renderList();
             });
 
@@ -566,14 +573,13 @@ class LessonNotesEditor extends ToastEditorField {
     }
 }
 
-type AssessmentRow = { description: string; for: boolean; as: boolean; of: boolean };
-
 class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
     element: HTMLDivElement;
     header: HTMLHeadingElement;
     table: HTMLTableElement;
     tbody: HTMLTableSectionElement;
     addButton: HTMLButtonElement;
+    onChange?: () => void;
 
     private rows: AssessmentRow[] = [];
 
@@ -625,11 +631,13 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
     addRow(description: string = "", forVal: boolean = false, asVal: boolean = false, ofVal: boolean = false) {
         const row = { description, for: forVal, as: asVal, of: ofVal };
         this.rows.push(row);
+        this.onChange?.();
         this.render();
     }
 
     private removeRow(index: number) {
         this.rows.splice(index, 1);
+        this.onChange?.();
         this.render();
     }
 
@@ -645,6 +653,7 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
             descInput.value = row.description;
             descInput.addEventListener("input", e => {
                 row.description = (e.target as HTMLInputElement).value;
+                this.onChange?.();
             });
             descTd.appendChild(descInput);
 
@@ -655,6 +664,7 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
             forInput.checked = row.for;
             forInput.addEventListener("change", e => {
                 row.for = (e.target as HTMLInputElement).checked;
+                this.onChange?.();
             });
             forTd.appendChild(forInput);
 
@@ -665,6 +675,7 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
             asInput.checked = row.as;
             asInput.addEventListener("change", e => {
                 row.as = (e.target as HTMLInputElement).checked;
+                this.onChange?.();
             });
             asTd.appendChild(asInput);
 
@@ -675,6 +686,7 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
             ofInput.checked = row.of;
             ofInput.addEventListener("change", e => {
                 row.of = (e.target as HTMLInputElement).checked;
+                this.onChange?.();
             });
             ofTd.appendChild(ofInput);
 
@@ -683,7 +695,10 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
             const deleteBtn = document.createElement("button");
             deleteBtn.classList.add("chip", "transparent", "circle", "no-border");
             deleteBtn.innerHTML = `<i>close</i>`;
-            deleteBtn.addEventListener("click", () => this.removeRow(index));
+            deleteBtn.addEventListener("click", () => {
+                this.removeRow(index);
+                this.onChange?.();
+            });
             deleteTd.appendChild(deleteBtn);
 
             tr.appendChild(descTd);
@@ -721,6 +736,7 @@ class ResourceLinksSection implements LessonField<string[]> {
     helper: HTMLSpanElement;
     list: HTMLDivElement;
     addButton: HTMLButtonElement;
+    onChange?: () => void;
 
     private links: string[] = [];
 
@@ -759,6 +775,7 @@ class ResourceLinksSection implements LessonField<string[]> {
         const url = prompt("Enter resource URL:");
         if (url) {
             this.links.push(url);
+            this.onChange?.();
             this.render();
         }
     }
@@ -779,6 +796,7 @@ class ResourceLinksSection implements LessonField<string[]> {
             removeBtn.innerHTML = `<i>close</i>`;
             removeBtn.addEventListener("click", () => {
                 this.links.splice(this.links.indexOf(link), 1);
+                this.onChange?.();
                 this.render();
             });
 
@@ -806,6 +824,56 @@ class ResourceLinksSection implements LessonField<string[]> {
     }
 }
 
+class LessonBuilder {
+    constructor(
+        private topic: TopicInput,
+        private lessonName: LessonNameInput,
+        private author: AuthorInput,
+        private grade: GradeLevelSelect,
+        private date: DateField,
+        private time: TimeLengthSelect,
+        private outcomes: CurricularOutcomesSection,
+        private resources: ResourceLinksSection,
+        private assessment: AssessmentEvidenceSection,
+        private notes: LessonNotesEditor
+    ) { }
+
+    /** Builds markdown for the Preview */
+    buildMarkdown(): string {
+        return `
+# ${this.lessonName.getValue() || "Untitled Lesson"}
+*${this.topic.getValue() || ""}*
+**Author:** ${this.author.getValue() || ""}
+**Grade:** ${this.grade.getValue() || ""}
+**Date:** ${this.date.getValue() || ""}
+**Time:** ${this.time.getValue() || ""}
+
+---
+
+## Curricular Outcomes
+${this.outcomes.getValue().map(o => `- ${o}`).join("\n") || "_None_"}
+
+---
+
+## Resource Links
+${this.resources.getValue().map(l => `- [${l}](${l})`).join("\n") || "_None_"}
+
+---
+
+## Assessment Evidence
+| Description | FOR | AS | OF |
+|-------------|-----|----|----|
+${this.assessment.getValue().map(r =>
+            `| ${r.description} | ${r.for ? "✓" : ""} | ${r.as ? "✓" : ""} | ${r.of ? "✓" : ""} |`
+        ).join("\n") || "| _No evidence yet_ |  |  |  |"}
+
+---
+
+## Lesson Notes
+${this.notes.getValue() || "_Nothing yet_"}
+        `;
+    }
+}
 
 
 class Preview {
@@ -837,46 +905,65 @@ class Preview {
 
 function setupEditorPane() {
     const topicInput = new TopicInput();
-    document.getElementById("editor-pane")!.appendChild(topicInput.element);
-
     const lessonNameInput = new LessonNameInput();
-    document.getElementById("editor-pane")!.appendChild(lessonNameInput.element);
-
     const authorInput = new AuthorInput();
-    document.getElementById("editor-pane")!.appendChild(authorInput.element);
-
     const gradeLevelSelect = new GradeLevelSelect();
-    document.getElementById("editor-pane")!.appendChild(gradeLevelSelect.element);
-
     const dateField = new DateField();
-    document.getElementById("editor-pane")!.appendChild(dateField.element);
-
     const timeLengthSelect = new TimeLengthSelect();
-    document.getElementById("editor-pane")!.appendChild(timeLengthSelect.element);
-
     const curricularOutcomesSection = new CurricularOutcomesSection();
-    document.getElementById("editor-pane")!.appendChild(curricularOutcomesSection.element);
-
     const resourceLinks = new ResourceLinksSection();
-    document.getElementById("editor-pane")!.appendChild(resourceLinks.element);
-
-    // const learningObjectives = new LearningPlanSection();
-    // document.getElementById("editor-pane")!.appendChild(learningObjectives.element);
-
     const assessmentEvidence = new AssessmentEvidenceSection();
-    document.getElementById("editor-pane")!.appendChild(assessmentEvidence.element);
-
     const lessonNotes = new LessonNotesEditor();
-    document.getElementById("editor-pane")!.appendChild(lessonNotes.element);
+
+    const editorPane = document.getElementById("editor-pane")!;
+    [
+        topicInput,
+        lessonNameInput,
+        authorInput,
+        gradeLevelSelect,
+        dateField,
+        timeLengthSelect,
+        curricularOutcomesSection,
+        resourceLinks,
+        assessmentEvidence,
+        lessonNotes
+    ].forEach(f => editorPane.appendChild(f.element));
 
     const preview = new Preview("preview-pane");
+    const builder = new LessonBuilder(
+        topicInput,
+        lessonNameInput,
+        authorInput,
+        gradeLevelSelect,
+        dateField,
+        timeLengthSelect,
+        curricularOutcomesSection,
+        resourceLinks,
+        assessmentEvidence,
+        lessonNotes
+    );
 
-    // update preview live as you type
-    lessonNotes.editor.on("change", () => {
-        preview.update(lessonNotes.getValue());
-    });
-    preview.update(lessonNotes.getValue());
+    function updatePreview() {
+        preview.update(builder.buildMarkdown());
+    }
+
+    // Attach listeners to each field
+    [topicInput.input, lessonNameInput.input, authorInput.input, gradeLevelSelect.select,
+    dateField.input, timeLengthSelect.select].forEach(el =>
+        el.addEventListener("input", updatePreview)
+    );
+
+    lessonNotes.editor.on("change", updatePreview);
+
+    // For outcomes/resources/assessment, you’d call updatePreview() at the end of their add/remove handlers:
+    // e.g. in CurricularOutcomesSection.addOutcome() → after this.renderList(); call updatePreview()
+    curricularOutcomesSection.onChange = updatePreview;
+    resourceLinks.onChange = updatePreview;
+    assessmentEvidence.onChange = updatePreview;
+
+    updatePreview(); // initial
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const appearanceButton = document.getElementById("appearance-button") as HTMLButtonElement;
