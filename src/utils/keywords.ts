@@ -1,7 +1,8 @@
 import { MathematicsOutcome } from "@models/mathematics-outcome";
-import { mathematicsQuickSearchKeyWords, socialStudiesQuickSearchKeyWords, scienceQuickSearchKeywords } from "./quick-search-words";
+import { mathematicsQuickSearchKeyWords, socialStudiesQuickSearchKeyWords, scienceQuickSearchKeywords, biologyQuickSearchKeywords } from "./quick-search-words";
 import { SocialStudiesOutcome } from "@models/social-studies-outcome";
 import { ScienceOutcome } from "@models/science-outcome";
+import { BiologyOutcome } from "@models/biology-outcome";
 
 export function highlightKeywords(text: string, keywords: string[]): string {
     const escaped = keywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
@@ -27,6 +28,21 @@ export function getScienceKeywords(outcome: ScienceOutcome) {
     scienceQuickSearchKeywords.forEach(k => {
         const low = k.toLowerCase();
         if (outcome.specificLearningOutcome.toLowerCase().includes(low)) keywords.add(k);
+        outcome.generalLearningOutcomes.forEach(g => {
+            if (g.name.toLowerCase().includes(low)) keywords.add(k);
+        });
+    });
+    return keywords.size > 0 ? `: ${Array.from(keywords).join(", ")}` : "";
+}
+
+export function getBiologyKeywords(outcome: BiologyOutcome) {
+    const keywords = new Set<string>();
+    biologyQuickSearchKeywords.forEach(k => {
+        const low = k.toLowerCase();
+        if (outcome.specificLearningOutcome.toLowerCase().includes(low)) keywords.add(k);
+        outcome.generalLearningOutcomes.forEach(g => {
+            if (g.name.toLowerCase().includes(low)) keywords.add(k);
+        });
     });
     return keywords.size > 0 ? `: ${Array.from(keywords).join(", ")}` : "";
 }

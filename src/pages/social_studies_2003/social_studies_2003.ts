@@ -330,6 +330,7 @@ function loadResetFilterButton() {
         state.s = null;
         applyStateToUI(state);
         writeStateToURL(state);
+        updateMenusForGrade();
     });
 }
 

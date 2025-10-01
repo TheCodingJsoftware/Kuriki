@@ -7,9 +7,9 @@ export class SkillTypeElement {
     constructor(skillType: SkillType) {
         this.skillType = skillType;
         const el = document.createElement("button");
-        el.classList.add("skill", "tiny-margin", "chip");
-        el.dataset.skillId = skillType.id;
-        el.dataset.skillName = skillType.name;
+        el.classList.add("skill-type", "tiny-margin", "chip");
+        el.dataset.skillTypeId = skillType.id;
+        el.dataset.skillTypeName = skillType.name;
         el.setAttribute("aria-pressed", "false");
 
         // const icon = document.createElement("i");
@@ -28,7 +28,7 @@ export class SkillTypeElement {
         this.element.setAttribute("aria-pressed", selected ? "true" : "false");
     }
 
-    onClick(handler: (skill: SkillType, el: SkillTypeElement) => void) {
+    onClick(handler: (skillType: SkillType, el: SkillTypeElement) => void) {
         this.element.addEventListener("click", () => handler(this.skillType, this));
     }
 }

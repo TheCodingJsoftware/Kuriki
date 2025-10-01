@@ -1,4 +1,7 @@
-export interface RawScienceOutcome {
+import { Unit } from "./unit";
+import { GeneralLearningOutcome } from "./general-learning-outcome";
+
+export interface RawBiologyOutcome {
     outcome_id: string;
     grade: string;
     specific_learning_outcome: string;
@@ -7,27 +10,28 @@ export interface RawScienceOutcome {
 }
 
 export class BiologyOutcome {
-    outcome_id: string;
-    grade: string;
-    specific_learning_outcome: string;
-    unit: { id: string; name: string }[];
-    general_learning_outcomes: { id: string; description: string }[];
-
-    constructor(raw: RawScienceOutcome) {
-        this.outcome_id = raw.outcome_id;
-        this.grade = raw.grade;
-        this.specific_learning_outcome = raw.specific_learning_outcome;
-
-        this.unit = Object.entries(raw.unit).map(([id, name]) => ({
-            id,
-            name,
-        }));
-
-        this.general_learning_outcomes = Object.entries(raw.general_learning_outcomes).map(
-            ([id, description]) => ({
-                id,
-                description,
-            })
-        );
+    private _data: {
+        outcomeId: string;
+        grade: string;
+        specificLearningOutcome: string;
+        unit: Unit;
+        generalLearningOutcomes: GeneralLearningOutcome[];
     }
+
+    constructor(data: RawBiologyOutcome) {
+        const [unitId, unitName] = Object.entries(data.unit ?? {})[0] ?? ['', ''];
+
+        this._data = {
+            outcomeId: data.outcome_id,
+            grade: data.grade,
+            specificLearningOutcome: data.specific_learning_outcome,
+            unit: new Unit(unitId, unitName),
+            generalLearningOutcomes: Object.entries(data.general_learning_outcomes).map(([id, description]) => new GeneralLearningOutcome(id, description))
+        }
+    }
+    get outcomeId() { return this._data.outcomeId; }
+    get grade() { return this._data.grade; }
+    get specificLearningOutcome() { return this._data.specificLearningOutcome; }
+    get unit() { return this._data.unit; }
+    get generalLearningOutcomes() { return this._data.generalLearningOutcomes; }
 }

@@ -7,9 +7,9 @@ export class ClusterElement {
     constructor(cluster: Cluster) {
         this.cluster = cluster;
         const el = document.createElement("button");
-        el.classList.add("skill", "tiny-margin", "chip");
-        el.dataset.skillId = cluster.id;
-        el.dataset.skillName = cluster.name;
+        el.classList.add("cluster", "tiny-margin", "chip");
+        el.dataset.clusterId = cluster.id;
+        el.dataset.clusterName = cluster.name;
         el.setAttribute("aria-pressed", "false");
 
         // const icon = document.createElement("i");
@@ -28,7 +28,7 @@ export class ClusterElement {
         this.element.setAttribute("aria-pressed", selected ? "true" : "false");
     }
 
-    onClick(handler: (skill: Cluster, el: ClusterElement) => void) {
+    onClick(handler: (cluster: Cluster, el: ClusterElement) => void) {
         this.element.addEventListener("click", () => handler(this.cluster, this));
     }
 }

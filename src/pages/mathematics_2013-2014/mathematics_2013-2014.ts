@@ -286,6 +286,7 @@ function loadResetFilterButton() {
         state.o = null;
         applyStateToUI(state);
         writeStateToURL(state);
+        updateMenusForGrade();
     });
 }
 

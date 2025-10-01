@@ -149,17 +149,17 @@ function renderClusterMenu(available: Cluster[]) {
     const container = document.getElementById("clusters") as HTMLDivElement;
     container.innerHTML = "";
 
-    const strandMenu = new MenuButton(
+    const clusterMenu = new MenuButton(
         "Clusters",
         "category",
         available.map(s => ({ key: s.id, label: s.name }))
     );
 
     available.forEach(s => {
-        if (selectedClusters.has(s.id)) strandMenu.setSelected(s.id, true);
+        if (selectedClusters.has(s.id)) clusterMenu.setSelected(s.id, true);
     });
 
-    strandMenu.onToggle.connect(({ key, value }) => {
+    clusterMenu.onToggle.connect(({ key, value }) => {
         value ? selectedClusters.add(key) : selectedClusters.delete(key);
         const state = currentState();
         state.c = [...selectedClusters];
@@ -168,7 +168,7 @@ function renderClusterMenu(available: Cluster[]) {
         writeStateToURL(state);
     });
 
-    container.appendChild(strandMenu.button);
+    container.appendChild(clusterMenu.button);
 }
 
 function loadGradeTabs() {
@@ -220,6 +220,7 @@ function loadResetFilterButton() {
         state.o = null;
         applyStateToUI(state);
         writeStateToURL(state);
+        updateMenusForGrade();
     });
 }
 

@@ -7,13 +7,13 @@ export class DistinctiveLearningOutcomeElement {
     constructor(distinctiveLearningOutcome: DistinctiveLearningOutcome) {
         this.distinctiveLearningOutcome = distinctiveLearningOutcome;
         const el = document.createElement("button");
-        el.classList.add("skill", "tiny-margin", "chip");
-        el.dataset.skillId = distinctiveLearningOutcome.id;
-        el.dataset.skillName = distinctiveLearningOutcome.name;
+        el.classList.add("distinctive-learning-outcome", "tiny-margin", "chip");
+        el.dataset.distinctiveLearningOutcomeId = distinctiveLearningOutcome.id;
+        el.dataset.distinctiveLearningOutcomeName = distinctiveLearningOutcome.name;
         el.setAttribute("aria-pressed", "false");
 
         // const icon = document.createElement("i");
-        // icon.innerHTML = skillType.getIcon();
+        // icon.innerHTML = distinctiveLearningOutcomeType.getIcon();
 
         const span = document.createElement("span");
         span.innerText = `[${distinctiveLearningOutcome.id}] ${distinctiveLearningOutcome.name}`;
@@ -28,7 +28,7 @@ export class DistinctiveLearningOutcomeElement {
         this.element.setAttribute("aria-pressed", selected ? "true" : "false");
     }
 
-    onClick(handler: (skill: DistinctiveLearningOutcome, el: DistinctiveLearningOutcomeElement) => void) {
+    onClick(handler: (distinctiveLearningOutcome: DistinctiveLearningOutcome, el: DistinctiveLearningOutcomeElement) => void) {
         this.element.addEventListener("click", () => handler(this.distinctiveLearningOutcome, this));
     }
 }

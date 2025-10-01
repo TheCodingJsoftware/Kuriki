@@ -2,21 +2,21 @@ import { OutcomeType } from "@models/outcome-type";
 
 export class OutcomeTypeElement {
     element: HTMLElement;
-    skillType: OutcomeType;
+    outcomeType: OutcomeType;
 
-    constructor(skillType: OutcomeType) {
-        this.skillType = skillType;
+    constructor(outcomeType: OutcomeType) {
+        this.outcomeType = outcomeType;
         const el = document.createElement("button");
-        el.classList.add("skill", "tiny-margin", "chip");
-        el.dataset.skillId = skillType.id;
-        el.dataset.skillName = skillType.name;
+        el.classList.add("outcome-type", "tiny-margin", "chip");
+        el.dataset.outcomeTypeId = outcomeType.id;
+        el.dataset.outcomeTypeName = outcomeType.name;
         el.setAttribute("aria-pressed", "false");
 
         // const icon = document.createElement("i");
-        // icon.innerHTML = skillType.getIcon();
+        // icon.innerHTML = outcomeTypeType.getIcon();
 
         const span = document.createElement("span");
-        span.innerText = `[${skillType.id}] ${skillType.name}`;
+        span.innerText = `[${outcomeType.id}] ${outcomeType.name}`;
 
         // el.appendChild(icon);
         el.appendChild(span);
@@ -28,7 +28,7 @@ export class OutcomeTypeElement {
         this.element.setAttribute("aria-pressed", selected ? "true" : "false");
     }
 
-    onClick(handler: (skill: OutcomeType, el: OutcomeTypeElement) => void) {
-        this.element.addEventListener("click", () => handler(this.skillType, this));
+    onClick(handler: (outcomeType: OutcomeType, el: OutcomeTypeElement) => void) {
+        this.element.addEventListener("click", () => handler(this.outcomeType, this));
     }
 }
