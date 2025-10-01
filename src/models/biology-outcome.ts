@@ -20,9 +20,7 @@ export class BiologyOutcome extends Outcome<{
         const [unitId, unitName] = Object.entries(data.unit ?? {})[0] ?? ['', ''];
 
         this._data = {
-            outcomeId: data.outcome_id,
-            grade: data.grade,
-            specificLearningOutcome: data.specific_learning_outcome,
+            ...this._data,
             unit: new Unit(unitId, unitName),
             generalLearningOutcomes: Object.entries(data.general_learning_outcomes).map(([id, description]) => new GeneralLearningOutcome(id, description))
         }
@@ -30,4 +28,8 @@ export class BiologyOutcome extends Outcome<{
 
     get unit() { return this._data.unit; }
     get generalLearningOutcomes() { return this._data.generalLearningOutcomes; }
+
+    public toString(): string {
+        return `${this.outcomeId} ${this.specificLearningOutcome} [${this.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`
+    }
 }

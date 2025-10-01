@@ -5,6 +5,7 @@ import { DistinctiveLearningOutcomeElement } from "./distinctive-learning-outcom
 import { GeneralLearningOutcomeElement } from './general-learning-outcome-element';
 import { OutcomeTypeElement } from "./outcome-type-element";
 import { SocialStudiesOutcome } from "@models/social-studies-outcome";
+import { CopiedOutcomeSnackbar } from "@components/common/snackbar/outcome-copied";
 
 export class SocialStudiesOutcomeCard {
     private outcome: SocialStudiesOutcome;
@@ -76,12 +77,11 @@ export class SocialStudiesOutcomeCard {
         // });
 
         // Copy button
-        const copyBtn = document.createElement("button");
-        copyBtn.innerText = "Copy Outcome";
-        copyBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(
-                `${this.outcome.outcomeId} ${this.outcome.specificLearningOutcome}`
-            );
+        const copyOutcome = document.createElement("button");
+        copyOutcome.innerText = "Copy Outcome";
+        copyOutcome.addEventListener("click", () => {
+            navigator.clipboard.writeText(this.outcome.toString());
+            new CopiedOutcomeSnackbar();
         });
 
         // Append children
@@ -89,7 +89,7 @@ export class SocialStudiesOutcomeCard {
         container.appendChild(elements);
         container.appendChild(description);
         // container.appendChild(list);
-        container.appendChild(copyBtn);
+        container.appendChild(copyOutcome);
 
         this.element = container;
     }

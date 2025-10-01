@@ -1,3 +1,4 @@
+import { CopiedOutcomeSnackbar } from "@components/common/snackbar/outcome-copied";
 import { SocialStudiesOutcome } from "@models/social-studies-outcome";
 import { getSocialStudiesKeywords, highlightKeywords } from "@utils/keywords";
 import { socialStudiesQuickSearchKeyWords } from "@utils/quick-search-words";
@@ -45,7 +46,8 @@ export class SocialStudiesOutcomeElement {
         copyOutcome.innerText = "Copy Outcome";
         copyOutcome.addEventListener("click", (event) => {
             event.stopPropagation();
-            navigator.clipboard.writeText(`${outcome.outcomeId} ${outcome.specificLearningOutcome}`);
+            navigator.clipboard.writeText(this.outcome.toString());
+            new CopiedOutcomeSnackbar();
         });
 
         tooltipActions.appendChild(copyOutcome);

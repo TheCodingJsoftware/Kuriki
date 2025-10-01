@@ -2,6 +2,7 @@ import { highlightKeywords } from "@utils/keywords";
 import { scienceQuickSearchKeywords } from "@utils/quick-search-words";
 import { UnitElement } from "./unit-element";
 import { BiologyOutcome } from "@models/biology-outcome";
+import { CopiedOutcomeSnackbar } from "@components/common/snackbar/outcome-copied";
 
 export class BiologyOutcomeCard {
     private outcome: BiologyOutcome;
@@ -44,12 +45,11 @@ export class BiologyOutcomeCard {
         });
 
         // Copy button
-        const copyBtn = document.createElement("button");
-        copyBtn.innerText = "Copy Outcome";
-        copyBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(
-                `${this.outcome.outcomeId} ${this.outcome.specificLearningOutcome} [${this.outcome.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`
-            );
+        const copyOutcome = document.createElement("button");
+        copyOutcome.innerText = "Copy Outcome";
+        copyOutcome.addEventListener("click", () => {
+            navigator.clipboard.writeText(this.outcome.toString());
+            new CopiedOutcomeSnackbar();
         });
 
         // Append children
@@ -57,7 +57,7 @@ export class BiologyOutcomeCard {
         container.appendChild(skills);
         container.appendChild(description);
         container.appendChild(list);
-        container.appendChild(copyBtn);
+        container.appendChild(copyOutcome);
 
         this.element = container;
     }

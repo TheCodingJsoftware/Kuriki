@@ -40,4 +40,8 @@ export class MathematicsOutcome extends Outcome<{
     get strand() { return this._data.strand; }
     get skills() { return this._data.skills; }
     get generalLearningOutcomes() { return this._data.generalLearningOutcome; }
+
+    public toString(): string {
+        return `${this.outcomeId} ${this.specificLearningOutcome} [${this.skills.toArray().map(s => s.id).join(", ")}]`
+    }
 }

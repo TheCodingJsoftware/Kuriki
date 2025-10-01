@@ -3,6 +3,7 @@ import { mathematicsQuickSearchKeyWords } from "@utils/quick-search-words";
 import { SkillElement } from "./skill-element";
 import { StrandElement } from "./strand-element";
 import { MathematicsOutcome } from "@models/mathematics-outcome";
+import { CopiedOutcomeSnackbar } from "@components/common/snackbar/outcome-copied";
 
 export class MathematicsOutcomeCard {
     private outcome: MathematicsOutcome;
@@ -53,12 +54,11 @@ export class MathematicsOutcomeCard {
         });
 
         // Copy button
-        const copyBtn = document.createElement("button");
-        copyBtn.innerText = "Copy Outcome";
-        copyBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(
-                `${this.outcome.outcomeId} ${this.outcome.specificLearningOutcome} [${this.outcome.skills.toArray().map(s => s.id).join(", ")}]`
-            );
+        const copyOutcome = document.createElement("button");
+        copyOutcome.innerText = "Copy Outcome";
+        copyOutcome.addEventListener("click", () => {
+            navigator.clipboard.writeText(this.outcome.toString());
+            new CopiedOutcomeSnackbar();
         });
 
         // Append children
@@ -66,7 +66,7 @@ export class MathematicsOutcomeCard {
         container.appendChild(skills);
         container.appendChild(description);
         container.appendChild(list);
-        container.appendChild(copyBtn);
+        container.appendChild(copyOutcome);
 
         this.element = container;
     }

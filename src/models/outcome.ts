@@ -1,8 +1,8 @@
-import { BiologyOutcome } from "./biology-outcome";
-import { MathematicsOutcome } from "./mathematics-outcome";
-import { ScienceOutcome } from "./science-outcome";
-import { SocialStudiesOutcome } from "./social-studies-outcome";
-import { SocialStudiesSkill } from "./social-studies-skill";
+import { BiologyOutcome } from "@models/biology-outcome";
+import { MathematicsOutcome } from "@models/mathematics-outcome";
+import { ScienceOutcome } from "@models/science-outcome";
+import { SocialStudiesOutcome } from "@models/social-studies-outcome";
+import { SocialStudiesSkill } from "@models/social-studies-skill";
 
 export type OutcomeType = MathematicsOutcome | SocialStudiesOutcome | SocialStudiesSkill | BiologyOutcome | ScienceOutcome
 
@@ -34,4 +34,8 @@ export class Outcome<T extends {
     get outcomeId() { return this._data.outcomeId; }
     get grade() { return this._data.grade; }
     get specificLearningOutcome() { return this._data.specificLearningOutcome; }
+
+    public toString(): string {
+        return `${this.outcomeId} ${this.specificLearningOutcome}`
+    }
 }

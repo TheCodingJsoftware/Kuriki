@@ -29,11 +29,9 @@ export class SocialStudiesOutcome extends Outcome<{
         const [dloId, dloName] = Object.entries(data.distinctive_learning_outcome ?? {})[0] ?? ['', ''];
 
         this._data = {
-            outcomeId: data.outcome_id ?? '',
-            grade: data.grade ?? '',
+            ...this._data,
             cluster: new Cluster(clusterId, clusterName),
             outcomeType: new OutcomeType(outcomeTypeId, outcomeTypeName),
-            specificLearningOutcome: data.specific_learning_outcome ?? '',
             generalLearningOutcome: new GeneralLearningOutcome(gloId, gloName),
             distinctiveLearningOutcome: new DistinctiveLearningOutcome(dloId, dloName)
         };
@@ -43,4 +41,8 @@ export class SocialStudiesOutcome extends Outcome<{
     get outcomeType() { return this._data.outcomeType; }
     get generalLearningOutcome() { return this._data.generalLearningOutcome; }
     get distinctiveLearningOutcome() { return this._data.distinctiveLearningOutcome; }
+
+    public toString(): string {
+        return `${this.outcomeId} ${this.specificLearningOutcome}`
+    }
 }

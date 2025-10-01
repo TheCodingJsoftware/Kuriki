@@ -20,9 +20,7 @@ export class ScienceOutcome extends Outcome<{
         const [clusterId, clusterName] = Object.entries(data.cluster ?? {})[0] ?? ['', ''];
 
         this._data = {
-            outcomeId: data.outcome_id,
-            grade: data.grade,
-            specificLearningOutcome: data.specific_learning_outcome,
+            ...this._data,
             cluster: new Cluster(clusterId, clusterName),
             generalLearningOutcomes: Object.entries(data.general_learning_outcomes).map(([id, description]) => new GeneralLearningOutcome(id, description))
         }
@@ -30,4 +28,8 @@ export class ScienceOutcome extends Outcome<{
 
     get cluster() { return this._data.cluster; }
     get generalLearningOutcomes() { return this._data.generalLearningOutcomes; }
+
+    public toString(): string {
+        return `${this.outcomeId} ${this.specificLearningOutcome} [${this.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`
+    }
 }

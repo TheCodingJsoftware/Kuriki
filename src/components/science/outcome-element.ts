@@ -1,3 +1,4 @@
+import { CopiedOutcomeSnackbar } from "@components/common/snackbar/outcome-copied";
 import { ScienceOutcome } from "@models/science-outcome";
 import { getScienceKeywords, highlightKeywords } from "@utils/keywords";
 import { mathematicsQuickSearchKeyWords } from "@utils/quick-search-words";
@@ -47,7 +48,9 @@ export class ScienceOutcomeElement {
         copyOutcome.innerText = "Copy Outcome";
         copyOutcome.addEventListener("click", (event) => {
             event.stopPropagation();
-            navigator.clipboard.writeText(`${outcome.outcomeId} ${outcome.specificLearningOutcome} [${outcome.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`);
+            navigator.clipboard.writeText(this.outcome.toString());
+            new CopiedOutcomeSnackbar();
+
         });
 
         tooltipActions.appendChild(copyOutcome);
