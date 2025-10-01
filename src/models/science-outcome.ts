@@ -1,3 +1,6 @@
+import { Cluster } from "./cluster";
+import { GeneralLearningOutcome } from "./general-learning-outcome";
+
 export interface RawScienceOutcome {
     outcome_id: string;
     grade: string;
@@ -7,27 +10,28 @@ export interface RawScienceOutcome {
 }
 
 export class ScienceOutcome {
-    outcome_id: string;
-    grade: string;
-    specific_learning_outcome: string;
-    cluster: { id: string; name: string }[];
-    general_learning_outcomes: { id: string; description: string }[];
-
-    constructor(raw: RawScienceOutcome) {
-        this.outcome_id = raw.outcome_id;
-        this.grade = raw.grade;
-        this.specific_learning_outcome = raw.specific_learning_outcome;
-
-        this.cluster = Object.entries(raw.cluster).map(([id, name]) => ({
-            id,
-            name,
-        }));
-
-        this.general_learning_outcomes = Object.entries(raw.general_learning_outcomes).map(
-            ([id, description]) => ({
-                id,
-                description,
-            })
-        );
+    private _data: {
+        outcomeId: string;
+        grade: string;
+        specificLearningOutcome: string;
+        cluster: Cluster;
+        generalLearningOutcomes: GeneralLearningOutcome[];
     }
+
+    constructor(data: RawScienceOutcome) {
+        const [clusterId, clusterName] = Object.entries(data.cluster ?? {})[0] ?? ['', ''];
+
+        this._data = {
+            outcomeId: data.outcome_id,
+            grade: data.grade,
+            specificLearningOutcome: data.specific_learning_outcome,
+            cluster: new Cluster(clusterId, clusterName),
+            generalLearningOutcomes: Object.entries(data.general_learning_outcomes).map(([id, description]) => new GeneralLearningOutcome(id, description))
+        }
+    }
+    get outcomeId() { return this._data.outcomeId; }
+    get grade() { return this._data.grade; }
+    get specificLearningOutcome() { return this._data.specificLearningOutcome; }
+    get cluster() { return this._data.cluster; }
+    get generalLearningOutcomes() { return this._data.generalLearningOutcomes; }
 }

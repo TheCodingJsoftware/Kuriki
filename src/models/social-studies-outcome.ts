@@ -2,10 +2,11 @@ import { Cluster } from '@models/cluster';
 import { OutcomeType } from '@models/outcome-type';
 import { GeneralLearningOutcome } from '@models/general-learning-outcome';
 import { DistinctiveLearningOutcome } from '@models/distinctive-learning-outcome';
+import { Grade } from '@state/grades';
 
 export interface RawSocialStudiesOutcome {
     outcome_id: string;
-    grade: string;
+    grade: Grade;
     cluster: Record<string, string>;
     outcome_type: Record<string, string>;
     specific_learning_outcome: string;
@@ -45,6 +46,7 @@ export class SocialStudiesOutcome {
     get grade() { return this._data.grade; }
     get cluster() { return this._data.cluster; }
     get outcomeType() { return this._data.outcomeType; }
+    get specificLearningOutcome() { return this._data.specificLearningOutcome; }
     get generalLearningOutcome() { return this._data.generalLearningOutcome; }
     get distinctiveLearningOutcome() { return this._data.distinctiveLearningOutcome; }
 }

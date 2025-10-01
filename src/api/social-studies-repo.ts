@@ -10,7 +10,7 @@ import { GeneralLearningOutcome } from "@models/general-learning-outcome";
 import { DistinctiveLearningOutcome } from "@models/distinctive-learning-outcome";
 
 export const SocialStudiesRepo = {
-    async getAllOutcomes(): Promise<SocialStudiesOutcome[]> {
+    async getOutcomes(): Promise<SocialStudiesOutcome[]> {
         return cachedFetch(
             "social_studies_2003",
             "outcomes",

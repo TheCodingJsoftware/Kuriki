@@ -11,7 +11,6 @@ import "@static/css/lesson.css";
 
 import "@toast-ui/editor/dist/toastui-editor.css"; // important
 import "@toast-ui/editor/dist/theme/toastui-editor-dark.css"; // if using dark theme
-import { getPreferredMode } from "@utils/theme";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
 

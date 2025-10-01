@@ -1,10 +1,10 @@
 export class OutcomeType {
     constructor(
-        public outcomeTypeId: string,
-        public outcomeTypeName: string
+        public id: string,
+        public name: string
     ) { }
 
     toDict(): Record<string, string> {
-        return { [this.outcomeTypeId]: this.outcomeTypeName };
+        return { [this.id]: this.name };
     }
 }

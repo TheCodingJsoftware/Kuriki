@@ -3,58 +3,154 @@ import "beercss"
 import "material-dynamic-colors"
 import "@static/css/style.css"
 import { MathematicsOutcome } from "@models/mathematics-outcome";
-import { mathematicsQuickSearchKeyWords } from "@utils/quick-search-words";
 import { Skill } from "@models/skill";
 import { enhanceLinks } from "@utils/enhance-links";
 import { Strand } from "@models/strand";
 import { MenuButton } from "@components/common/buttons/menu-button";
-import { SkillElement } from "@components/mathematics/skill-element"
-import { StrandElement } from "@components/mathematics/strand-element"
-import { DEFAULT_GRADE, GRADES } from "@state/grades";
 import { MathematicsRepo } from "@api/mathematics-repo";
-import { Storage } from "@utils/storage";
 import { updateMetaColors } from "@utils/theme";
+import { Grade } from "@state/grades";
+import { MathematicsOutcomeElement } from "@components/mathematics/outcome-element";
+import { MathematicsOutcomeCard } from "@components/mathematics/card-element";
 
+const GRADES: Record<string, Grade> = {
+    "Kindergarten": "K",
+    "Grade 1": "1",
+    "Grade 2": "2",
+    "Grade 3": "3",
+    "Grade 4": "4",
+    "Grade 5": "5",
+    "Grade 6": "6",
+    "Grade 7": "7",
+    "Grade 8": "8",
+    "Grade 9": "9",
+    "Grade 10 Essentials": "10E",
+    "Grade 10 Introduction to Applied and Pre-Calculus": "10I",
+    "Grade 11 Applied": "11A",
+    "Grade 11 Essentials": "11E",
+    "Grade 11 Pre-Calculus": "11P",
+    "Grade 12 Applied": "12A",
+    "Grade 12 Essentials": "12E",
+    "Grade 12 Pre-Calculus": "12P",
+};
+const DEFAULT_GRADE: Grade = GRADES["Kindergarten"] as Grade;
+
+// ---------------- State ----------------
 let searchQuery: string = "";
-let selectedGrade: string = "K";
+let selectedGrade: string = DEFAULT_GRADE;
 let selectedStrands = new Set<string>();
 let selectedSkills = new Set<string>();
+
 let allOutcomes: MathematicsOutcome[] = [];
 let allStrands: Strand[] = [];
 let allSkills: Skill[] = [];
 
+// ---------------- URL State Helpers ----------------
+type AppState = {
+    g: Grade;           // selected grade
+    str: string[];      // selected strands
+    skl: string[];      // selected skills
+    q: string;          // search query
+    o?: string | null;  // selected outcome
+};
+
+function readStateFromURL(): AppState {
+    const url = new URL(location.href);
+    const p = url.searchParams;
+    return {
+        g: (p.get("g") as Grade) || DEFAULT_GRADE,
+        str: (p.get("str") || "").split(",").filter(Boolean),
+        skl: (p.get("skl") || "").split(",").filter(Boolean),
+        q: p.get("q") || "",
+        o: p.get("o"),
+    };
+}
+
+function writeStateToURL(state: AppState, replace = false) {
+    const url = new URL(location.href);
+    const p = url.searchParams;
+    p.set("g", state.g);
+    state.str.length ? p.set("str", state.str.join(",")) : p.delete("str");
+    state.skl.length ? p.set("skl", state.skl.join(",")) : p.delete("skl");
+    state.q ? p.set("q", state.q) : p.delete("q");
+    state.o ? p.set("o", state.o) : p.delete("o");
+    url.search = p.toString();
+
+    if (replace) {
+        history.replaceState(state, "", url.toString());
+    } else {
+        history.pushState(state, "", url.toString());
+    }
+}
+
+
+function applyStateToUI(state: AppState) {
+    selectedGrade = state.g;
+    selectedStrands = new Set(state.str);
+    selectedSkills = new Set(state.skl);
+    searchQuery = state.q;
+
+    const input = document.querySelector<HTMLInputElement>("#search input");
+    if (input) input.value = searchQuery;
+
+    renderUI();
+
+    if (state.o) {
+        const found = applyFilters().find(o => o.outcomeId === state.o);
+        if (found) scrollToOutcome(found, false);
+    }
+}
+
+function currentState(): AppState {
+    return {
+        g: selectedGrade as Grade,
+        str: [...selectedStrands],
+        skl: [...selectedSkills],
+        q: searchQuery,
+        o: getCurrentlySelectedOutcomeIdOrNull(),
+    };
+}
+
+function getCurrentlySelectedOutcomeIdOrNull(): string | null {
+    const el = document.querySelector<HTMLElement>(".outcome.selected");
+    return el?.dataset.outcomeId ?? null;
+}
+
+window.addEventListener("popstate", () => {
+    const state = readStateFromURL();
+    applyStateToUI(state);
+});
+
+// ---------------- Filtering ----------------
 function applyFilters(): MathematicsOutcome[] {
     let filtered = selectedGrade
         ? allOutcomes.filter(o => o.grade === selectedGrade)
         : allOutcomes;
 
+    const validStrandIds = new Set(filtered.map(o => o.strand.id));
+    const validSkillIds = new Set(filtered.flatMap(o => Array.from(o.skills).map(s => s.id)));
 
-    const validStrandIds = new Set(filtered.map(o => o.strand.strandId));
-    const validSkillIds = new Set(filtered.flatMap(o => Array.from(o.skills).map(s => s.skillId)));
-
-    // prune irrelevant selections
     selectedStrands = new Set([...selectedStrands].filter(id => validStrandIds.has(id)));
     selectedSkills = new Set([...selectedSkills].filter(id => validSkillIds.has(id)));
 
     if (selectedStrands.size > 0) {
-        filtered = filtered.filter(o => selectedStrands.has(o.strand.strandId));
+        filtered = filtered.filter(o => selectedStrands.has(o.strand.id));
     }
 
     if (selectedSkills.size > 0) {
         filtered = filtered.filter(o =>
-            Array.from(o.skills).some(s => selectedSkills.has(s.skillId))
+            Array.from(o.skills).some(s => selectedSkills.has(s.id))
         );
     }
 
     if (searchQuery.trim().length > 0) {
-        const query = searchQuery.toLowerCase();
+        const q = searchQuery.toLowerCase();
         filtered = filtered.filter(o =>
-            o.specificLearningOutcome.toLowerCase().includes(query) ||
-            o.generalLearningOutcomes.some(g => g.toLowerCase().includes(query)) ||
-            o.strand.strandName.toLowerCase().includes(query) ||
+            o.specificLearningOutcome.toLowerCase().includes(q) ||
+            o.generalLearningOutcomes.some(g => g.toLowerCase().includes(q)) ||
+            o.strand.name.toLowerCase().includes(q) ||
             Array.from(o.skills).some(s =>
-                s.skillName.toLowerCase().includes(query) ||
-                s.skillId.toLowerCase().includes(query)
+                s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q)
             )
         );
     }
@@ -62,126 +158,79 @@ function applyFilters(): MathematicsOutcome[] {
     return filtered;
 }
 
+// ---------------- UI Rendering ----------------
+function renderUI() {
+    loadOutcomes(applyFilters());
+}
+
 function updateMenusForGrade() {
-    // outcomes for this grade
     const gradeOutcomes = selectedGrade
         ? allOutcomes.filter(o => o.grade === selectedGrade)
         : allOutcomes;
 
-    const gradeStrands = getUniqueStrands(gradeOutcomes);
-    renderStrandMenu(gradeStrands);
-
-    const gradeSkills = getUniqueSkills(gradeOutcomes);
-    renderSkillMenu(gradeSkills);
-}
-
-function renderUI() {
-    const filtered = applyFilters();
-
-    loadOutcomes(filtered);
-
-    // Restore last outcome if present
-    if (selectedGrade) {
-        const savedOutcomeId = Storage.get(`selectedOutcome:${selectedGrade}`, null);
-        if (savedOutcomeId) {
-            const found = filtered.find(o => o.outcomeId === savedOutcomeId);
-            if (found) loadOutcome(found);
-        }
-    }
+    renderStrandMenu(getUniqueStrands(gradeOutcomes));
+    renderSkillMenu(getUniqueSkills(gradeOutcomes));
 }
 
 function renderStrandMenu(available: Strand[]) {
-    const container = document.getElementById("strands");
-    if (!container) return;
+    const container = document.getElementById("strands") as HTMLDivElement;
     container.innerHTML = "";
 
-    // build menu items
     const strandMenu = new MenuButton(
         "Strands",
         "category",
-        available.map(s => ({ key: s.strandId, label: s.strandName }))
+        available.map(s => ({ key: s.id, label: s.name }))
     );
 
-    // restore selection from state
     available.forEach(s => {
-        if (selectedStrands.has(s.strandId)) {
-            strandMenu.setSelected(s.strandId, true);
-        }
+        if (selectedStrands.has(s.id)) strandMenu.setSelected(s.id, true);
     });
 
     strandMenu.onToggle.connect(({ key, value }) => {
-        if (value) {
-            selectedStrands.add(key);
-        } else {
-            selectedStrands.delete(key);
-        }
-        if (selectedGrade) {
-            Storage.set(
-                `selectedStrands:${selectedGrade}`,
-                [...selectedStrands]
-            );
-        }
-        renderUI();
+        value ? selectedStrands.add(key) : selectedStrands.delete(key);
+        const state = currentState();
+        state.str = [...selectedStrands];
+        state.o = null;
+        applyStateToUI(state);
+        writeStateToURL(state);
     });
 
     container.appendChild(strandMenu.button);
 }
 
 function renderSkillMenu(available: Skill[]) {
-    const container = document.getElementById("skills");
-    if (!container) return;
+    const container = document.getElementById("skills") as HTMLDivElement;
     container.innerHTML = "";
 
     const skillMenu = new MenuButton(
         "Skills",
         "task_alt",
-        available.map(s => ({ key: s.skillId, label: s.skillName }))
+        available.map(s => ({ key: s.id, label: s.name }))
     );
 
     available.forEach(s => {
-        if (selectedSkills.has(s.skillId)) {
-            skillMenu.setSelected(s.skillId, true);
-        }
+        if (selectedSkills.has(s.id)) skillMenu.setSelected(s.id, true);
     });
 
     skillMenu.onToggle.connect(({ key, value }) => {
-        if (value) {
-            selectedSkills.add(key);
-        } else {
-            selectedSkills.delete(key);
-        }
-        if (selectedGrade) {
-            Storage.set(
-                `selectedSkills:${selectedGrade}`,
-                [...selectedSkills]
-            );
-        }
-        renderUI();
+        value ? selectedSkills.add(key) : selectedSkills.delete(key);
+        const state = currentState();
+        state.skl = [...selectedSkills];
+        state.o = null;
+        applyStateToUI(state);
+        writeStateToURL(state);
     });
 
     container.appendChild(skillMenu.button);
 }
 
-function loadTabs() {
+function loadGradeTabs() {
     const tabsElement = document.getElementById("grades");
     if (!tabsElement) return;
     tabsElement.innerHTML = "";
 
-    const savedGrade = Storage.get("selectedGrade", DEFAULT_GRADE);
-    if (savedGrade) {
-        selectedGrade = savedGrade;
-    } else {
-        selectedGrade = DEFAULT_GRADE; // default
-        Storage.set("selectedGrade", selectedGrade);
-    }
-
-    selectedStrands = new Set(
-        Storage.get<string[]>(`selectedStrands:${selectedGrade}`, [])
-    );
-
-    selectedSkills = new Set(
-        Storage.get<string[]>(`selectedSkills:${selectedGrade}`, [])
-    );
+    const stateNow = readStateFromURL();
+    selectedGrade = stateNow.g;
 
     for (const [label, value] of Object.entries(GRADES)) {
         const tab = document.createElement("a");
@@ -193,24 +242,12 @@ function loadTabs() {
             tabsElement.querySelectorAll("a").forEach(a => a.classList.remove("active"));
             tab.classList.add("active");
 
-            selectedGrade = value;
-            Storage.set("selectedGrade", value);
-
-            // restore per-grade filters on grade switch
-            selectedStrands = new Set(
-                Storage.get<string[]>(`selectedStrands:${selectedGrade}`, [])
-            );
-
-            selectedSkills = new Set(
-                Storage.get<string[]>(`selectedSkills:${selectedGrade}`, [])
-            );
-
-            searchQuery = Storage.get(`search:${selectedGrade}`, "");
-            const input = document.querySelector<HTMLInputElement>("#search input");
-            if (input) input.value = searchQuery;
-
+            const state = currentState();
+            state.g = value as Grade;
+            state.o = null;
+            applyStateToUI(state);
+            writeStateToURL(state);
             updateMenusForGrade();
-            renderUI();
         });
 
         tabsElement.appendChild(tab);
@@ -219,290 +256,128 @@ function loadTabs() {
 
 function getUniqueStrands(outcomes: MathematicsOutcome[]): Strand[] {
     const map = new Map<string, Strand>();
-
     for (const o of outcomes) {
-        const strand = o.strand;
-        if (!map.has(strand.strandId)) {
-            map.set(strand.strandId, new Strand(strand.strandId, strand.strandName));
+        if (!map.has(o.strand.id)) {
+            map.set(o.strand.id, o.strand);
         }
     }
-
     return Array.from(map.values());
 }
 
 function getUniqueSkills(outcomes: MathematicsOutcome[]): Skill[] {
     const map = new Map<string, Skill>();
-
-    for (const outcome of outcomes) {
-        for (const skill of outcome.skills) {
-            if (!map.has(skill.skillId)) {
-                map.set(skill.skillId, skill);
+    for (const o of outcomes) {
+        for (const s of o.skills) {
+            if (!map.has(s.id)) {
+                map.set(s.id, s)
             }
         }
-    }
+    };
     return Array.from(map.values());
 }
 
-function highlightKeywords(text: string, keywords: string[]): string {
-    // Escape regex special chars in keywords
-    const escapedKeywords = keywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-    if (escapedKeywords.length === 0) return text;
-
-    // Build regex to match any keyword, case-insensitive
-    const regex = new RegExp(`\\b(${escapedKeywords.join("|")})\\b`, "gi");
-
-    // Replace matches with <b>wrapped</b>
-    return text.replace(regex, (match) => `<b>${match}</b>`);
-}
-
-function getKeywords(outcome: MathematicsOutcome) {
-    const keywords = new Set<string>();
-
-    mathematicsQuickSearchKeyWords.forEach(keyword => {
-        const lowerCaseKeyword = keyword.toLowerCase();
-
-        if (outcome.specificLearningOutcome.toLowerCase().includes(lowerCaseKeyword)) {
-            keywords.add(keyword);
-        }
-
-        outcome.generalLearningOutcomes.forEach(glo => {
-            if (glo.toLowerCase().includes(lowerCaseKeyword)) {
-                keywords.add(keyword);
-            }
-        });
-    });
-
-    return keywords.size > 0 ? `: ${Array.from(keywords).join(', ')}` : '';
-}
-
-class MathematicsOutcomeElement {
-    element: HTMLElement;
-    outcome: MathematicsOutcome;
-
-    constructor(outcome: MathematicsOutcome) {
-        this.outcome = outcome;
-
-        const el = document.createElement("button");
-        el.classList.add("left-align", "outcome", "responsive", "small-margin")
-        el.dataset.outcomeId = outcome.outcomeId;
-        el.dataset.grade = outcome.grade;
-        el.dataset.specificLearningOutcome = outcome.specificLearningOutcome;
-        el.dataset.generalLearningOutcome = outcome.generalLearningOutcomes.join(', ');
-        el.dataset.strand = outcome.strand.strandName;
-
-        const savedOutcomeId = Storage.get(`selectedOutcome:${outcome.grade}`, null);
-        if (savedOutcomeId === outcome.outcomeId) {
-            el.classList.add("selected");
-        }
-
-        el.addEventListener("click", () => {
-            loadOutcome(outcome);
-        });
-
-        const span = document.createElement("span");
-        span.innerHTML = `<b>${outcome.outcomeId}</b>${getKeywords(this.outcome)}`;
-
-        const tooltip = document.createElement("div");
-        tooltip.classList.add("tooltip", "top", "max");
-
-        const tooltipTitle = document.createElement("h6");
-        tooltipTitle.innerText = outcome.outcomeId;
-
-        const tooltipStrand = document.createElement("b");
-        tooltipStrand.innerText = outcome.strand.strandName;
-
-        const tooltipDescription = document.createElement("p");
-        tooltipDescription.innerHTML = highlightKeywords(
-            `${outcome.specificLearningOutcome} [${outcome.skills.toArray().map(s => s.skillId).join(", ")}]`,
-            mathematicsQuickSearchKeyWords
-        );
-
-        const tooltipActions = document.createElement("nav");
-        const copyOutcome = document.createElement("a");
-        copyOutcome.classList.add("inverse-link");
-        copyOutcome.innerText = "Copy Outcome";
-        copyOutcome.addEventListener("click", (event) => {
-            event.stopPropagation();
-            navigator.clipboard.writeText(`${outcome.outcomeId} ${outcome.specificLearningOutcome} [${outcome.skills.toArray().map(s => s.skillId).join(", ")}]`);
-        });
-
-        tooltipActions.appendChild(copyOutcome);
-
-        tooltip.appendChild(tooltipTitle);
-        tooltip.appendChild(tooltipStrand);
-        tooltip.appendChild(tooltipDescription);
-        tooltip.appendChild(tooltipActions);
-
-        el.appendChild(span);
-        el.appendChild(tooltip);
-
-        this.element = el;
-    }
-
-    render(): HTMLElement {
-        return this.element;
-    }
-}
-
-function renderOutcomeDetails(outcome: MathematicsOutcome): HTMLElement {
-    const container = document.createElement("article");
-    container.classList.add("outcome-details", "round", "border");
-
-    const title = document.createElement("h6");
-    title.innerText = `${outcome.outcomeId}${getKeywords(outcome)}`;
-
-    const skills = document.createElement("nav")
-    skills.classList.add("row", "wrap", "no-space")
-
-    const strandElement = new StrandElement(outcome.strand);
-
-    if (selectedStrands.has(outcome.strand.strandId)) {
-        strandElement.setSelected(true);
-    }
-    skills.appendChild(strandElement.element);
-
-    for (const skill of outcome.skills) {
-        const skillElement = new SkillElement(skill);
-        if (selectedSkills.has(skill.skillId)) {
-            skillElement.setSelected(true);
-        }
-        skills.appendChild(skillElement.element);
-    }
-
-    const description = document.createElement("p");
-    description.innerHTML = highlightKeywords(
-        outcome.specificLearningOutcome,
-        mathematicsQuickSearchKeyWords
-    );
-
-    const list = document.createElement("ul");
-    outcome.generalLearningOutcomes.forEach(glo => {
-        const li = document.createElement("li");
-        li.innerHTML = highlightKeywords(glo, mathematicsQuickSearchKeyWords);
-        list.appendChild(li);
-    });
-
-    const copyBtn = document.createElement("button");
-    copyBtn.innerText = "Copy Outcome";
-    copyBtn.addEventListener("click", () => {
-        navigator.clipboard.writeText(`${outcome.outcomeId} ${outcome.specificLearningOutcome} [${outcome.skills.toArray().map(s => s.skillId).join(", ")}]`);
-    });
-
-    container.appendChild(title);
-    container.appendChild(skills);
-    container.appendChild(description);
-    container.appendChild(list);
-    container.appendChild(copyBtn);
-
-    return container;
-}
-
-function loadOutcome(outcome: MathematicsOutcome) {
-    Storage.set(`selectedOutcome:${outcome.grade}`, outcome.outcomeId);
-
-    document.querySelectorAll(".outcome").forEach(o => {
-        o.classList.remove("selected");
-        if (o instanceof HTMLElement && o.dataset.outcomeId === outcome.outcomeId) {
-            o.classList.add("selected");
-        }
-    });
-
-    const detailsPanel = document.getElementById("details-panel");
-    if (detailsPanel) {
-        detailsPanel.innerHTML = '';
-        detailsPanel.appendChild(renderOutcomeDetails(outcome));
-    }
-}
-
-
-function loadOutcomes(outcomes: MathematicsOutcome[]) {
-    const outcomesElement = document.getElementById("outcomes");
-    const detailsPanel = document.getElementById("details-panel");
-
-    if (outcomesElement && detailsPanel) {
-        outcomesElement.innerHTML = '';
-        detailsPanel.innerHTML = '';
-
-        for (const outcome of outcomes) {
-            if (!outcome) continue;
-            const outcomeEl = new MathematicsOutcomeElement(outcome);
-            outcomesElement.appendChild(outcomeEl.render());
-        }
-    }
-}
-
 function loadResetFilterButton() {
-    const resetFilterButton = document.getElementById("reset-filter-button");
-    if (resetFilterButton) {
-        resetFilterButton.addEventListener("click", () => {
-            selectedStrands.clear();
-            selectedSkills.clear();
-            Storage.set(`selectedStrands:${selectedGrade}`, "[]");
-            Storage.set(`selectedSkills:${selectedGrade}`, "[]");
-
-            searchQuery = "";
-            Storage.set(`search:${selectedGrade}`, "");
-            const input = document.querySelector<HTMLInputElement>("#search input");
-            if (input) input.value = "";
-
-            updateMenusForGrade();
-            renderUI();
-        });
-    }
+    const btn = document.getElementById("reset-filter-button") as HTMLButtonElement;
+    btn.addEventListener("click", () => {
+        const state = currentState();
+        state.str = [];
+        state.skl = [];
+        state.q = "";
+        state.o = null;
+        applyStateToUI(state);
+        writeStateToURL(state);
+    });
 }
 
 function loadSearch() {
-    const searchContainer = document.querySelector<HTMLDivElement>("#search");
-    if (!searchContainer) return;
-    const input = searchContainer.querySelector<HTMLInputElement>("input");
-    if (!input) return;
+    const box = document.querySelector<HTMLDivElement>("#search") as HTMLDivElement;
+    const input = box.querySelector<HTMLInputElement>("input") as HTMLInputElement;
+    const st = readStateFromURL();
+    input.value = st.q;
+    searchQuery = st.q;
+    let t: number | null = null;
+    const flush = (push = false) => {
+        const state = currentState();
+        state.q = input.value;
+        applyStateToUI(state);
+        writeStateToURL(state, !push);
+    };
+    input.addEventListener("input", () => { if (t) clearTimeout(t); t = setTimeout(() => flush(false), 200); });
+    input.addEventListener("change", () => flush(true));
+}
 
-    // load per-grade saved query
-    const saved = Storage.get(`search:${selectedGrade}`, null);
-    if (saved) {
-        searchQuery = saved;
-        input.value = saved;
-    } else {
-        searchQuery = "";
-        input.value = "";
+function scrollToOutcome(outcome: MathematicsOutcome, push = true) {
+    document.querySelectorAll(".outcome").forEach(o => o.classList.remove("selected"));
+    document.querySelectorAll(".outcome-details").forEach(o => o.classList.remove("selected", "flash-border"));
+
+    const match = document.querySelector<HTMLElement>(
+        `.outcome[data-outcome-id="${outcome.outcomeId}"]`
+    );
+
+    if (match) {
+        match.classList.add("selected");
+        const detailsPanel = document.getElementById("details-panel") as HTMLDivElement;
+        const card = detailsPanel.querySelector(`.outcome-details[data-outcome-id="${outcome.outcomeId}"]`) as HTMLElement;
+        card.classList.add("selected", "flash-border")
+        card.scrollIntoView({
+            behavior: "smooth",   // animate
+            block: "center"       // center in viewport
+        });
     }
 
-    input.addEventListener("input", () => {
-        searchQuery = input.value;
-        Storage.set(`search:${selectedGrade}`, searchQuery);
-        renderUI();
+    if (push) {
+        const st = currentState();
+        st.o = outcome.outcomeId;
+        writeStateToURL(st);
+    }
+}
+
+function loadOutcomes(outcomes: MathematicsOutcome[]) {
+    const list = document.getElementById("outcomes") as HTMLDivElement;
+    const detailsPanel = document.getElementById("details-panel") as HTMLDivElement;
+
+    list.innerHTML = "";
+    detailsPanel.innerHTML = "";
+
+    outcomes.forEach(o => {
+        const outcomeElement = new MathematicsOutcomeElement(o);
+        outcomeElement.element.addEventListener("click", () => scrollToOutcome(o));
+        list.appendChild(outcomeElement.render());
+
+        const card = new MathematicsOutcomeCard(o);
+        detailsPanel.appendChild(card.render());
     });
 }
 
+
+// ---------------- Bootstrap ----------------
 document.addEventListener("DOMContentLoaded", () => {
     ui("theme", "#0061a4");
     updateMetaColors("#0061a4");
     enhanceLinks();
 
-    Promise.all([
-        MathematicsRepo.getStrands(),
-        MathematicsRepo.getSkills()
-    ]).then(([strands, skills]) => {
-        allStrands = strands;
-        allSkills = skills;
-        renderStrandMenu(allStrands);
-        renderSkillMenu(allSkills);
+    Promise.all([MathematicsRepo.getStrands(), MathematicsRepo.getSkills()])
+        .then(([strands, skills]) => {
+            allStrands = strands;
+            allSkills = skills;
+        }).catch(err => {
+            console.error(err)
+        });
+
+    MathematicsRepo.getOutcomes().then(outcomes => {
+        allOutcomes = outcomes;
+
+        const boot = readStateFromURL();
+        applyStateToUI(boot);
+        updateMenusForGrade();
+        writeStateToURL(currentState(), true);
+
+        loadResetFilterButton();
+        loadSearch();
+        loadGradeTabs();
+
+        document.getElementById("loading-indicator")?.remove();
     }).catch(err => {
         console.error(err);
     });
-    MathematicsRepo.getAllOutcomes().then(outcomes => {
-        allOutcomes = outcomes;
-
-        loadTabs();
-        renderUI();
-        updateMenusForGrade();
-        loadResetFilterButton();
-        loadSearch();
-
-        const loadingIndicator = document.getElementById("loading-indicator");
-        if (loadingIndicator) {
-            loadingIndicator.remove();
-        }
-    });
-
 });

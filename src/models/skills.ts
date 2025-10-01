@@ -24,6 +24,6 @@ export class Skills implements Iterable<Skill> {
     }
 
     toDict(): Record<string, string> {
-        return Object.fromEntries(this._skills.map(skill => [skill.skillId, skill.skillName]));
+        return Object.fromEntries(this._skills.map(skill => [skill.id, skill.name]));
     }
 }

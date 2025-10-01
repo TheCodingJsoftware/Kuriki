@@ -8,15 +8,15 @@ export class SkillElement {
         this.skill = skill;
         const el = document.createElement("button");
         el.classList.add("skill", "tiny-margin", "chip");
-        el.dataset.skillId = skill.skillId;
-        el.dataset.skillName = skill.skillName;
+        el.dataset.skillId = skill.id;
+        el.dataset.skillName = skill.name;
         el.setAttribute("aria-pressed", "false");
 
         const icon = document.createElement("i");
         icon.innerHTML = skill.getIcon();
 
         const span = document.createElement("span");
-        span.innerText = skill.skillName;
+        span.innerText = `[${skill.id}] ${skill.name}`;
 
         el.appendChild(icon);
         el.appendChild(span);

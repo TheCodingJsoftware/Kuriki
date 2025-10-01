@@ -33,15 +33,15 @@ export const strandIconDictionary: { [key: string]: string } = {
 
 export class Strand {
     constructor(
-        public strandId: string,
-        public strandName: string
+        public id: string,
+        public name: string
     ) { }
 
     getIcon(): string {
-        return strandIconDictionary[this.strandId] as string;
+        return strandIconDictionary[this.id] as string;
     }
 
     toDict(): Record<string, string> {
-        return { [this.strandId]: this.strandName };
+        return { [this.id]: this.name };
     }
 }

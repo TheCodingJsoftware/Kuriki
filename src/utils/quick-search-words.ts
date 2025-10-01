@@ -90,3 +90,22 @@ export const mathematicsQuickSearchKeyWords: string[] = [
     "Visualization",
     "coins"
 ]
+
+export const scienceQuickSearchKeywords: string[] = [
+]
+
+export const biologyQuickSearchKeywords: string[] = [
+
+]
+
+export const socialStudiesQuickSearchKeyWords: string[] = [
+    "Social Studies",
+    "History",
+    "Geography",
+    "Science",
+    "Mathematics",
+    "English",
+    "Reading",
+    "Writing",
+    "Speaking",
+]

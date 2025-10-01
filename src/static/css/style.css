@@ -14,9 +14,38 @@
     vertical-align: middle;
 }
 
-.outcome.selected {
-    background-color: var(--primary);
-    color: var(--on-primary);
+@keyframes flash-border {
+    0% {
+        border-color: transparent;
+        background-color: var(--surface-container-low);
+    }
+
+    25% {
+        border-color: var(--primary);
+        background-color: var(--surface-variant);
+    }
+
+    50% {
+        border-color: transparent;
+        background-color: var(--surface-container-low);
+    }
+
+    75% {
+        border-color: var(--primary);
+        background-color: var(--surface-variant);
+    }
+
+    100% {
+        border-color: var(--outline-variant);
+        background-color: var(--surface-container-low);
+    }
+}
+
+.flash-border {
+    animation: flash-border 1s ease-in-out;
+}
+
+.selected {
     outline: .125rem solid var(--primary);
     outline-offset: 0.25rem;
 }

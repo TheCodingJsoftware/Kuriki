@@ -5,7 +5,7 @@ import { Strand } from "@models/strand";
 import { Skill } from "@models/skill";
 
 export const MathematicsRepo = {
-    async getAllOutcomes(): Promise<MathematicsOutcome[]> {
+    async getOutcomes(): Promise<MathematicsOutcome[]> {
         return cachedFetch<MathematicsOutcome>(
             "mathematics_2013-2014",
             "outcomes",

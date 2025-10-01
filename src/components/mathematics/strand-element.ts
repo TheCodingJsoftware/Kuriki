@@ -8,15 +8,15 @@ export class StrandElement {
         this.strand = strand;
         const el = document.createElement("button");
         el.classList.add("strand", "tiny-margin", "chip");
-        el.dataset.strandId = strand.strandId;
-        el.dataset.strandName = strand.strandName;
+        el.dataset.strandId = strand.id;
+        el.dataset.strandName = strand.name;
         el.setAttribute("aria-pressed", "false");
 
         const icon = document.createElement("i");
         icon.innerHTML = strand.getIcon();
 
         const span = document.createElement("span");
-        span.innerText = strand.strandName;
+        span.innerText = `[${strand.id}] ${strand.name}`;
 
         el.appendChild(icon);
         el.appendChild(span);

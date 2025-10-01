@@ -1,10 +1,10 @@
 export class DistinctiveLearningOutcome {
     constructor(
-        public dloId: string,
-        public dloName: string
+        public id: string,
+        public name: string
     ) { }
 
     toDict(): Record<string, string> {
-        return { [this.dloId]: this.dloName };
+        return { [this.id]: this.name };
     }
 }

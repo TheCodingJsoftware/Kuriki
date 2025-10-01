@@ -10,15 +10,15 @@ export const skillsIconDictionary: { [key: string]: string } = {
 
 export class Skill {
     constructor(
-        public skillId: string,
-        public skillName: string
+        public id: string,
+        public name: string
     ) { }
 
     getIcon(): string {
-        return skillsIconDictionary[this.skillId] as string;
+        return skillsIconDictionary[this.id] as string;
     }
 
     toDict(): Record<string, string> {
-        return { [this.skillId]: this.skillName };
+        return { [this.id]: this.name };
     }
 }

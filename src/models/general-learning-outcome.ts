@@ -1,10 +1,10 @@
 export class GeneralLearningOutcome {
     constructor(
-        public gloId: string,
-        public gloName: string
+        public id: string,
+        public name: string
     ) { }
 
     toDict(): Record<string, string> {
-        return { [this.gloId]: this.gloName };
+        return { [this.id]: this.name };
     }
 }

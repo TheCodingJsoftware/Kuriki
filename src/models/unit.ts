@@ -1,10 +1,10 @@
 export class Unit {
     constructor(
-        public unitId: string,
-        public unitName: string
+        public id: string,
+        public name: string
     ) { }
 
     toDict(): Record<string, string> {
-        return { [this.unitId]: this.unitName };
+        return { [this.id]: this.name };
     }
 }

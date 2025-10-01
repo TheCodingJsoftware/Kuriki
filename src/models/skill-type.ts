@@ -1,10 +1,10 @@
 export class SkillType {
     constructor(
-        public skillTypeId: string,
-        public skillTypeName: string
+        public id: string,
+        public name: string
     ) { }
 
     toDict(): Record<string, string> {
-        return { [this.skillTypeId]: this.skillTypeName };
+        return { [this.id]: this.name };
     }
 }
