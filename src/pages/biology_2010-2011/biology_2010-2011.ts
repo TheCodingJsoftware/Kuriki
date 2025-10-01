@@ -16,7 +16,7 @@ const GRADES: Record<string, Grade> = {
     "Grade 11": "11",
     "Grade 12": "12",
 };
-const DEFAULT_GRADE: Grade = GRADES["Kindergarten"] as Grade;
+const DEFAULT_GRADE: Grade = GRADES["Grade 11"] as Grade;
 
 // ---------------- State ----------------
 let searchQuery: string = "";

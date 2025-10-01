@@ -2,30 +2,27 @@ import { Cluster } from '@models/cluster';
 import { OutcomeType } from '@models/outcome-type';
 import { GeneralLearningOutcome } from '@models/general-learning-outcome';
 import { DistinctiveLearningOutcome } from '@models/distinctive-learning-outcome';
-import { Grade } from '@state/grades';
+import { Outcome, RawOutcome } from '@models/outcome';
 
-export interface RawSocialStudiesOutcome {
-    outcome_id: string;
-    grade: Grade;
+export interface RawSocialStudiesOutcome extends RawOutcome {
     cluster: Record<string, string>;
     outcome_type: Record<string, string>;
-    specific_learning_outcome: string;
     general_learning_outcome: Record<string, string>;
     distinctive_learning_outcome: Record<string, string>;
 }
 
-export class SocialStudiesOutcome {
-    private _data: {
-        outcomeId: string;
-        grade: string;
-        cluster: Cluster;
-        outcomeType: OutcomeType;
-        specificLearningOutcome: string;
-        generalLearningOutcome: GeneralLearningOutcome;
-        distinctiveLearningOutcome: DistinctiveLearningOutcome;
-    };
-
+export class SocialStudiesOutcome extends Outcome<{
+    outcomeId: string;
+    grade: string;
+    cluster: Cluster;
+    outcomeType: OutcomeType;
+    specificLearningOutcome: string;
+    generalLearningOutcome: GeneralLearningOutcome;
+    distinctiveLearningOutcome: DistinctiveLearningOutcome;
+}> {
     constructor(data: RawSocialStudiesOutcome) {
+        super(data);
+
         const [clusterId, clusterName] = Object.entries(data.cluster ?? {})[0] ?? ['', ''];
         const [outcomeTypeId, outcomeTypeName] = Object.entries(data.outcome_type ?? {})[0] ?? ['', ''];
         const [gloId, gloName] = Object.entries(data.general_learning_outcome ?? {})[0] ?? ['', ''];
@@ -42,11 +39,8 @@ export class SocialStudiesOutcome {
         };
     }
 
-    get outcomeId() { return this._data.outcomeId; }
-    get grade() { return this._data.grade; }
     get cluster() { return this._data.cluster; }
     get outcomeType() { return this._data.outcomeType; }
-    get specificLearningOutcome() { return this._data.specificLearningOutcome; }
     get generalLearningOutcome() { return this._data.generalLearningOutcome; }
     get distinctiveLearningOutcome() { return this._data.distinctiveLearningOutcome; }
 }
