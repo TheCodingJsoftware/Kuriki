@@ -10,7 +10,8 @@ import type { AssessmentRow } from "@models/assessment-row";
 import "@static/css/lesson.css";
 
 import "@toast-ui/editor/dist/toastui-editor.css"; // important
-import "@toast-ui/editor/dist/theme/toastui-editor-dark.css"; // if using dark theme
+// import "@toast-ui/editor/dist/theme/toastui-editor-dark.css"; // if using dark theme
+import { builtInTemplates, LessonTemplate } from "@models/lesson-template";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
 
@@ -566,6 +567,70 @@ class ToastEditorField implements LessonField<string> {
     }
 }
 
+function loadUserTemplates(): LessonTemplate[] {
+    return JSON.parse(localStorage.getItem("userTemplates") || "[]");
+}
+
+function saveUserTemplate(name: string, markdown: string) {
+    const templates = loadUserTemplates();
+    templates.push({ id: `user-${Date.now()}`, name, markdown });
+    localStorage.setItem("userTemplates", JSON.stringify(templates));
+}
+
+class TemplateSelect {
+    element: HTMLDivElement;
+    select: HTMLSelectElement;
+
+    constructor(onSelect: (t: LessonTemplate) => void) {
+        this.element = document.createElement("div");
+        this.element.classList.add("field", "border", "round", "label");
+
+        this.select = document.createElement("select");
+        this.refresh();
+
+        this.select.addEventListener("change", () => {
+            const templates = [...builtInTemplates, ...loadUserTemplates()];
+            const selected = templates.find(t => t.id === this.select.value);
+            if (selected) onSelect(selected);
+        });
+
+        const label = document.createElement("label");
+        label.textContent = "Lesson Notes Template";
+        this.element.appendChild(this.select);
+        this.element.appendChild(label);
+    }
+
+    refresh() {
+        const userTemplates = loadUserTemplates();
+        this.select.innerHTML = `
+          <option value="">Choose a template...</option>
+          <optgroup label="Built-In">
+            ${builtInTemplates.map(t => `<option value="${t.id}">${t.name}</option>`).join("")}
+          </optgroup>
+          <optgroup label="My Templates">
+            ${userTemplates.map(t => `<option value="${t.id}">${t.name}</option>`).join("")}
+          </optgroup>
+        `;
+    }
+}
+class SaveTemplateButton {
+    element: HTMLButtonElement;
+
+    constructor(notes: LessonNotesEditor, templateSelect: TemplateSelect) {
+        this.element = document.createElement("button");
+        this.element.classList.add("chip", "small", "border");
+        this.element.innerHTML = `<i>save</i> <span>Save Current as Template</span>`;
+
+        this.element.addEventListener("click", () => {
+            const name = prompt("Enter a name for this template:");
+            if (!name) return;
+            saveUserTemplate(name, notes.getValue());
+            templateSelect.refresh(); // update dropdown with new template
+        });
+    }
+}
+
+
 class LessonNotesEditor extends ToastEditorField {
     constructor() {
         super("lesson-notes", "Lesson Notes");
@@ -913,6 +978,12 @@ function setupEditorPane() {
     const resourceLinks = new ResourceLinksSection();
     const assessmentEvidence = new AssessmentEvidenceSection();
     const lessonNotes = new LessonNotesEditor();
+    const templateSelect = new TemplateSelect((tpl) => {
+        if (confirm(`Apply "${tpl.name}" template? This will replace current notes.`)) {
+            lessonNotes.setValue(tpl.markdown);
+        }
+    });
+    const saveTemplateBtn = new SaveTemplateButton(lessonNotes, templateSelect);
 
     const editorPane = document.getElementById("editor-pane")!;
     [
@@ -925,6 +996,8 @@ function setupEditorPane() {
         curricularOutcomesSection,
         resourceLinks,
         assessmentEvidence,
+        templateSelect,
+        saveTemplateBtn,
         lessonNotes
     ].forEach(f => editorPane.appendChild(f.element));
 

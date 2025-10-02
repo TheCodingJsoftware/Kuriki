@@ -51,21 +51,84 @@ Scoped WiTeX styles for Toast UI Viewer inside #preview-pane
 	font-family: 'Latin Modern Roman', serif;
 }
 
+.toastui-editor-ww-container {
+	background-color: var(--container) !important;
+}
+
+.toastui-editor-contents h1,
+.toastui-editor-contents h2,
+.toastui-editor-contents h3,
+.toastui-editor-contents h4,
+.toastui-editor-contents h5,
+.toastui-editor-contents h6,
+.toastui-editor-ww-container .toastui-editor-contents td p,
+.toastui-editor-ww-container .toastui-editor-contents p,
+.scroll>table,
+table :is(thead,
+	tbody,
+	tfoot,
+	tr,
+	td),
+.toastui-editor-contents p {
+	color: var(--on-background) !important;
+}
+
+.toastui-editor-defaultUI-toolbar {
+	/* background-color: var(--on-surface) !important; */
+	border-top-right-radius: 1.5em !important;
+	border-top-left-radius: 1.5em !important;
+}
+
+.toastui-editor-defaultUI {
+	border-color: var(--outline) !important;
+	border-radius: 1.5em !important;
+}
+
+.toastui-editor-mode-switch {
+	border-top: none !important;
+	background-color: var(--fill) !important;
+}
+
+.toastui-editor-mode-switch .tab-item {
+	background-color: var(--fill) !important;
+	color: var(--on-primary) !important;
+}
+
+.toastui-editor-mode-switch .tab-item {
+	background-color: var(--surface-container) !important;
+	color: var(--on-surface-container) !important;
+	border: none !important;
+	border-radius: 1.5em !important;
+	margin: .125rem !important;
+}
+
+.toastui-editor-mode-switch .tab-item:hover {
+	background: var(--active) !important;
+}
+
+.toastui-editor-mode-switch .tab-item.active {
+	background-color: var(--secondary-container) !important;
+	color: var(--on-secondary-container) !important;
+}
+
 @media print {
 	body {
 		background-color: white !important;
+		color: black !important;
 	}
 
-	p,
-	tbody tr td,
-	h1,
-	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
+	#preview-pane,
+	#preview-pane p,
+	#preview-pane tbody td,
+	#preview-pane h1,
+	#preview-pane h2,
+	#preview-pane h3,
+	#preview-pane h4,
+	#preview-pane h5,
+	#preview-pane h6 {
+		background-color: white !important;
 		color: black !important;
-		border-color: black !important
+		border-color: black !important;
 	}
 
 	.hide-on-print {
