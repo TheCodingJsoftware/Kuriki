@@ -55,6 +55,54 @@ const RESOURCES: ResourceData[] = [
         url: "https://netorg7317916-my.sharepoint.com/:u:/g/personal/jared_pinelandfarms_ca/EaZp36jvPcZHgdY7HI9RYYsBDXtjioU3O4URyj7duDPGrw?e=0sEv3G",
         category: "Mathematics",
         tags: ["teaching", "resources", "blackline"]
+    },
+    {
+        icon: ".pdf",
+        name: "K-4 Science Framework (1999)",
+        description: "Manitoba Curriculum Framework of Outcomes (1999).",
+        url: "https://paperless.pinelandfarms.ca/share/ahJ8vYXa79XoTaL75R3r1b871goLzd8HkSmH930BDh9YMu8cdZ",
+        category: "Science",
+        tags: ["curriculum", "framework", "k-4", "1999"]
+    },
+    {
+        icon: ".pdf",
+        name: "5-8 Science Framework (2000)",
+        description: "Manitoba Curriculum Framework of Outcomes (2000).",
+        url: "https://paperless.pinelandfarms.ca/share/GiTZsiUuJwdVk8KrA88nItXq0CqRgIGj6hYubcnePNJu1XgORB",
+        category: "Science",
+        tags: ["curriculum", "framework", "k-4", "2000"]
+    },
+    {
+        icon: ".pdf",
+        name: "Senior 1 Science Framework (2000)",
+        description: "Manitoba Curriculum Framework of Outcomes (2000).",
+        url: "https://paperless.pinelandfarms.ca/share/bLqQsE1FxOk9p2x185Dkk97ONqIwZVEAkPi524XSjzlNxj3v7U",
+        category: "Science",
+        tags: ["curriculum", "framework", "k-4", "2000"]
+    },
+    {
+        icon: "",
+        name: "All Documents",
+        description: "Collection of official Manitoba government science curriculum documents.",
+        url: "https://netorg7317916-my.sharepoint.com/:f:/g/personal/jared_pinelandfarms_ca/EhiJe2WH_5FGh9oyVzfZaxoBKz7An4Kz4ScQ3eDlJWSSwA?e=Vcy4JD",
+        category: "Science",
+        tags: ["manitoba", "government", "math"]
+    },
+    {
+        icon: "",
+        name: "All Documents",
+        description: "Collection of official Manitoba government social studies curriculum documents.",
+        url: "https://netorg7317916-my.sharepoint.com/:f:/g/personal/jared_pinelandfarms_ca/Eg2gmVKrjMRGp6xVg1dsV0EBg65NatB1KysZYi314vkaUQ?e=5mWYVy",
+        category: "Social Studies",
+        tags: ["manitoba", "government", "social studies"]
+    },
+    {
+        icon: ".pdf",
+        name: "Grade 10 Social Studies Geographic Issues of the 21st Century Framework (2006)",
+        description: "Manitoba Curriculum Framework of Outcomes (2006).",
+        url: "https://paperless.pinelandfarms.ca/share/NQPPcXvIyvNTyNfQNdxKyZ243j57EUJgjr0PN1LAddap1miX48",
+        category: "Social Studies",
+        tags: ["curriculum", "framework", "grade 10", "2006"]
     }
 ];
 
