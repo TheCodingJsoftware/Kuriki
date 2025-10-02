@@ -5,7 +5,7 @@ import { Unit } from "@models/unit";
 import { GeneralLearningOutcome } from "@models/general-learning-outcome";
 
 export const BiologyRepo = {
-    async getAllOutcomes(): Promise<BiologyOutcome[]> {
+    async getOutcomes(): Promise<BiologyOutcome[]> {
         return cachedFetch<BiologyOutcome>(
             "biology_2010-2011",
             "outcomes",

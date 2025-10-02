@@ -15,7 +15,7 @@ export class SocialStudiesOutcomeCard {
         this.outcome = outcome;
 
         const container = document.createElement("article");
-        container.classList.add("outcome-details", "round", "border");
+        container.classList.add("outcome-details", "round", "border", "large-width");
         container.dataset.outcomeId = this.outcome.outcomeId;
 
         // Title
@@ -24,7 +24,7 @@ export class SocialStudiesOutcomeCard {
 
         // Skills + Strand row
         const elements = document.createElement("nav");
-        elements.classList.add("row", "wrap", "no-space", "medium-width");
+        elements.classList.add("row", "wrap", "no-space");
 
         const clusterElement = new ClusterElement(this.outcome.cluster);
         // if (selectedStrands.has(this.outcome.strand.id)) {

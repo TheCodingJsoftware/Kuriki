@@ -106,6 +106,8 @@ export class AppearanceDialog extends DialogComponent {
             ui("theme", color);
             updateMetaColors(color);
         });
-    }
 
+        window.addEventListener("resize", this.handleResize);
+        this.handleResize()
+    }
 }

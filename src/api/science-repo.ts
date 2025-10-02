@@ -5,7 +5,7 @@ import { Cluster } from "@models/cluster";
 import { GeneralLearningOutcome } from "@models/general-learning-outcome";
 
 export const ScienceRepo = {
-    async getAllOutcomes(): Promise<ScienceOutcome[]> {
+    async getOutcomes(): Promise<ScienceOutcome[]> {
         return cachedFetch<ScienceOutcome>(
             "science_1999-2000",
             "outcomes",

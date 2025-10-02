@@ -1,5 +1,6 @@
 import { CopiedOutcomeSnackbar } from "@components/common/snackbar/outcome-copied";
 import { BiologyOutcome } from "@models/biology-outcome";
+import { CURRICULA } from "@models/curricula";
 import { getBiologyKeywords, highlightKeywords } from "@utils/keywords";
 import { mathematicsQuickSearchKeyWords } from "@utils/quick-search-words";
 
@@ -11,12 +12,17 @@ export class BiologyOutcomeElement {
         this.outcome = outcome;
 
         const el = document.createElement("button");
-        el.classList.add("left-align", "outcome", "responsive", "small-margin")
+        el.classList.add("biology", "left-align", "outcome", "responsive", "small-margin")
         el.dataset.outcomeId = outcome.outcomeId;
         el.dataset.grade = outcome.grade;
         el.dataset.specificLearningOutcome = outcome.specificLearningOutcome;
         el.dataset.generalLearningOutcome = outcome.generalLearningOutcomes.join(', ');
         el.dataset.unit = outcome.unit.name;
+
+        const icon = document.createElement("i");
+        icon.classList.add("hidden");
+        icon.innerHTML = CURRICULA["biology_2010-2011"].icon;
+        el.appendChild(icon);
 
         const span = document.createElement("span");
         span.innerHTML = `<b>${outcome.outcomeId}</b>${getBiologyKeywords(this.outcome)}`;
@@ -61,5 +67,13 @@ export class BiologyOutcomeElement {
 
     render(): HTMLElement {
         return this.element;
+    }
+
+    showIcon() {
+        this.element.querySelector("i")!.classList.remove("hidden");
+    }
+
+    hideIcon() {
+        this.element.querySelector("i")!.classList.add("hidden");
     }
 }

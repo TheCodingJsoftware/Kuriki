@@ -1,4 +1,5 @@
 import { CopiedOutcomeSnackbar } from "@components/common/snackbar/outcome-copied";
+import { CURRICULA } from "@models/curricula";
 import { MathematicsOutcome } from "@models/mathematics-outcome";
 import { getMathematicsKeywords, highlightKeywords } from "@utils/keywords";
 import { mathematicsQuickSearchKeyWords } from "@utils/quick-search-words";
@@ -12,7 +13,7 @@ export class MathematicsOutcomeElement {
         this.outcome = outcome;
 
         const el = document.createElement("button");
-        el.classList.add("left-align", "outcome", "responsive", "small-margin")
+        el.classList.add("mathematics", "left-align", "outcome", "responsive", "small-margin")
         el.dataset.outcomeId = outcome.outcomeId;
         el.dataset.grade = outcome.grade;
         el.dataset.specificLearningOutcome = outcome.specificLearningOutcome;
@@ -23,6 +24,11 @@ export class MathematicsOutcomeElement {
         if (savedOutcomeId === outcome.outcomeId) {
             el.classList.add("selected");
         }
+
+        const icon = document.createElement("i");
+        icon.classList.add("hidden");
+        icon.innerHTML = CURRICULA["mathematics_2013-2014"].icon;
+        el.appendChild(icon);
 
         const span = document.createElement("span");
         span.innerHTML = `<b>${outcome.outcomeId}</b>${getMathematicsKeywords(this.outcome)}`;
@@ -67,5 +73,13 @@ export class MathematicsOutcomeElement {
 
     render(): HTMLElement {
         return this.element;
+    }
+
+    showIcon() {
+        this.element.querySelector("i")!.classList.remove("hidden");
+    }
+
+    hideIcon() {
+        this.element.querySelector("i")!.classList.add("hidden");
     }
 }

@@ -1,3 +1,5 @@
+import { DEFAULT_COLOR } from "@utils/colors";
+
 export function getPreferredMode() {
     return window.matchMedia &&
         window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -9,14 +11,14 @@ function getPrimaryColor(): string {
     // Read from BeerCSS variable
     return getComputedStyle(document.documentElement)
         .getPropertyValue("--primary")
-        .trim() || "#ffb870"; // fallback
+        .trim() || DEFAULT_COLOR; // fallback
 }
 
 function loadTheme(overideMode?: string) {
     const mode = localStorage.getItem("mode") || getPreferredMode();
     ui("mode", overideMode || mode);
 
-    const themeColor = localStorage.getItem("theme") || "#ffb870";
+    const themeColor = localStorage.getItem("theme") || DEFAULT_COLOR;
     ui("theme", themeColor);
 
     // Update both theme-related meta tags

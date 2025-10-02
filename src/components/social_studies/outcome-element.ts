@@ -1,4 +1,5 @@
 import { CopiedOutcomeSnackbar } from "@components/common/snackbar/outcome-copied";
+import { CURRICULA } from "@models/curricula";
 import { SocialStudiesOutcome } from "@models/social-studies-outcome";
 import { getSocialStudiesKeywords, highlightKeywords } from "@utils/keywords";
 import { socialStudiesQuickSearchKeyWords } from "@utils/quick-search-words";
@@ -12,7 +13,7 @@ export class SocialStudiesOutcomeElement {
         this.outcome = outcome;
 
         const el = document.createElement("button");
-        el.classList.add("left-align", "outcome", "responsive", "small-margin")
+        el.classList.add("social-studies", "left-align", "outcome", "responsive", "small-margin")
         el.dataset.outcomeId = outcome.outcomeId;
         el.dataset.grade = outcome.grade;
         el.dataset.specificLearningOutcome = outcome.specificLearningOutcome;
@@ -21,6 +22,11 @@ export class SocialStudiesOutcomeElement {
         if (savedOutcomeId === outcome.outcomeId) {
             el.classList.add("selected");
         }
+
+        const icon = document.createElement("i");
+        icon.classList.add("hidden");
+        icon.innerHTML = CURRICULA["social_studies_2003"].icon;
+        el.appendChild(icon);
 
         const span = document.createElement("span");
         span.innerHTML = `<b>${outcome.outcomeId}</b>${getSocialStudiesKeywords(this.outcome)}`;
@@ -65,5 +71,13 @@ export class SocialStudiesOutcomeElement {
 
     render(): HTMLElement {
         return this.element;
+    }
+
+    showIcon() {
+        this.element.querySelector("i")!.classList.remove("hidden");
+    }
+
+    hideIcon() {
+        this.element.querySelector("i")!.classList.add("hidden");
     }
 }

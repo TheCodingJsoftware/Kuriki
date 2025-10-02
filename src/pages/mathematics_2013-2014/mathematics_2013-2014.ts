@@ -351,6 +351,83 @@ function loadOutcomes(outcomes: MathematicsOutcome[]) {
 }
 
 
+function goToNextOutcome() {
+    const outcomes = applyFilters();
+    const currentId = getCurrentlySelectedOutcomeIdOrNull();
+
+    if (!currentId) {
+        if (outcomes.length > 0) scrollToOutcome(outcomes[0]!);
+        return;
+    }
+
+    const idx = outcomes.findIndex(o => o.outcomeId === currentId);
+    if (idx >= 0 && idx < outcomes.length - 1) {
+        const next = outcomes[idx + 1];
+        if (next) scrollToOutcome(next); // ✅ safe
+    }
+}
+
+function goToPrevOutcome() {
+    const outcomes = applyFilters();
+    const currentId = getCurrentlySelectedOutcomeIdOrNull();
+
+    if (!currentId) {
+        if (outcomes.length > 0) scrollToOutcome(outcomes[outcomes.length - 1]!);
+        return;
+    }
+
+    const idx = outcomes.findIndex(o => o.outcomeId === currentId);
+    if (idx > 0) {
+        const prev = outcomes[idx - 1];
+        if (prev) scrollToOutcome(prev); // ✅ safe
+    }
+}
+
+
+document.addEventListener("keydown", (e) => {
+    // Don’t interfere if user is typing in a text field
+    const target = e.target as HTMLElement;
+    if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
+        return;
+    }
+
+    switch (e.key) {
+        case "ArrowDown":
+        case "s":
+        case "S":
+        case "ArrowRight":
+        case "d":
+        case "D":
+            e.preventDefault();
+            e.stopPropagation();
+            goToNextOutcome();
+            break;
+
+        case "ArrowUp":
+        case "w":
+        case "W":
+        case "ArrowLeft":
+        case "a":
+        case "A":
+            e.preventDefault();
+            e.stopPropagation();
+            goToPrevOutcome();
+            break;
+
+        default:
+            // Handle number keys 1–9
+            if (/^[1-9]$/.test(e.key)) {
+                e.preventDefault();
+                e.stopPropagation();
+                const outcomes = applyFilters();
+                const index = parseInt(e.key, 10) - 1; // 1 → index 0
+                if (index < outcomes.length) {
+                    scrollToOutcome(outcomes[index]!);
+                }
+            }
+    }
+});
+
 // ---------------- Bootstrap ----------------
 document.addEventListener("DOMContentLoaded", () => {
     ui("theme", "#0061a4");
