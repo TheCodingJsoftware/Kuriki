@@ -107,6 +107,8 @@ function setupEditorPreviewToggle() {
     const hash = window.location.hash.replace("#", "") as ViewMode | "";
     if (hash === "editor-preview" || hash === "editor-only" || hash === "preview-only") {
         applyView(hash); // override storage if hash is present
+        const editorPreviewToggle = document.getElementById("editor-preview-toggle") as HTMLDivElement;
+        editorPreviewToggle.classList.add("hidden");
     } else {
         // Otherwise fallback to last saved mode or default
         const lastMode = (localStorage.getItem("lessonViewMode") as ViewMode) || "editor-preview";
@@ -414,18 +416,18 @@ class DateField implements LessonField<string> {
 }
 
 class CurricularOutcomesSection implements LessonField<string[]> {
-    element: HTMLDivElement;
+    element: HTMLElement;
     header: HTMLHeadingElement;
     list: HTMLDivElement;
     addButton: HTMLButtonElement;
     onChange?: () => void;
 
-    private outcomes: Outcome[] = [];
+    private outcomes: Map<string, Outcome> = new Map();
 
     constructor() {
         // wrapper
-        this.element = document.createElement("div");
-        this.element.classList.add("s12", "m12", "l12");
+        this.element = document.createElement("article");
+        this.element.classList.add("s12", "m12", "l12", "border", "round");
         this.element.id = "curricular-outcomes";
 
         // header
@@ -448,62 +450,78 @@ class CurricularOutcomesSection implements LessonField<string[]> {
         this.element.appendChild(this.addButton);
     }
 
+    /** Add outcome(s) via dialog, ensuring no duplicates */
     private async addOutcome() {
         const selectOutcomes = new SelectOutcomesDialog();
         const outcomes = await selectOutcomes.open();
-        if (outcomes) {
+        if (outcomes && outcomes.length) {
             for (const outcome of outcomes) {
-                this.outcomes.push(outcome);
+                if (!this.outcomes.has(outcome.outcomeId)) {
+                    this.outcomes.set(outcome.outcomeId, outcome);
+                }
             }
             this.renderList();
             this.onChange?.();
         }
     }
 
+    /** Render all outcomes with delete buttons */
     private renderList() {
         this.list.innerHTML = "";
-        this.outcomes.forEach(outcome => {
+
+        for (const outcome of this.outcomes.values()) {
+            let outcomeElement: HTMLElement;
+
             if (outcome instanceof MathematicsOutcome) {
-                const mathematicsElement = new MathematicsOutcomeElement(outcome);
-                mathematicsElement.showIcon();
-                mathematicsElement.element.addEventListener("click", () => {
-                    // window.location.href = `/mathematics_2013-2014.html?g=${outcome.grade}&o=${outcome.outcomeId}`;
-                });
-                this.list.appendChild(mathematicsElement.render());
+                const el = new MathematicsOutcomeElement(outcome);
+                el.showIcon();
+                outcomeElement = el.render();
+            } else if (outcome instanceof SocialStudiesOutcome) {
+                const el = new SocialStudiesOutcomeElement(outcome);
+                el.showIcon();
+                outcomeElement = el.render();
+            } else if (outcome instanceof BiologyOutcome) {
+                const el = new BiologyOutcomeElement(outcome);
+                el.showIcon();
+                outcomeElement = el.render();
+            } else if (outcome instanceof ScienceOutcome) {
+                const el = new ScienceOutcomeElement(outcome);
+                el.showIcon();
+                outcomeElement = el.render();
+            } else {
+                continue;
             }
-            else if (outcome instanceof SocialStudiesOutcome) {
-                const socialStudiesElement = new SocialStudiesOutcomeElement(outcome);
-                socialStudiesElement.showIcon();
-                socialStudiesElement.element.addEventListener("click", () => {
-                    // window.location.href = `/social_studies_2003.html?g=${outcome.grade}&o=${outcome.outcomeId}`;
-                });
-                this.list.appendChild(socialStudiesElement.render());
-            }
-            else if (outcome instanceof BiologyOutcome) {
-                const biologyElement = new BiologyOutcomeElement(outcome);
-                biologyElement.showIcon();
-                biologyElement.element.addEventListener("click", () => {
-                    // window.location.href = `/biology_2010-2011.html?g=${outcome.grade}&o=${outcome.outcomeId}`;
-                });
-                this.list.appendChild(biologyElement.render());
-            }
-            else if (outcome instanceof ScienceOutcome) {
-                const scienceElement = new ScienceOutcomeElement(outcome);
-                scienceElement.showIcon();
-                scienceElement.element.addEventListener("click", () => {
-                    // window.location.href = `/science_1999-2000.html?g=${outcome.grade}&o=${outcome.outcomeId}`;
-                });
-                this.list.appendChild(scienceElement.render());
-            }
-        });
+
+            outcomeElement.classList.remove("responsive");
+            outcomeElement.classList.add("max");
+
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("outcome-wrapper", "row", 'tiny-space');
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.classList.add("chip", "circle", "error");
+            deleteBtn.innerHTML = `<i>delete</i>`;
+
+            deleteBtn.addEventListener("click", () => {
+                this.outcomes.delete(outcome.outcomeId);
+                this.renderList();
+                this.onChange?.();
+            });
+
+            wrapper.appendChild(outcomeElement);
+            wrapper.appendChild(deleteBtn);
+            this.list.appendChild(wrapper);
+        }
     }
 
+    /** Returns full Outcome objects */
     getOutcomes(): Outcome[] {
-        return this.outcomes;
+        return Array.from(this.outcomes.values());
     }
 
+    /** Returns only outcome IDs for saving */
     getValues(): string[] {
-        return this.outcomes.map(o => o.outcomeId);
+        return Array.from(this.outcomes.keys());
     }
 
     getValue(): string[] {
@@ -514,13 +532,12 @@ class CurricularOutcomesSection implements LessonField<string[]> {
         this.setValues(value);
     }
 
+    /** Load outcome objects by their IDs */
     async setValues(values: string[]) {
-        this.outcomes = [];
-        for (const outcomeCode of values) {
-            const outcome = await OutcomeFinder.getById(outcomeCode);
-            if (outcome) {
-                this.outcomes.push(outcome)
-            }
+        this.outcomes.clear();
+        for (const id of values) {
+            const outcome = await OutcomeFinder.getById(id);
+            if (outcome) this.outcomes.set(id, outcome);
         }
         this.renderList();
     }
@@ -537,10 +554,10 @@ class ToastEditorField implements LessonField<string> {
 
         // wrapper
         this.element = document.createElement("div");
-        this.element.classList.add("s12", "m12", "l12", "toast-field");
+        this.element.classList.add("s12", "m12", "l12", "top-padding", "toast-field");
 
         // header
-        this.header = document.createElement("h6");
+        this.header = document.createElement("h5");
         this.header.textContent = labelText;
         this.header.setAttribute("for", this.id);
         this.element.appendChild(this.header);
@@ -657,7 +674,7 @@ class LessonNotesEditor extends ToastEditorField {
 }
 
 class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
-    element: HTMLDivElement;
+    element: HTMLElement;
     header: HTMLHeadingElement;
     table: HTMLTableElement;
     tbody: HTMLTableSectionElement;
@@ -668,8 +685,8 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
 
     constructor() {
         // wrapper
-        this.element = document.createElement("div");
-        this.element.classList.add("s12", "m12", "l12");
+        this.element = document.createElement("article");
+        this.element.classList.add("s12", "m12", "l12", "border", "round");
         this.element.id = "assessment-evidence";
 
         // header
@@ -756,7 +773,7 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
                 </label>
             </td>
             <td class="delete-row-button">
-                <button class="circle delete-row-button"><i>delete</i></button>
+                <button class="chip circle error delete-row-button"><i>delete</i></button>
             </td>
         `;
 
@@ -825,10 +842,10 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
 }
 
 class ResourceLinksSection implements LessonField<string[]> {
-    element: HTMLDivElement;
+    element: HTMLElement;
     header: HTMLHeadingElement;
     helper: HTMLSpanElement;
-    list: HTMLDivElement;
+    list: HTMLElement;
     addButton: HTMLButtonElement;
     onChange?: () => void;
 
@@ -836,8 +853,8 @@ class ResourceLinksSection implements LessonField<string[]> {
 
     constructor() {
         // wrapper
-        this.element = document.createElement("div");
-        this.element.classList.add("s12", "m12", "l12");
+        this.element = document.createElement("article");
+        this.element.classList.add("s12", "m12", "l12", "border", "round");
         this.element.id = "resources-section";
 
         // header
@@ -849,7 +866,8 @@ class ResourceLinksSection implements LessonField<string[]> {
         this.helper.textContent = "Link to a resource, such as a website, PDF, or video.";
 
         // list container
-        this.list = document.createElement("div");
+        this.list = document.createElement("nav");
+        this.list.classList.add("wrap", "row", "tiny-space");
         this.list.id = "resource-links";
 
         // add button
@@ -887,7 +905,7 @@ class ResourceLinksSection implements LessonField<string[]> {
             anchor.dataset.url = link
 
             const removeBtn = document.createElement("button");
-            removeBtn.classList.add("transparent", "no-border", "circle", "responsive");
+            removeBtn.classList.add("transparent", "no-border", "circle", "responsive", "ripple");
             removeBtn.innerHTML = `<i>close</i>`;
             removeBtn.addEventListener("click", () => {
                 this.links.splice(this.links.indexOf(link), 1);
@@ -906,6 +924,7 @@ class ResourceLinksSection implements LessonField<string[]> {
             chip.appendChild(tooltip);
             this.list.appendChild(chip);
         });
+        enhanceLinks();
     }
 
     getValues() {
@@ -975,7 +994,6 @@ ${this.notes.getValue() || "_Nothing yet_"}
         `;
     }
 }
-
 
 class Preview {
     private element: HTMLDivElement;
@@ -1238,7 +1256,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupEditorPreviewToggle();
     setupEditorPane();
     await loadLessonById();
-    enhanceLinks();
 });
 
 document.addEventListener("keydown", (e) => {
