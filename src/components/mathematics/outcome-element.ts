@@ -75,6 +75,14 @@ export class MathematicsOutcomeElement {
         return this.element;
     }
 
+    showTooltip() {
+        this.element.querySelector(".tooltip")!.classList.remove("hidden");
+    }
+
+    hideTooltip() {
+        this.element.querySelector(".tooltip")!.classList.add("hidden");
+    }
+
     showIcon() {
         this.element.querySelector("i")!.classList.remove("hidden");
     }

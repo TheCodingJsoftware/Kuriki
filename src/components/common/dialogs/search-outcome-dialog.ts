@@ -9,44 +9,40 @@ import { MathematicsOutcome } from "@models/mathematics-outcome";
 import { SocialStudiesOutcome } from "@models/social-studies-outcome";
 import { BiologyOutcome } from "@models/biology-outcome";
 import { ScienceOutcome } from "@models/science-outcome";
-import { MathematicsOutcomeElement } from '../../mathematics/outcome-element';
+import { MathematicsOutcomeElement } from '@components/mathematics/outcome-element';
 import { SocialStudiesOutcomeElement } from "@components/social_studies/outcome-element";
 import { BiologyOutcomeElement } from "@components/biology/outcome-element";
 import { ScienceOutcomeElement } from "@components/science/outcome-element";
 import { debounce } from "@utils/debounce";
 
-interface IndexedOutcome {
-    outcome: Outcome;
-    text: string; // pre-lowered version
-}
 
-
-export class SearchDialog extends DialogComponent {
+export class SearchOutcomeDialog extends DialogComponent {
     allMathematicsOutcomes: MathematicsOutcome[] = [];
     allSocialStudiesOutcomes: SocialStudiesOutcome[] = [];
     allBiologyOutcomes: BiologyOutcome[] = [];
     allScienceOutcomes: ScienceOutcome[] = [];
 
     private fuse: Fuse<Outcome> | null = null;
-    private indexedOutcomes: IndexedOutcome[] = [];
 
     MAX_RESULTS = 50;
 
     constructor() {
         super({
             id: "search-dialog",
-            title: "One stop search",
+            title: "One Stop Search",
             bodyContent: `
-            <div>
+            <div class="padding">
                 <div class="field label prefix border fill round responsive" id="search">
                     <i>search</i>
                     <input type="text">
-                    <label for="search">Search</label>
+                    <label for="search">Search outcomes</label>
                 </div>
+                <p>Press the outcome to open.</p>
                 <div id="results"></div>
             </div>`,
         });
         this.init();
+        this.element.classList.add("no-padding");
     }
 
     async getAllOutcomes() {
@@ -71,7 +67,7 @@ export class SearchDialog extends DialogComponent {
 
         // Configure Fuse
         this.fuse = new Fuse(allOutcomes, {
-            keys: ["specificLearningOutcome"],
+            keys: ["specificLearningOutcome", "specificLearningOutcomes"],
             threshold: 0.4,        // fuzziness (lower = stricter, higher = more matches)
             ignoreLocation: true,  // don't force match near beginning of string
             minMatchCharLength: 2, // only match queries of length >= 2
@@ -122,6 +118,11 @@ export class SearchDialog extends DialogComponent {
             }
         }
 
+        if (!query) {
+            resultsContainer.innerHTML = `<p>Type to search outcomes...</p>`;
+            return;
+        }
+
         if (results.length === 0) {
             resultsContainer.innerHTML = `<p>No results found</p>`;
         }
@@ -158,5 +159,4 @@ export class SearchDialog extends DialogComponent {
         window.addEventListener("resize", this.handleResize);
         this.handleResize();
     }
-
 }

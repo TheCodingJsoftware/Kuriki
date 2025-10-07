@@ -1,10 +1,3 @@
-/*********************************************************************
-Scoped WiTeX styles for Toast UI Viewer inside #preview-pane
-*********************************************************************/
-
-
-/* Fonts */
-
 @font-face {
 	font-family: 'Latin Modern Roman';
 	font-weight: normal;
@@ -73,8 +66,16 @@ table :is(thead,
 	color: var(--on-background) !important;
 }
 
+.toastui-editor-contents table th {
+	background-color: var(--surface-container-high) !important;
+}
+
+#preview-pane .toastui-editor-contents table th {
+	background-color: #555 !important;
+}
+
 .toastui-editor-defaultUI-toolbar {
-	/* background-color: var(--on-surface) !important; */
+	background-color: var(--surface-container-highest) !important;
 	border-top-right-radius: 1.5em !important;
 	border-top-left-radius: 1.5em !important;
 }

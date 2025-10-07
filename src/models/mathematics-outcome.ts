@@ -4,7 +4,7 @@ import { Skill } from '@models/skill';
 import { Outcome, RawOutcome } from '@models/outcome';
 
 export interface RawMathematicsOutcome extends RawOutcome {
-    general_learning_outcome: string[];
+    general_learning_outcomes: string[];
     strand: Record<string, string>;
     skills: Record<string, string>;
 }
@@ -13,13 +13,13 @@ export class MathematicsOutcome extends Outcome<{
     outcomeId: string;
     grade: string;
     specificLearningOutcome: string;
-    generalLearningOutcome: string[];
+    generalLearningOutcomes: string[];
     strand: Strand;
     skills: Skills;
 }> {
     constructor(data: RawMathematicsOutcome) {
         super(data);
-        1
+
         const strandKey = Object.keys(data.strand)[0] as string;
         const strandValue = data.strand[strandKey] as string;
         const strand = new Strand(strandKey, strandValue);
@@ -31,7 +31,7 @@ export class MathematicsOutcome extends Outcome<{
 
         this._data = {
             ...this._data,
-            generalLearningOutcome: data.general_learning_outcome ?? [],
+            generalLearningOutcomes: data.general_learning_outcomes ?? [],
             strand,
             skills
         };
@@ -39,7 +39,7 @@ export class MathematicsOutcome extends Outcome<{
 
     get strand() { return this._data.strand; }
     get skills() { return this._data.skills; }
-    get generalLearningOutcomes() { return this._data.generalLearningOutcome; }
+    get generalLearningOutcomes() { return this._data.generalLearningOutcomes; }
 
     public toString(): string {
         return `${this.outcomeId} ${this.specificLearningOutcome} [${this.skills.toArray().map(s => s.id).join(", ")}]`

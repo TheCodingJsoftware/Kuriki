@@ -54,22 +54,9 @@
             <i>home</i>
             <div>Home</div>
         </a>
-        <h6 class="max left-align">Lesson Plan</h6>
-        <a id="appearance-button">
-            <i>palette</i>
-            <span>Appearance</span>
-        </a>
-        <a onclick="window.print()">
-            <i>print</i>
-            <div>Print</div>
-        </a>
-        <a>
-            <i>share</i>
-            <div>Share</div>
-        </a>
-    </nav>
-    <main class="responsive">
-        <nav id="editor-preview-toggle" class="group connected center-align wrap hide-on-print">
+        <h6 class="left-align">Lesson Plan</h6>
+
+        <nav id="editor-preview-toggle" class="group connected center-align wrap max hide-on-print">
             <button id="editor-preview" class="left-round active">
                 <i>splitscreen_left</i>
                 <span class="m l">Editor & Preview</span>
@@ -83,7 +70,27 @@
                 <span class="m l">Preview only</span>
             </button>
         </nav>
-        <div class="grid">
+        <a id="appearance-button">
+            <i>palette</i>
+            <span>Appearance</span>
+        </a>
+        <a onclick="window.print()">
+            <i>print</i>
+            <div>Print</div>
+        </a>
+        <a>
+            <i>share</i>
+            <div>Share</div>
+        </a>
+        <a id="save-button">
+            <progress class="circle small hidden"></progress>
+            <i>save</i>
+            <div>Save</div>
+        </a>
+    </nav>
+
+    <main class="responsive">
+        <div class="grid" id="editor-preview-container">
             <article class="s12 m6 l6 border round hide-on-print" id="editor-pane">
             </article>
             <div class="s12 m6 l6 " id="preview-pane">

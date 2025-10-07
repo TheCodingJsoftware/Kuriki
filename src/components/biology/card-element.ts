@@ -2,7 +2,9 @@ import { highlightKeywords } from "@utils/keywords";
 import { scienceQuickSearchKeywords } from "@utils/quick-search-words";
 import { UnitElement } from "./unit-element";
 import { BiologyOutcome } from "@models/biology-outcome";
-import { CopiedOutcomeSnackbar } from "@components/common/snackbar/outcome-copied";
+import { CopyOutcomeButton } from "@components/common/buttons/copy-outcome-button";
+import { AddResourceButton } from "@components/common/buttons/add-resource-button";
+import { CreateLessonPlanButton } from "@components/common/buttons/create-lesson-button";
 
 export class BiologyOutcomeCard {
     private outcome: BiologyOutcome;
@@ -44,20 +46,22 @@ export class BiologyOutcomeCard {
             list.appendChild(li);
         });
 
-        // Copy button
-        const copyOutcome = document.createElement("button");
-        copyOutcome.innerText = "Copy Outcome";
-        copyOutcome.addEventListener("click", () => {
-            navigator.clipboard.writeText(this.outcome.toString());
-            new CopiedOutcomeSnackbar();
-        });
+        const copyOutcome = new CopyOutcomeButton(this.outcome.toString());
+        const addResource = new AddResourceButton(this.outcome.outcomeId)
+        const createNewLesson = new CreateLessonPlanButton(this.outcome.outcomeId);
+
+        const actionNav = document.createElement("nav");
+        actionNav.classList.add("row", "wrap");
+        actionNav.appendChild(addResource.render());
+        actionNav.appendChild(createNewLesson.render());
+        actionNav.appendChild(copyOutcome.render());
 
         // Append children
         container.appendChild(title);
         container.appendChild(skills);
         container.appendChild(description);
         container.appendChild(list);
-        container.appendChild(copyOutcome);
+        container.appendChild(actionNav);
 
         this.element = container;
     }

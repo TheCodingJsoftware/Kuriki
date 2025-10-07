@@ -10,8 +10,20 @@ import type { AssessmentRow } from "@models/assessment-row";
 import "@static/css/lesson.css";
 
 import "@toast-ui/editor/dist/toastui-editor.css"; // important
-// import "@toast-ui/editor/dist/theme/toastui-editor-dark.css"; // if using dark theme
 import { builtInTemplates, LessonTemplate } from "@models/lesson-template";
+import { LessonAPI } from "@api/lesson-api";
+import { enhanceLinks } from "@utils/enhance-links";
+import { SelectOutcomesDialog } from "@components/common/dialogs/select-outcomes-dialog";
+import { Outcome } from "@models/outcome";
+import { MathematicsOutcome } from "@models/mathematics-outcome";
+import { MathematicsOutcomeElement } from "@components/mathematics/outcome-element";
+import { SocialStudiesOutcome } from "@models/social-studies-outcome";
+import { SocialStudiesOutcomeElement } from "@components/social_studies/outcome-element";
+import { BiologyOutcome } from "@models/biology-outcome";
+import { BiologyOutcomeElement } from "@components/biology/outcome-element";
+import { ScienceOutcome } from "@models/science-outcome";
+import { ScienceOutcomeElement } from "@components/science/outcome-element";
+import { OutcomeFinder } from "@utils/outcome-finder";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
 
@@ -407,7 +419,7 @@ class CurricularOutcomesSection implements LessonField<string[]> {
     addButton: HTMLButtonElement;
     onChange?: () => void;
 
-    private outcomes: string[] = [];
+    private outcomes: Outcome[] = [];
 
     constructor() {
         // wrapper
@@ -435,10 +447,13 @@ class CurricularOutcomesSection implements LessonField<string[]> {
         this.element.appendChild(this.addButton);
     }
 
-    private addOutcome() {
-        const outcome = prompt("Enter curricular outcome:");
-        if (outcome && outcome.trim() !== "") {
-            this.outcomes.push(outcome.trim());
+    private async addOutcome() {
+        const selectOutcomes = new SelectOutcomesDialog();
+        const outcomes = await selectOutcomes.open();
+        if (outcomes) {
+            for (const outcome of outcomes) {
+                this.outcomes.push(outcome);
+            }
             this.renderList();
             this.onChange?.();
         }
@@ -446,27 +461,48 @@ class CurricularOutcomesSection implements LessonField<string[]> {
 
     private renderList() {
         this.list.innerHTML = "";
-        this.outcomes.forEach((outcome, index) => {
-            const chip = document.createElement("button");
-            chip.textContent = outcome;
-
-            // delete button (small x)
-            const removeBtn = document.createElement("button");
-            removeBtn.classList.add("chip", "tiny", "error", "circle");
-            removeBtn.innerHTML = `<i>close</i>`;
-            removeBtn.addEventListener("click", () => {
-                this.outcomes.splice(index, 1);
-                this.onChange?.();
-                this.renderList();
-            });
-
-            chip.appendChild(removeBtn);
-            this.list.appendChild(chip);
+        this.outcomes.forEach(outcome => {
+            if (outcome instanceof MathematicsOutcome) {
+                const mathematicsElement = new MathematicsOutcomeElement(outcome);
+                mathematicsElement.showIcon();
+                mathematicsElement.element.addEventListener("click", () => {
+                    // window.location.href = `/mathematics_2013-2014.html?g=${outcome.grade}&o=${outcome.outcomeId}`;
+                });
+                this.list.appendChild(mathematicsElement.render());
+            }
+            else if (outcome instanceof SocialStudiesOutcome) {
+                const socialStudiesElement = new SocialStudiesOutcomeElement(outcome);
+                socialStudiesElement.showIcon();
+                socialStudiesElement.element.addEventListener("click", () => {
+                    // window.location.href = `/social_studies_2003.html?g=${outcome.grade}&o=${outcome.outcomeId}`;
+                });
+                this.list.appendChild(socialStudiesElement.render());
+            }
+            else if (outcome instanceof BiologyOutcome) {
+                const biologyElement = new BiologyOutcomeElement(outcome);
+                biologyElement.showIcon();
+                biologyElement.element.addEventListener("click", () => {
+                    // window.location.href = `/biology_2010-2011.html?g=${outcome.grade}&o=${outcome.outcomeId}`;
+                });
+                this.list.appendChild(biologyElement.render());
+            }
+            else if (outcome instanceof ScienceOutcome) {
+                const scienceElement = new ScienceOutcomeElement(outcome);
+                scienceElement.showIcon();
+                scienceElement.element.addEventListener("click", () => {
+                    // window.location.href = `/science_1999-2000.html?g=${outcome.grade}&o=${outcome.outcomeId}`;
+                });
+                this.list.appendChild(scienceElement.render());
+            }
         });
     }
 
-    getValues(): string[] {
+    getOutcomes(): Outcome[] {
         return this.outcomes;
+    }
+
+    getValues(): string[] {
+        return this.outcomes.map(o => o.outcomeId);
     }
 
     getValue(): string[] {
@@ -477,8 +513,14 @@ class CurricularOutcomesSection implements LessonField<string[]> {
         this.setValues(value);
     }
 
-    setValues(values: string[]) {
-        this.outcomes = values;
+    async setValues(values: string[]) {
+        this.outcomes = [];
+        for (const outcomeCode of values) {
+            const outcome = await OutcomeFinder.getById(outcomeCode);
+            if (outcome) {
+                this.outcomes.push(outcome)
+            }
+        }
         this.renderList();
     }
 }
@@ -516,46 +558,22 @@ class ToastEditorField implements LessonField<string> {
         this.element.appendChild(editorContainer);
 
         // theme
-        const editorTheme = ui("mode") === "dark" ? "dark" : "light";
-        const initialMarkdown = `
-## Cross-Curricular/Real World Connections
+        // const editorTheme = ui("mode") === "dark" ? "dark" : "light";
 
-<ul><li></li></ul>
-
-
-| Materials and Resources | Student Specific Planning |
-| ----------------------- | ------------------------- |
-| Resources (referenced), handouts, ICT, equipment, etc.<ul><li></li></ul> | Considering students' readiness, interests, and learning profile, how will learning tasks for this lesson be differentiated?<ul><li></li></ul> |
-
-## Learning Plan
-
-| Phase | Description | Time |
-| ----- | ----------- | ---- |
-| Activate |  | 10 minutes |
-| Acquire |  | 20 minutes |
-| Apply |  | 25 minutes |
-| Closure |  | 5 minutes |
-
-
-## Reflections
-
-<ul><li></li></ul>
-`;
         // editor
         this.editor = new Editor({
             el: editorContainer,
             previewStyle: "vertical",
             height: "800px",
             initialEditType: "wysiwyg",
-            initialValue: localStorage.getItem(this.id) || initialMarkdown,
             usageStatistics: false,
-            theme: editorTheme,
+            // theme: editorTheme,
         });
 
         // save changes
-        this.editor.on("change", () => {
-            localStorage.setItem(this.id, this.editor.getMarkdown());
-        });
+        // this.editor.on("change", () => {
+        //     localStorage.setItem(this.id, this.editor.getMarkdown());
+        // });
     }
 
     getValue(): string {
@@ -613,6 +631,7 @@ class TemplateSelect {
         `;
     }
 }
+
 class SaveTemplateButton {
     element: HTMLButtonElement;
 
@@ -629,7 +648,6 @@ class SaveTemplateButton {
         });
     }
 }
-
 
 class LessonNotesEditor extends ToastEditorField {
     constructor() {
@@ -707,73 +725,84 @@ class AssessmentEvidenceSection implements LessonField<AssessmentRow[]> {
 
     private render() {
         this.tbody.innerHTML = "";
+
         this.rows.forEach((row, index) => {
             const tr = document.createElement("tr");
 
-            // description
-            const descTd = document.createElement("td");
-            const descInput = document.createElement("input");
-            descInput.type = "text";
+            // --- Build inner HTML directly (for consistent markup)
+            tr.innerHTML = `
+            <td>
+                <div class="field border textarea extra min">
+                    <textarea class="small-padding" id="description"></textarea>
+                </div>
+            </td>
+            <td>
+                <label class="checkbox">
+                    <input id="for-learning" type="checkbox">
+                    <span></span>
+                </label>
+            </td>
+            <td>
+                <label class="checkbox">
+                    <input id="as-learning" type="checkbox">
+                    <span></span>
+                </label>
+            </td>
+            <td>
+                <label class="checkbox">
+                    <input id="of-learning" type="checkbox">
+                    <span></span>
+                </label>
+            </td>
+            <td class="delete-row-button">
+                <button class="circle delete-row-button"><i>delete</i></button>
+            </td>
+        `;
+
+            // --- Reference elements
+            const descInput = tr.querySelector("#description") as HTMLTextAreaElement;
+            const forInput = tr.querySelector("#for-learning") as HTMLInputElement;
+            const asInput = tr.querySelector("#as-learning") as HTMLInputElement;
+            const ofInput = tr.querySelector("#of-learning") as HTMLInputElement;
+            const deleteBtn = tr.querySelector(".delete-row-button button") as HTMLButtonElement;
+
+            // --- Initialize values
             descInput.value = row.description;
-            descInput.addEventListener("input", e => {
-                row.description = (e.target as HTMLInputElement).value;
+            forInput.checked = row.for;
+            asInput.checked = row.as;
+            ofInput.checked = row.of;
+
+            // --- Bind events
+            descInput.addEventListener("input", (e) => {
+                row.description = (e.target as HTMLTextAreaElement).value;
                 this.onChange?.();
             });
-            descTd.appendChild(descInput);
 
-            // FOR
-            const forTd = document.createElement("td");
-            const forInput = document.createElement("input");
-            forInput.type = "checkbox";
-            forInput.checked = row.for;
-            forInput.addEventListener("change", e => {
+            forInput.addEventListener("change", (e) => {
                 row.for = (e.target as HTMLInputElement).checked;
                 this.onChange?.();
             });
-            forTd.appendChild(forInput);
 
-            // AS
-            const asTd = document.createElement("td");
-            const asInput = document.createElement("input");
-            asInput.type = "checkbox";
-            asInput.checked = row.as;
-            asInput.addEventListener("change", e => {
+            asInput.addEventListener("change", (e) => {
                 row.as = (e.target as HTMLInputElement).checked;
                 this.onChange?.();
             });
-            asTd.appendChild(asInput);
 
-            // OF
-            const ofTd = document.createElement("td");
-            const ofInput = document.createElement("input");
-            ofInput.type = "checkbox";
-            ofInput.checked = row.of;
-            ofInput.addEventListener("change", e => {
+            ofInput.addEventListener("change", (e) => {
                 row.of = (e.target as HTMLInputElement).checked;
                 this.onChange?.();
             });
-            ofTd.appendChild(ofInput);
 
-            // delete
-            const deleteTd = document.createElement("td");
-            const deleteBtn = document.createElement("button");
-            deleteBtn.classList.add("chip", "transparent", "circle", "no-border");
-            deleteBtn.innerHTML = `<i>close</i>`;
             deleteBtn.addEventListener("click", () => {
                 this.removeRow(index);
                 this.onChange?.();
             });
-            deleteTd.appendChild(deleteBtn);
 
-            tr.appendChild(descTd);
-            tr.appendChild(forTd);
-            tr.appendChild(asTd);
-            tr.appendChild(ofTd);
-            tr.appendChild(deleteTd);
-
+            // --- Append to table
             this.tbody.appendChild(tr);
         });
     }
+
 
     getValues() {
         return this.rows;
@@ -847,16 +876,17 @@ class ResourceLinksSection implements LessonField<string[]> {
     private render() {
         this.list.innerHTML = "";
         this.links.forEach((link) => {
-            const chip = document.createElement("div");
+            const chip = document.createElement("button");
             chip.classList.add("chip");
 
             const anchor = document.createElement("a");
             anchor.href = link;
             anchor.target = "_blank";
             anchor.textContent = link;
+            anchor.dataset.url = link
 
             const removeBtn = document.createElement("button");
-            removeBtn.classList.add("link", "no-border", "circle");
+            removeBtn.classList.add("transparent", "no-border", "circle", "responsive");
             removeBtn.innerHTML = `<i>close</i>`;
             removeBtn.addEventListener("click", () => {
                 this.links.splice(this.links.indexOf(link), 1);
@@ -864,8 +894,15 @@ class ResourceLinksSection implements LessonField<string[]> {
                 this.render();
             });
 
+            const tooltip = document.createElement("div");
+            tooltip.classList.add("tooltip");
+            tooltip.innerHTML = `
+                <a class="inverse-link underline" href="${link}" target="_blank">${link}</a>
+            `;
+
             chip.appendChild(anchor);
             chip.appendChild(removeBtn);
+            chip.appendChild(tooltip);
             this.list.appendChild(chip);
         });
     }
@@ -915,7 +952,7 @@ class LessonBuilder {
 ---
 
 ## Curricular Outcomes
-${this.outcomes.getValue().map(o => `- ${o}`).join("\n") || "_None_"}
+${this.outcomes.getOutcomes().map(o => `- ${o.toString()}`).join("\n") || "_None_"}
 
 ---
 
@@ -933,7 +970,6 @@ ${this.assessment.getValue().map(r =>
 
 ---
 
-## Lesson Notes
 ${this.notes.getValue() || "_Nothing yet_"}
         `;
     }
@@ -943,6 +979,7 @@ ${this.notes.getValue() || "_Nothing yet_"}
 class Preview {
     private element: HTMLDivElement;
     private viewer: Viewer;
+    private autoSaveTimer: number | undefined;
 
     constructor(containerId: string = "preview-pane") {
         const container = document.getElementById(containerId) as HTMLDivElement;
@@ -964,6 +1001,9 @@ class Preview {
 
     update(markdown: string) {
         this.viewer.setMarkdown(markdown || "Nothing to preview yet...");
+
+        if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
+        this.autoSaveTimer = window.setTimeout(() => handleSaveClick(), 5000);
     }
 }
 
@@ -978,6 +1018,18 @@ function setupEditorPane() {
     const resourceLinks = new ResourceLinksSection();
     const assessmentEvidence = new AssessmentEvidenceSection();
     const lessonNotes = new LessonNotesEditor();
+
+    (window as any).topicInput = topicInput;
+    (window as any).lessonNameInput = lessonNameInput;
+    (window as any).authorInput = authorInput;
+    (window as any).gradeLevelSelect = gradeLevelSelect;
+    (window as any).dateField = dateField;
+    (window as any).timeLengthSelect = timeLengthSelect;
+    (window as any).curricularOutcomesSection = curricularOutcomesSection;
+    (window as any).resourceLinks = resourceLinks;
+    (window as any).assessmentEvidence = assessmentEvidence;
+    (window as any).lessonNotes = lessonNotes;
+
     const templateSelect = new TemplateSelect((tpl) => {
         if (confirm(`Apply "${tpl.name}" template? This will replace current notes.`)) {
             lessonNotes.setValue(tpl.markdown);
@@ -1014,6 +1066,8 @@ function setupEditorPane() {
         assessmentEvidence,
         lessonNotes
     );
+    (window as any).preview = preview;
+    (window as any).builder = builder;
 
     function updatePreview() {
         preview.update(builder.buildMarkdown());
@@ -1024,11 +1078,7 @@ function setupEditorPane() {
     dateField.input, timeLengthSelect.select].forEach(el =>
         el.addEventListener("input", updatePreview)
     );
-
     lessonNotes.editor.on("change", updatePreview);
-
-    // For outcomes/resources/assessment, you’d call updatePreview() at the end of their add/remove handlers:
-    // e.g. in CurricularOutcomesSection.addOutcome() → after this.renderList(); call updatePreview()
     curricularOutcomesSection.onChange = updatePreview;
     resourceLinks.onChange = updatePreview;
     assessmentEvidence.onChange = updatePreview;
@@ -1036,12 +1086,155 @@ function setupEditorPane() {
     updatePreview(); // initial
 }
 
+async function saveLesson() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const idParam = urlParams.get("id") || window.location.hash.replace("#", "");
+    if (!idParam) {
+        alert("No lesson ID in URL.");
+        return;
+    }
 
-document.addEventListener("DOMContentLoaded", () => {
+    const lessonId = parseInt(idParam, 10);
+
+    const data = {
+        topic: (document.getElementById("topic-title") as HTMLInputElement)?.value || "",
+        name: (document.getElementById("lesson-name") as HTMLInputElement)?.value || "",
+        author: (document.getElementById("author-name") as HTMLInputElement)?.value || "",
+        gradeLevel: (document.getElementById("grade-level") as HTMLSelectElement)?.value || "",
+        date: (document.getElementById("date-time-picker") as HTMLInputElement)?.value || "",
+        timeLength: (document.getElementById("time-length") as HTMLSelectElement)?.value || "",
+        curricularOutcomes: [],
+        resourceLinks: [],
+        assessmentEvidence: [],
+        notes: "",
+    };
+
+    // If your field instances are available globally or in scope:
+    data.notes = (window as any).lessonNotes.getValue();
+    data.curricularOutcomes = (window as any).curricularOutcomesSection.getValue();
+    data.resourceLinks = (window as any).resourceLinks.getValue();
+    data.assessmentEvidence = (window as any).assessmentEvidence.getValue();
+
+    const outcomes = data.curricularOutcomes;
+
+    try {
+        await LessonAPI.post(lessonId, data, outcomes);
+        // console.log("Lesson saved:", lessonId);
+        // alert("Lesson saved successfully!");
+    } catch (err) {
+        console.error("Failed to save lesson:", err);
+        alert("Failed to save lesson. Check console for details.");
+    }
+}
+
+// --- Button UI state controller
+function updateSaveButton(state: "idle" | "saving" | "success" | "error" = "idle") {
+    const saveButton = document.getElementById("save-button") as HTMLAnchorElement;
+    const saveIcon = saveButton.querySelector("i")!;
+    const saveText = saveButton.querySelector("div")!;
+    const saveSpinner = saveButton.querySelector("progress")!;
+
+    switch (state) {
+        case "saving":
+            saveSpinner.classList.remove("hidden");  // show spinner
+            saveIcon.classList.add("hidden");        // hide icon
+            saveText.textContent = "Saving...";
+            saveButton.classList.add("disabled");    // prevent multiple clicks
+            break;
+
+        case "success":
+            saveSpinner.classList.add("hidden");
+            saveIcon.classList.remove("hidden");
+            saveText.textContent = "Saved!";
+            saveButton.classList.remove("disabled");
+            // revert text after short delay
+            setTimeout(() => updateSaveButton("idle"), 1500);
+            break;
+
+        case "error":
+            saveSpinner.classList.add("hidden");
+            saveIcon.classList.remove("hidden");
+            saveText.textContent = "Failed!";
+            saveButton.classList.remove("disabled");
+            setTimeout(() => updateSaveButton("idle"), 2000);
+            break;
+
+        case "idle":
+        default:
+            saveSpinner.classList.add("hidden");
+            saveIcon.classList.remove("hidden");
+            saveText.textContent = "Save";
+            saveButton.classList.remove("disabled");
+            break;
+    }
+}
+
+async function loadLessonById() {
+    const params = new URLSearchParams(window.location.search);
+    const idParam = params.get("id");
+    if (!idParam) return;
+
+    const id = parseInt(idParam, 10);
+    try {
+        const response = await LessonAPI.getById(id);
+        const lesson = response.data;
+
+        if (!lesson || !lesson.data) return;
+
+        // Now safely extract and set field values
+        const { data } = lesson;
+
+        // For example:
+        (document.getElementById("topic-title") as HTMLInputElement).value = data.topic || "";
+        (document.getElementById("lesson-name") as HTMLInputElement).value = data.name || "";
+        (document.getElementById("author-name") as HTMLInputElement).value = data.author || "";
+        (document.getElementById("grade-level") as HTMLSelectElement).value = data.gradeLevel || "";
+        (document.getElementById("date-time-picker") as HTMLInputElement).value = data.date?.slice(0, 10) || "";
+        (document.getElementById("time-length") as HTMLSelectElement).value = data.timeLength || "";
+
+        (window as any).lessonNotes.setValue(data.notes || "");
+
+        // Outcomes, resources, and assessments need to be set through their components
+        await (window as any).curricularOutcomesSection.setValues(data.curricularOutcomes || []);
+        (window as any).resourceLinks.setValues(data.resourceLinks || []);
+        (window as any).assessmentEvidence.setValues(data.assessmentEvidence || []);
+
+        (window as any).preview.update((window as any).builder.buildMarkdown());
+    } catch (err) {
+        console.error("Failed to load lesson:", err);
+    }
+}
+
+async function handleSaveClick() {
+    updateSaveButton("saving");
+    try {
+        await saveLesson();          // reuse your saveLesson() function
+        updateSaveButton("success");
+    } catch (err) {
+        updateSaveButton("error");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
     const appearanceButton = document.getElementById("appearance-button") as HTMLButtonElement;
     appearanceButton.addEventListener("click", () => {
         new AppearanceDialog();
     });
+
+    const saveButton = document.getElementById("save-button") as HTMLButtonElement;
+    saveButton.addEventListener("click", handleSaveClick);
     setupEditorPreviewToggle();
     setupEditorPane();
+    await loadLessonById();
+    enhanceLinks();
+});
+
+document.addEventListener("keydown", (e) => {
+    // Check for Ctrl+S (Windows/Linux) or ⌘+S (macOS)
+    const isSaveShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s";
+
+    if (isSaveShortcut) {
+        e.preventDefault();
+        handleSaveClick();
+    }
 });
