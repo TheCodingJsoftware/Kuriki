@@ -31,7 +31,7 @@ export class SearchOutcomeDialog extends DialogComponent {
             id: "search-dialog",
             title: "One Stop Search",
             bodyContent: `
-            <div class="padding">
+            <div>
                 <div class="field label prefix border fill round responsive" id="search">
                     <i>search</i>
                     <input type="text">
@@ -42,7 +42,6 @@ export class SearchOutcomeDialog extends DialogComponent {
             </div>`,
         });
         this.init();
-        this.element.classList.add("no-padding");
     }
 
     async getAllOutcomes() {

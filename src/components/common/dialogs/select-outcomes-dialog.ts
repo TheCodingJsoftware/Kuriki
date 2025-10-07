@@ -28,21 +28,22 @@ export class SelectOutcomesDialog extends DialogComponent {
             id: "select-outcomes-dialog",
             title: "Select Outcomes",
             bodyContent: `
-            <div class="padding">
+            <div>
                 <div class="margin field label prefix border fill round responsive" id="search">
                     <i>search</i>
                     <input type="text">
                     <label for="search">Search outcomes</label>
                 </div>
-                <p class="padding">Select one or more outcomes below:</p>
-                <div id="results" class="padding"></div>
+                <p>Select one or more outcomes below:</p>
+                <div id="results"></div>
+            </div>`,
+            footerContent: `
                 <nav class="no-margin bottom right-align surface-container-high">
                     <button class="button border" id="cancel-btn">Cancel</button>
                     <button class="button primary" id="done-btn">Done</button>
-                </nav>
-            </div>`,
+                </nav>`,
+            isModal: true,
         });
-        this.element.classList.add("no-padding");
     }
 
     /** Open the dialog modally and return selected outcomes when done */
@@ -60,8 +61,6 @@ export class SelectOutcomesDialog extends DialogComponent {
     }
 
     async init() {
-        this.element.classList.add("modal");
-
         const searchInput = this.element.querySelector("#search input") as HTMLInputElement;
         const doneBtn = this.element.querySelector("#done-btn") as HTMLButtonElement;
         const cancelBtn = this.element.querySelector("#cancel-btn") as HTMLButtonElement;

@@ -24,6 +24,7 @@ import { BiologyOutcomeElement } from "@components/biology/outcome-element";
 import { ScienceOutcome } from "@models/science-outcome";
 import { ScienceOutcomeElement } from "@components/science/outcome-element";
 import { OutcomeFinder } from "@utils/outcome-finder";
+import { ShareLessonDialog } from "@components/common/dialogs/share-lesson-dialog";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
 
@@ -1200,6 +1201,12 @@ async function loadLessonById() {
         (window as any).assessmentEvidence.setValues(data.assessmentEvidence || []);
 
         (window as any).preview.update((window as any).builder.buildMarkdown());
+
+        const progress = document.getElementById("progress") as HTMLDivElement;
+        progress.remove();
+
+        const main = document.querySelector("main") as HTMLElement;
+        main.classList.remove("hidden");
     } catch (err) {
         console.error("Failed to load lesson:", err);
     }
@@ -1220,6 +1227,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     appearanceButton.addEventListener("click", () => {
         new AppearanceDialog();
     });
+
+    const shareLessonButton = document.getElementById("share-lesson") as HTMLButtonElement;
+    shareLessonButton.addEventListener("click", () => {
+        new ShareLessonDialog();
+    })
 
     const saveButton = document.getElementById("save-button") as HTMLButtonElement;
     saveButton.addEventListener("click", handleSaveClick);

@@ -78,7 +78,7 @@
             <i>print</i>
             <div>Print</div>
         </a>
-        <a>
+        <a id="share-lesson">
             <i>share</i>
             <div>Share</div>
         </a>
@@ -89,9 +89,13 @@
         </a>
     </nav>
 
-    <main class="responsive">
+    <div class="small-width small-height fixed center middle" id="progress" style="z-index: 9999 !important;">
+        <div class="shape loading-indicator max rotate"></div>
+    </div>
+
+    <main class="responsive hidden">
         <div class="grid" id="editor-preview-container">
-            <article class="s12 m6 l6 border round hide-on-print" id="editor-pane">
+            <article class="s12 m6 l6 round hide-on-print" id="editor-pane">
             </article>
             <div class="s12 m6 l6 " id="preview-pane">
                 <h1>Preview</h1>

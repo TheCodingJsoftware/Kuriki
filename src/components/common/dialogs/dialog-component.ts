@@ -103,7 +103,7 @@ export class DialogComponent {
 
         if (this.options.footerContent) {
             this.footerElement.innerHTML = this.options.footerContent;
-            this.footerElement.className = "dialog-footer";
+            this.footerElement.className = "dialog-footer bottom fixed surface-container-high";
             dialogContent.appendChild(this.footerElement);
         } else {
             this.createDefaultFooter();
