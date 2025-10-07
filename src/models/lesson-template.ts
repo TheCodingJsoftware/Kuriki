@@ -13,7 +13,7 @@ export const builtInTemplates: LessonTemplate[] = [
         markdown: `
 ## Cross-Curricular/Real World Connections
 
-<ul><li></li></ul>
+*
 
 | Materials and Resources | Student Specific Planning |
 | ----------------------- | ------------------------- |
@@ -29,7 +29,8 @@ export const builtInTemplates: LessonTemplate[] = [
 | Closure |  | 5 minutes |
 
 ## Reflections
-<ul><li></li></ul>
+
+*
     `
     },
     {

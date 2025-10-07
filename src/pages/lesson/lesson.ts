@@ -38,8 +38,8 @@ function setupEditorPreviewToggle() {
     const editorOnlyBtn = document.getElementById("editor-only") as HTMLButtonElement;
     const previewOnlyBtn = document.getElementById("preview-only") as HTMLButtonElement;
 
-    const editorPane = document.getElementById("editor-pane") as HTMLElement;
-    const previewPane = document.getElementById("preview-pane") as HTMLElement;
+    const editorPane = document.getElementById("editor-container") as HTMLElement;
+    const previewPane = document.getElementById("preview-container") as HTMLElement;
 
     function setActive(button: HTMLButtonElement) {
         [editorBtn, editorOnlyBtn, previewOnlyBtn].forEach(b => b.classList.remove("active"));
@@ -409,13 +409,12 @@ class DateField implements LessonField<string> {
         this.element.appendChild(this.input);
         this.element.appendChild(this.label);
 
-        // ✅ initialize after DOM attachment
         setTimeout(() => {
             this.picker = flatpickr(this.input, {
                 altInput: true,
                 enableTime: true,
                 altFormat: "F j, Y h:i K",
-                dateFormat: "Y-m-d H:i",
+                dateFormat: "F j, Y h:i K",
                 defaultDate: new Date(),
             });
         }, 0);
@@ -999,7 +998,7 @@ class LessonBuilder {
     buildMarkdown(): string {
         return `
 # ${this.lessonName.getValue() || "Untitled Lesson"}
-## *${this.topic.getValue() || ""}*
+*${this.topic.getValue() || ""}*
 **Author:** ${this.author.getValue() || ""}
 **Grade:** ${this.grade.getValue() || ""}
 **Date:** ${this.date.getValue() || ""}
@@ -1239,20 +1238,16 @@ async function loadLessonById() {
         // Now safely extract and set field values
         const { data } = lesson;
 
-        (document.getElementById("topic-title") as HTMLInputElement).value = data.topic || "";
-        (document.getElementById("lesson-name") as HTMLInputElement).value = data.name || "";
-        (document.getElementById("author-name") as HTMLInputElement).value = data.author || "";
-        (document.getElementById("grade-level") as HTMLSelectElement).value = data.gradeLevel || "";
+        (window as any).topicInput.setValue(data.topic || "");
+        (window as any).lessonNameInput.setValue(data.name || "");
+        (window as any).authorInput.setValue(data.author || "");
+        (window as any).gradeLevelSelect.setValue(data.gradeLevel || "");
         (window as any).dateField.setValue(data.date || "");
-        (document.getElementById("time-length") as HTMLSelectElement).value = data.timeLength || "";
-
+        (window as any).timeLengthSelect.setValue(data.timeLength || "");
         (window as any).lessonNotes.setValue(data.notes || "");
-
-        // Outcomes, resources, and assessments need to be set through their components
         await (window as any).curricularOutcomesSection.setValues(data.curricularOutcomes || []);
         (window as any).resourceLinks.setValues(data.resourceLinks || []);
         (window as any).assessmentEvidence.setValues(data.assessmentEvidence || []);
-
         (window as any).preview.update((window as any).builder.buildMarkdown());
 
         const progress = document.getElementById("progress") as HTMLDivElement;
