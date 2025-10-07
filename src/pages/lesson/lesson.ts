@@ -8,8 +8,9 @@ import Editor from "@toast-ui/editor";
 import Viewer from "@toast-ui/editor/dist/toastui-editor-viewer";
 import type { AssessmentRow } from "@models/assessment-row";
 import "@static/css/lesson.css";
-
-import "@toast-ui/editor/dist/toastui-editor.css"; // important
+import "flatpickr/dist/themes/dark.css";
+import flatpickr from "flatpickr";
+import "@toast-ui/editor/dist/toastui-editor.css";
 import { builtInTemplates, LessonTemplate } from "@models/lesson-template";
 import { LessonAPI } from "@api/lesson-api";
 import { enhanceLinks } from "@utils/enhance-links";
@@ -27,6 +28,8 @@ import { OutcomeFinder } from "@utils/outcome-finder";
 import { ShareLessonDialog } from "@components/common/dialogs/share-lesson-dialog";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
+let autoSaveTimer: number | undefined;
+let lessonPlanLoaded: boolean = false;
 
 function setupEditorPreviewToggle() {
     const main = document.querySelector("main") as HTMLElement;
@@ -378,7 +381,8 @@ class DateField implements LessonField<string> {
     input: HTMLInputElement;
     label: HTMLLabelElement;
     icon: HTMLElement;
-    id: string = "date-time-picker";
+    id: string = "date-time-input";
+    private picker!: any;
 
     constructor() {
         // wrapper
@@ -391,7 +395,7 @@ class DateField implements LessonField<string> {
 
         // input
         this.input = document.createElement("input");
-        this.input.type = "date";
+        this.input.type = "text"; // flatpickr needs text type
         this.input.id = this.id;
         this.input.name = "date";
 
@@ -404,14 +408,40 @@ class DateField implements LessonField<string> {
         this.element.appendChild(this.icon);
         this.element.appendChild(this.input);
         this.element.appendChild(this.label);
+
+        // ✅ initialize after DOM attachment
+        setTimeout(() => {
+            this.picker = flatpickr(this.input, {
+                altInput: true,
+                enableTime: true,
+                altFormat: "F j, Y h:i K",
+                dateFormat: "Y-m-d H:i",
+                defaultDate: new Date(),
+            });
+        }, 0);
     }
 
+    /**
+     * Get the ISO-style date/time string in "Y-m-d H:i" format
+     */
     getValue(): string {
-        return this.input.value;
+        if (!this.picker) return this.input.value || "";
+        // getFormattedDate() uses the configured dateFormat
+        return this.picker.input.value || "";
     }
 
+    /**
+     * Set the date/time (string or Date)
+     * @param value string like "2025-10-06 14:30" or ISO date
+     */
     setValue(value: string) {
-        this.input.value = value;
+        if (!this.picker) {
+            this.input.value = value;
+            return;
+        }
+
+        // If string can be parsed as date, set via flatpickr API
+        this.picker.setDate(value, true); // true = trigger onChange
     }
 }
 
@@ -496,7 +526,7 @@ class CurricularOutcomesSection implements LessonField<string[]> {
             outcomeElement.classList.add("max");
 
             const wrapper = document.createElement("div");
-            wrapper.classList.add("outcome-wrapper", "row", 'tiny-space');
+            wrapper.classList.add("outcome-wrapper", "row", 'tiny-space', "no-margin");
 
             const deleteBtn = document.createElement("button");
             deleteBtn.classList.add("chip", "circle", "error");
@@ -656,7 +686,7 @@ class SaveTemplateButton {
     constructor(notes: LessonNotesEditor, templateSelect: TemplateSelect) {
         this.element = document.createElement("button");
         this.element.classList.add("chip", "small", "border");
-        this.element.innerHTML = `<i>save</i> <span>Save Current as Template</span>`;
+        this.element.innerHTML = `<i>save</i><span>Save Current as Template</span>`;
 
         this.element.addEventListener("click", () => {
             const name = prompt("Enter a name for this template:");
@@ -901,8 +931,14 @@ class ResourceLinksSection implements LessonField<string[]> {
             const anchor = document.createElement("a");
             anchor.href = link;
             anchor.target = "_blank";
-            anchor.textContent = link;
-            anchor.dataset.url = link
+
+            const maxLength = 25;
+            anchor.textContent = link.length > maxLength
+                ? link.substring(0, maxLength) + "..."
+                : link;
+
+            anchor.dataset.url = link;
+
 
             const removeBtn = document.createElement("button");
             removeBtn.classList.add("transparent", "no-border", "circle", "responsive", "ripple");
@@ -963,7 +999,7 @@ class LessonBuilder {
     buildMarkdown(): string {
         return `
 # ${this.lessonName.getValue() || "Untitled Lesson"}
-*${this.topic.getValue() || ""}*
+## *${this.topic.getValue() || ""}*
 **Author:** ${this.author.getValue() || ""}
 **Grade:** ${this.grade.getValue() || ""}
 **Date:** ${this.date.getValue() || ""}
@@ -998,7 +1034,6 @@ ${this.notes.getValue() || "_Nothing yet_"}
 class Preview {
     private element: HTMLDivElement;
     private viewer: Viewer;
-    private autoSaveTimer: number | undefined;
 
     constructor(containerId: string = "preview-pane") {
         const container = document.getElementById(containerId) as HTMLDivElement;
@@ -1020,9 +1055,10 @@ class Preview {
 
     update(markdown: string) {
         this.viewer.setMarkdown(markdown || "Nothing to preview yet...");
-
-        if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
-        this.autoSaveTimer = window.setTimeout(() => handleSaveClick(), 5000);
+        if (lessonPlanLoaded) {
+            if (autoSaveTimer) clearTimeout(autoSaveTimer);
+            autoSaveTimer = window.setTimeout(() => handleSaveClick(), 5000);
+        }
     }
 }
 
@@ -1120,7 +1156,7 @@ async function saveLesson() {
         name: (document.getElementById("lesson-name") as HTMLInputElement)?.value || "",
         author: (document.getElementById("author-name") as HTMLInputElement)?.value || "",
         gradeLevel: (document.getElementById("grade-level") as HTMLSelectElement)?.value || "",
-        date: (document.getElementById("date-time-picker") as HTMLInputElement)?.value || "",
+        date: (document.getElementById("date-time-input") as HTMLInputElement)?.value || "",
         timeLength: (document.getElementById("time-length") as HTMLSelectElement)?.value || "",
         curricularOutcomes: [],
         resourceLinks: [],
@@ -1203,12 +1239,11 @@ async function loadLessonById() {
         // Now safely extract and set field values
         const { data } = lesson;
 
-        // For example:
         (document.getElementById("topic-title") as HTMLInputElement).value = data.topic || "";
         (document.getElementById("lesson-name") as HTMLInputElement).value = data.name || "";
         (document.getElementById("author-name") as HTMLInputElement).value = data.author || "";
         (document.getElementById("grade-level") as HTMLSelectElement).value = data.gradeLevel || "";
-        (document.getElementById("date-time-picker") as HTMLInputElement).value = data.date?.slice(0, 10) || "";
+        (window as any).dateField.setValue(data.date || "");
         (document.getElementById("time-length") as HTMLSelectElement).value = data.timeLength || "";
 
         (window as any).lessonNotes.setValue(data.notes || "");
@@ -1232,6 +1267,7 @@ async function loadLessonById() {
 
 async function handleSaveClick() {
     updateSaveButton("saving");
+    clearTimeout(autoSaveTimer);
     try {
         await saveLesson();          // reuse your saveLesson() function
         updateSaveButton("success");
@@ -1256,6 +1292,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupEditorPreviewToggle();
     setupEditorPane();
     await loadLessonById();
+    lessonPlanLoaded = true;
 });
 
 document.addEventListener("keydown", (e) => {

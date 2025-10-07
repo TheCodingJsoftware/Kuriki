@@ -43,8 +43,10 @@ export class ShareLessonDialog extends DialogComponent {
         const shareAsPreview = this.element.querySelector("#share-as-preview") as HTMLInputElement;
         shareAsPreview.addEventListener("input", () => {
             this.updateLink();
+            localStorage.setItem("shareAsPreview", shareAsPreview.checked ? "true" : "false");
         })
 
+        shareAsPreview.checked = localStorage.getItem("shareAsPreview") === "true";
 
         window.addEventListener("resize", this.handleResize);
         this.handleResize()
