@@ -59,10 +59,13 @@ export class MathematicsOutcomeCard {
 
         const copyOutcome = new CopyOutcomeButton(this.outcome.toString());
         const addResource = new AddResourceButton(this.outcome.outcomeId)
-        addResource.onResourceAdded.connect(() => {
-            resourceList.refresh();
-        })
+        addResource.onResourceAdded.connect(async () => {
+            await resourceList.refresh();
+        });
         const createNewLesson = new CreateLessonPlanButton(this.outcome.outcomeId);
+        createNewLesson.onLessonCreated.connect(async () => {
+            await lessonsList.refresh();
+        })
 
         const actionNav = document.createElement("nav");
         actionNav.classList.add("row", "wrap");

@@ -10,6 +10,7 @@ export class ResourceListContainer {
     private observer?: IntersectionObserver;
     private loaded = false;
     private loading = false;
+    private emptyMessage?: HTMLParagraphElement;
 
     constructor(outcome: Outcome) {
         this.outcome = outcome;
@@ -29,6 +30,8 @@ export class ResourceListContainer {
     }
 
     private setupLazyLoad() {
+        const detailsPanel = document.getElementById("details-panel") as HTMLDivElement;
+
         this.observer = new IntersectionObserver(
             (entries) => {
                 for (const entry of entries) {
@@ -39,7 +42,11 @@ export class ResourceListContainer {
                     }
                 }
             },
-            { rootMargin: "100px", threshold: 0.1 }
+            {
+                root: detailsPanel || null,
+                rootMargin: "0px 1000px 0px 1000px", // preload when within 500px horizontally
+                threshold: 0.0
+            }
         );
 
         this.observer.observe(this.element);
@@ -51,23 +58,23 @@ export class ResourceListContainer {
     }
 
     private async renderResources(force = false) {
-        if (this.loading) return; // prevent duplicate concurrent loads
+        if (this.loading) return;
         this.loading = true;
 
         try {
-            this.element.classList.remove("hidden");
             this.resourceList.innerHTML = "";
             this.title.innerText = "Resources";
+            this.emptyMessage?.remove();
 
             const resources = await ResourceAPI.getByOutcome(this.outcome.outcomeId);
 
-            if (!resources?.data?.length) {
-                this.element.classList.add("hidden");
-                this.loading = false;
+            const items = resources?.data ?? [];
+            if (!items.length) {
+                this.showEmptyMessage("No resources linked to this outcome yet.");
                 return;
             }
 
-            for (const resource of resources.data) {
+            for (const resource of items) {
                 const li = document.createElement("li");
 
                 const a = document.createElement("a");
@@ -84,11 +91,18 @@ export class ResourceListContainer {
             enhanceLinks(50);
         } catch (err) {
             console.error("Failed to load resources:", err);
-            this.title.innerText = "Resources (failed to load)";
+            this.showEmptyMessage("Failed to load resources. Please try again later.");
         } finally {
             this.loading = false;
             this.loaded = true;
         }
+    }
+
+    private showEmptyMessage(text: string) {
+        this.emptyMessage = document.createElement("p");
+        this.emptyMessage.classList.add("text-muted", "small", "tiny-padding");
+        this.emptyMessage.innerText = text;
+        this.element.appendChild(this.emptyMessage);
     }
 
     public render(): HTMLDivElement {

@@ -50,7 +50,13 @@ export class BiologyOutcomeCard {
 
         const copyOutcome = new CopyOutcomeButton(this.outcome.toString());
         const addResource = new AddResourceButton(this.outcome.outcomeId)
+        addResource.onResourceAdded.connect(async () => {
+            await resourceList.refresh();
+        });
         const createNewLesson = new CreateLessonPlanButton(this.outcome.outcomeId);
+        createNewLesson.onLessonCreated.connect(async () => {
+            await lessonsList.refresh();
+        })
 
         const resourceList = new ResourceListContainer(this.outcome);
         const lessonsList = new LessonListContainer(this.outcome);
