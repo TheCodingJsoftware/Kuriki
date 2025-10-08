@@ -27,6 +27,10 @@ import { ScienceOutcomeElement } from "@components/science/outcome-element";
 import { OutcomeFinder } from "@utils/outcome-finder";
 import { ShareLessonDialog } from "@components/common/dialogs/share-lesson-dialog";
 import { ContentCopiedSnackbar } from "@components/common/snackbar/content-copied";
+import { SocialStudiesOutcomeCard } from "@components/social_studies/card-element";
+import { MathematicsOutcomeCard } from "@components/mathematics/card-element";
+import { BiologyOutcomeCard } from "@components/biology/card-element";
+import { ScienceOutcomeCard } from "@components/science/card-element";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
 let autoSaveTimer: number | undefined;
@@ -504,18 +508,26 @@ class CurricularOutcomesSection implements LessonField<string[]> {
 
             if (outcome instanceof MathematicsOutcome) {
                 const el = new MathematicsOutcomeElement(outcome);
+                const card = new MathematicsOutcomeCard(outcome);
+                el.setTooltipElement(card.render());
                 el.showIcon();
                 outcomeElement = el.render();
             } else if (outcome instanceof SocialStudiesOutcome) {
                 const el = new SocialStudiesOutcomeElement(outcome);
+                const card = new SocialStudiesOutcomeCard(outcome);
+                el.setTooltipElement(card.render());
                 el.showIcon();
                 outcomeElement = el.render();
             } else if (outcome instanceof BiologyOutcome) {
                 const el = new BiologyOutcomeElement(outcome);
+                const card = new BiologyOutcomeCard(outcome);
+                el.setTooltipElement(card.render());
                 el.showIcon();
                 outcomeElement = el.render();
             } else if (outcome instanceof ScienceOutcome) {
                 const el = new ScienceOutcomeElement(outcome);
+                const card = new ScienceOutcomeCard(outcome);
+                el.setTooltipElement(card.render());
                 el.showIcon();
                 outcomeElement = el.render();
             } else {

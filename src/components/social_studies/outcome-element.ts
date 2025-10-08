@@ -73,6 +73,14 @@ export class SocialStudiesOutcomeElement {
         return this.element;
     }
 
+    setTooltipElement(element: HTMLElement) {
+        element.classList.add("medium-elevate");
+        const tooltip = this.element.querySelector(".tooltip") as HTMLElement;
+        tooltip.classList.add("transparent", "medium-width", "no-space");
+        tooltip.innerHTML = "";
+        tooltip.appendChild(element);
+    }
+
     showTooltip() {
         this.element.querySelector(".tooltip")!.classList.remove("hidden");
     }
