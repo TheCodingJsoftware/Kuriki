@@ -8,6 +8,8 @@ import { SocialStudiesOutcome } from "@models/social-studies-outcome";
 import { CopyOutcomeButton } from "@components/common/buttons/copy-outcome-button";
 import { AddResourceButton } from "@components/common/buttons/add-resource-button";
 import { CreateLessonPlanButton } from "@components/common/buttons/create-lesson-button";
+import { ResourceListContainer } from "@components/common/resources/resources";
+import { LessonListContainer } from "@components/common/lessons/lessons";
 
 export class SocialStudiesOutcomeCard {
     private outcome: SocialStudiesOutcome;
@@ -88,12 +90,17 @@ export class SocialStudiesOutcomeCard {
         actionNav.appendChild(createNewLesson.render());
         actionNav.appendChild(copyOutcome.render());
 
+        const resourceList = new ResourceListContainer(this.outcome);
+        const lessonsList = new LessonListContainer(this.outcome);
+
         // Append children
         container.appendChild(title);
         // container.appendChild(skills);
         container.appendChild(description);
         // container.appendChild(list);
         container.appendChild(actionNav);
+        container.appendChild(lessonsList.render());
+        container.appendChild(resourceList.render());
 
         this.element = container;
     }

@@ -1,5 +1,5 @@
 import { Signal } from "@utils/signal";
-import { LessonAPI } from "@api/lesson-api";
+import { LessonsAPI } from "@api/lessons-api";
 import { Outcome } from "firebase/ai";
 import { builtInTemplates } from '@models/lesson-template';
 
@@ -44,7 +44,7 @@ export class CreateLessonPlanButton {
 
             const outcomes = [this.outcome];
 
-            await LessonAPI.post(idKey, lessonData, outcomes);
+            await LessonsAPI.post(idKey, lessonData, outcomes);
 
             window.location.href = `/lesson.html?id=${idKey}`;
 

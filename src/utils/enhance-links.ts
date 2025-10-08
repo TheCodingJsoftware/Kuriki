@@ -1,8 +1,7 @@
 import { getUrlMetadata } from "@utils/get-url-metadata";
 
-export async function enhanceLinks() {
+export async function enhanceLinks(maxLength = 25) {
     const anchors = document.querySelectorAll<HTMLAnchorElement>("a[data-url]");
-    const maxLength = 25;
 
     await Promise.all(Array.from(anchors).map(async (anchor) => {
         const url = anchor.dataset.url!;

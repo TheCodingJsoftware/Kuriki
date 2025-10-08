@@ -6,6 +6,8 @@ import { MathematicsOutcome } from "@models/mathematics-outcome";
 import { CopyOutcomeButton } from "@components/common/buttons/copy-outcome-button";
 import { AddResourceButton } from "@components/common/buttons/add-resource-button";
 import { CreateLessonPlanButton } from "@components/common/buttons/create-lesson-button";
+import { ResourceListContainer } from "@components/common/resources/resources";
+import { LessonListContainer } from "@components/common/lessons/lessons";
 
 export class MathematicsOutcomeCard {
     private outcome: MathematicsOutcome;
@@ -57,6 +59,9 @@ export class MathematicsOutcomeCard {
 
         const copyOutcome = new CopyOutcomeButton(this.outcome.toString());
         const addResource = new AddResourceButton(this.outcome.outcomeId)
+        addResource.onResourceAdded.connect(() => {
+            resourceList.refresh();
+        })
         const createNewLesson = new CreateLessonPlanButton(this.outcome.outcomeId);
 
         const actionNav = document.createElement("nav");
@@ -65,12 +70,17 @@ export class MathematicsOutcomeCard {
         actionNav.appendChild(createNewLesson.render());
         actionNav.appendChild(copyOutcome.render());
 
+        const resourceList = new ResourceListContainer(this.outcome);
+        const lessonsList = new LessonListContainer(this.outcome);
+
         // Append children
         container.appendChild(title);
         container.appendChild(skills);
         container.appendChild(description);
         container.appendChild(list);
         container.appendChild(actionNav);
+        container.appendChild(lessonsList.render());
+        container.appendChild(resourceList.render());
 
         this.element = container;
     }

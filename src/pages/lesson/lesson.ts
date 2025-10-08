@@ -12,7 +12,7 @@ import "flatpickr/dist/themes/dark.css";
 import flatpickr from "flatpickr";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import { builtInTemplates, LessonTemplate } from "@models/lesson-template";
-import { LessonAPI } from "@api/lesson-api";
+import { LessonsAPI } from "@api/lessons-api";
 import { enhanceLinks } from "@utils/enhance-links";
 import { SelectOutcomesDialog } from "@components/common/dialogs/select-outcomes-dialog";
 import { Outcome } from "@models/outcome";
@@ -1172,7 +1172,7 @@ async function saveLesson() {
     const outcomes = data.curricularOutcomes;
 
     try {
-        await LessonAPI.post(lessonId, data, outcomes);
+        await LessonsAPI.post(lessonId, data, outcomes);
         // console.log("Lesson saved:", lessonId);
         // alert("Lesson saved successfully!");
     } catch (err) {
@@ -1230,7 +1230,7 @@ async function loadLessonById() {
 
     const id = parseInt(idParam, 10);
     try {
-        const response = await LessonAPI.getById(id);
+        const response = await LessonsAPI.getById(id);
         const lesson = response.data;
 
         if (!lesson || !lesson.data) return;

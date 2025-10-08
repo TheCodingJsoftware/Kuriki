@@ -11,6 +11,10 @@ export const builtInTemplates: LessonTemplate[] = [
         name: "Default Lesson Plan",
         description: "Cross-curricular, resources, learning plan, reflections.",
         markdown: `
+## Essential Questions
+
+*
+
 ## Cross-Curricular/Real World Connections
 
 *

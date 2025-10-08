@@ -1,1 +1,6 @@
-export type AssessmentRow = { description: string; for: boolean; as: boolean; of: boolean };
+export type AssessmentRow = {
+    description: string;
+    for: boolean;
+    as: boolean;
+    of: boolean
+};

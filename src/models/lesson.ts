@@ -1,11 +1,24 @@
 import type { AssessmentRow } from "@models/assessment-row";
 
-export class Lesson {
+export interface ILesson {
     topic: string;
     name: string;
     author: string;
     gradeLevel: string;
-    date: string;            // ISO date string ("2025-09-27")
+    date: string;
+    timeLength: string;      // e.g., "~ 45 minutes"
+    curricularOutcomes: string[];
+    resourceLinks: string[];
+    assessmentEvidence: AssessmentRow[];
+    notes: string;           // Markdown from ToastEditorField
+}
+
+export class Lesson implements ILesson {
+    topic: string;
+    name: string;
+    author: string;
+    gradeLevel: string;
+    date: string;
     timeLength: string;      // e.g., "~ 45 minutes"
     curricularOutcomes: string[];
     resourceLinks: string[];
@@ -31,12 +44,12 @@ export class Lesson {
     }
 
     /** Convert to plain object */
-    toObject(): Lesson {
+    toObject(): ILesson {
         return { ...this };
     }
 
     /** Create Lesson instance from JSON string */
-    static fromJSON(json: string): Lesson {
+    static fromJSON(json: string): ILesson {
         const obj = JSON.parse(json);
         return new Lesson(obj);
     }

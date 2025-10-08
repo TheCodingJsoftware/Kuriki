@@ -1,23 +1,31 @@
 const RESOURCE_API_ENDPOINT = "https://hbnitv.net/api/kuriki/resources";
 
-export class ResourceAPI {
-    /**
-     * Fetch all resources or filter by specific outcomeId
-     */
-    static async get(outcomeId?: string) {
-        const url = outcomeId
-            ? `${RESOURCE_API_ENDPOINT}?outcomeId=${encodeURIComponent(outcomeId)}`
-            : RESOURCE_API_ENDPOINT;
+type Resource = {
+    status: string;
+    data: string[];
+};
 
-        const res = await fetch(url, { method: "GET" });
-        if (!res.ok) throw new Error(`ResourceAPI GET failed: ${res.statusText}`);
+export class ResourceAPI {
+    static async getAll() {
+        const res = await fetch(RESOURCE_API_ENDPOINT);
+        if (!res.ok) throw new Error(`ResourceAPI GET all failed: ${res.statusText}`);
         return res.json();
     }
 
-    /**
-     * Add a new resource link for a specific outcome.
-     * (URL + outcomeId combination must be unique)
-     */
+    static async getByOutcome(outcomeId: string): Promise<Resource> {
+        const url = `${RESOURCE_API_ENDPOINT}?outcomeId=${encodeURIComponent(outcomeId)}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`ResourceAPI GET by outcomeId failed: ${res.statusText}`);
+        return res.json();
+    }
+
+    static async getByUrl(urlString: string): Promise<Resource> {
+        const url = `${RESOURCE_API_ENDPOINT}?url=${encodeURIComponent(urlString)}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`ResourceAPI GET by URL failed: ${res.statusText}`);
+        return res.json();
+    }
+
     static async post(url: string, outcomeId: string) {
         const payload = { url, outcomeId };
 
@@ -31,9 +39,6 @@ export class ResourceAPI {
         return res.json();
     }
 
-    /**
-     * Delete a resource by URL + outcomeId combination
-     */
     static async delete(url: string, outcomeId: string) {
         const params = new URLSearchParams({ url, outcomeId });
         const res = await fetch(`${RESOURCE_API_ENDPOINT}?${params.toString()}`, {

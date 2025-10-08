@@ -5,6 +5,8 @@ import { ScienceOutcome } from "@models/science-outcome";
 import { CopyOutcomeButton } from "@components/common/buttons/copy-outcome-button";
 import { AddResourceButton } from "@components/common/buttons/add-resource-button";
 import { CreateLessonPlanButton } from "@components/common/buttons/create-lesson-button";
+import { ResourceListContainer } from "@components/common/resources/resources";
+import { LessonListContainer } from "@components/common/lessons/lessons";
 
 export class ScienceOutcomeCard {
     private outcome: ScienceOutcome;
@@ -50,6 +52,9 @@ export class ScienceOutcomeCard {
         const addResource = new AddResourceButton(this.outcome.outcomeId)
         const createNewLesson = new CreateLessonPlanButton(this.outcome.outcomeId);
 
+        const resourceList = new ResourceListContainer(this.outcome);
+        const lessonsList = new LessonListContainer(this.outcome);
+
         const actionNav = document.createElement("nav");
         actionNav.classList.add("row", "wrap");
         actionNav.appendChild(addResource.render());
@@ -62,6 +67,8 @@ export class ScienceOutcomeCard {
         container.appendChild(description);
         container.appendChild(list);
         container.appendChild(actionNav);
+        container.appendChild(lessonsList.render());
+        container.appendChild(resourceList.render());
 
         this.element = container;
     }
