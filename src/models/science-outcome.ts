@@ -30,6 +30,6 @@ export class ScienceOutcome extends Outcome<{
     get generalLearningOutcomes() { return this._data.generalLearningOutcomes; }
 
     public toString(): string {
-        return `${this.outcomeId} ${this.specificLearningOutcome} [${this.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`
+        return `${this.outcomeId} ${this.specificLearningOutcome} [GLOs: ${this.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`
     }
 }
