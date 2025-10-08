@@ -26,6 +26,7 @@ import { ScienceOutcome } from "@models/science-outcome";
 import { ScienceOutcomeElement } from "@components/science/outcome-element";
 import { OutcomeFinder } from "@utils/outcome-finder";
 import { ShareLessonDialog } from "@components/common/dialogs/share-lesson-dialog";
+import { ContentCopiedSnackbar } from "@components/common/snackbar/content-copied";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
 let autoSaveTimer: number | undefined;
@@ -611,9 +612,9 @@ class ToastEditorField implements LessonField<string> {
         this.editor = new Editor({
             el: editorContainer,
             previewStyle: "vertical",
-            height: "800px",
+            height: "1000px",
             initialEditType: "wysiwyg",
-            usageStatistics: false,
+            usageStatistics: true,
             // theme: editorTheme,
         });
 
@@ -1028,22 +1029,19 @@ ${this.assessment.getValue().map(r =>
 ${this.notes.getValue() || "_Nothing yet_"}
         `;
     }
-}
 
-class Preview {
+} class Preview {
     private element: HTMLDivElement;
     private viewer: Viewer;
+    private lastMarkdown = "";
 
     constructor(containerId: string = "preview-pane") {
         const container = document.getElementById(containerId) as HTMLDivElement;
-        if (!container) {
-            throw new Error(`#${containerId} not found`);
-        }
+        if (!container) throw new Error(`#${containerId} not found`);
 
         this.element = container;
 
         const editorTheme = ui("mode") === "dark" ? "dark" : "light";
-        // mount Toast UI Viewer into the container
         this.viewer = new Viewer({
             el: this.element,
             initialValue: "Nothing to preview yet...",
@@ -1053,11 +1051,18 @@ class Preview {
     }
 
     update(markdown: string) {
-        this.viewer.setMarkdown(markdown || "Nothing to preview yet...");
+        this.lastMarkdown = markdown || "Nothing to preview yet...";
+        this.viewer.setMarkdown(this.lastMarkdown);
+
         if (lessonPlanLoaded) {
             if (autoSaveTimer) clearTimeout(autoSaveTimer);
             autoSaveTimer = window.setTimeout(() => handleSaveClick(), 5000);
         }
+    }
+
+    /** Return the latest Markdown text */
+    getMarkdown(): string {
+        return this.lastMarkdown;
     }
 }
 
@@ -1280,6 +1285,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const shareLessonButton = document.getElementById("share-lesson") as HTMLButtonElement;
     shareLessonButton.addEventListener("click", () => {
         new ShareLessonDialog();
+    })
+
+    const copyContentButton = document.getElementById("copy-content") as HTMLButtonElement;
+    copyContentButton.addEventListener("click", () => {
+        navigator.clipboard.writeText((window as any).preview.getMarkdown());
+        new ContentCopiedSnackbar();
     })
 
     const saveButton = document.getElementById("save-button") as HTMLButtonElement;
