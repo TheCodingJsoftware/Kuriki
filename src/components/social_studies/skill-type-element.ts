@@ -12,13 +12,13 @@ export class SkillTypeElement {
         el.dataset.skillTypeName = skillType.name;
         el.setAttribute("aria-pressed", "false");
 
-        // const icon = document.createElement("i");
-        // icon.innerHTML = skillType.getIcon();
+        const icon = document.createElement("i");
+        icon.innerHTML = skillType.getIcon();
 
         const span = document.createElement("span");
         span.innerText = `[${skillType.id}] ${skillType.name}`;
 
-        // el.appendChild(icon);
+        el.appendChild(icon);
         el.appendChild(span);
         this.element = el;
     }

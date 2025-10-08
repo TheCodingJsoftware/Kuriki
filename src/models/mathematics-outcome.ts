@@ -4,7 +4,7 @@ import { Skill } from '@models/skill';
 import { Outcome, RawOutcome } from '@models/outcome';
 
 export interface RawMathematicsOutcome extends RawOutcome {
-    general_learning_outcomes: string[];
+    general_learning_outcome: string[];
     strand: Record<string, string>;
     skills: Record<string, string>;
 }
@@ -29,12 +29,9 @@ export class MathematicsOutcome extends Outcome<{
             skills.add(new Skill(id, name));
         }
 
-        this._data = {
-            ...this._data,
-            generalLearningOutcomes: data.general_learning_outcomes ?? [],
-            strand,
-            skills
-        };
+        this._data.generalLearningOutcomes = data.general_learning_outcome ?? [];
+        this._data.strand = strand;
+        this._data.skills = skills;
     }
 
     get strand() { return this._data.strand; }

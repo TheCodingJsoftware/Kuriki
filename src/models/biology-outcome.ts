@@ -21,7 +21,7 @@ export class BiologyOutcome extends Outcome<{
 
         this._data = {
             ...this._data,
-            unit: new Unit(unitId, unitName),
+            unit: new Unit(`${this.grade}.${unitId}`, unitName),
             generalLearningOutcomes: Object.entries(data.general_learning_outcomes).map(([id, description]) => new GeneralLearningOutcome(id, description))
         }
     }

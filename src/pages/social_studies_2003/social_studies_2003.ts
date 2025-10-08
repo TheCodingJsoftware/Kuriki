@@ -7,7 +7,7 @@ import { SocialStudiesRepo } from "@api/social-studies-repo";
 import { updateMetaColors } from "@utils/theme";
 import { SocialStudiesOutcome } from "@models/social-studies-outcome";
 import { SocialStudiesSkill } from "@models/social-studies-skill";
-import { Cluster } from "@models/cluster";
+import { Cluster } from "@models/science-cluster";
 import { SkillType } from "@models/skill-type";
 import { OutcomeType } from "@models/outcome-type";
 import { GeneralLearningOutcome } from "@models/general-learning-outcome";

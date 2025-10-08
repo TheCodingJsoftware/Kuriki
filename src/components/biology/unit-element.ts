@@ -12,13 +12,13 @@ export class UnitElement {
         el.dataset.unitName = unit.name;
         el.setAttribute("aria-pressed", "false");
 
-        // const icon = document.createElement("i");
-        // icon.innerHTML = unit.getIcon();
+        const icon = document.createElement("i");
+        icon.innerHTML = unit.getIcon();
 
         const span = document.createElement("span");
         span.innerText = `${unit.name}`;
 
-        // el.appendChild(icon);
+        el.appendChild(icon);
         el.appendChild(span);
         this.element = el;
     }

@@ -12,13 +12,13 @@ export class OutcomeTypeElement {
         el.dataset.outcomeTypeName = outcomeType.name;
         el.setAttribute("aria-pressed", "false");
 
-        // const icon = document.createElement("i");
-        // icon.innerHTML = outcomeTypeType.getIcon();
+        const icon = document.createElement("i");
+        icon.innerHTML = outcomeType.getIcon();
 
         const span = document.createElement("span");
         span.innerText = `[${outcomeType.id}] ${outcomeType.name}`;
 
-        // el.appendChild(icon);
+        el.appendChild(icon);
         el.appendChild(span);
         this.element = el;
     }

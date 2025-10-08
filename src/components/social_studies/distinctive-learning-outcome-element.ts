@@ -12,13 +12,13 @@ export class DistinctiveLearningOutcomeElement {
         el.dataset.distinctiveLearningOutcomeName = distinctiveLearningOutcome.name;
         el.setAttribute("aria-pressed", "false");
 
-        // const icon = document.createElement("i");
-        // icon.innerHTML = distinctiveLearningOutcomeType.getIcon();
+        const icon = document.createElement("i");
+        icon.innerHTML = distinctiveLearningOutcome.getIcon();
 
         const span = document.createElement("span");
         span.innerText = `[${distinctiveLearningOutcome.id}] ${distinctiveLearningOutcome.name}`;
 
-        // el.appendChild(icon);
+        el.appendChild(icon);
         el.appendChild(span);
         this.element = el;
     }

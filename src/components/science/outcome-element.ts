@@ -31,7 +31,7 @@ export class ScienceOutcomeElement {
         el.appendChild(icon);
 
         const span = document.createElement("span");
-        span.innerHTML = `<b>${outcome.outcomeId}</b>${getScienceKeywords(this.outcome)}`;
+        span.innerHTML = `<strong>${outcome.outcomeId}</strong>${getScienceKeywords(this.outcome)}`;
 
         const tooltip = document.createElement("div");
         tooltip.classList.add("tooltip", "top", "max");
@@ -44,7 +44,7 @@ export class ScienceOutcomeElement {
 
         const tooltipDescription = document.createElement("p");
         tooltipDescription.innerHTML = highlightKeywords(
-            `${outcome.specificLearningOutcome} [${outcome.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`,
+            `${outcome.specificLearningOutcome} [GLOs: ${outcome.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`,
             mathematicsQuickSearchKeyWords
         );
 

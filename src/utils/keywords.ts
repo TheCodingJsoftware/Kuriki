@@ -8,7 +8,7 @@ export function highlightKeywords(text: string, keywords: string[]): string {
     const escaped = keywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
     if (!escaped.length) return text;
     const regex = new RegExp(`\\b(${escaped.join("|")})\\b`, "gi");
-    return text.replace(regex, m => `<b>${m}</b>`);
+    return text.replace(regex, m => `<strong>${m}</strong>`);
 }
 
 export function getMathematicsKeywords(outcome: MathematicsOutcome) {

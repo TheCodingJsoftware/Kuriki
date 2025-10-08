@@ -52,7 +52,7 @@
     animation: flash-border 1s ease-in-out;
 }
 
-.selected {
+button.selected {
     outline: .125rem solid var(--primary);
     outline-offset: 0.25rem;
 }

@@ -10,7 +10,7 @@ export class CopyOutcomeButton {
         this.textToCopy = textToCopy;
 
         this.button = document.createElement("button");
-        this.button.classList.add("border");
+        this.button.classList.add("extend", "circle", "border");
         this.button.title = "Copy Outcome";
 
         const icon = document.createElement("i");
@@ -19,8 +19,13 @@ export class CopyOutcomeButton {
         const label = document.createElement("span");
         label.textContent = "Copy Outcome";
 
+        // const tooltip = document.createElement("div");
+        // tooltip.classList.add("tooltip", "left", "max", "m", "l");
+        // tooltip.innerHTML = textToCopy;
+
         this.button.appendChild(icon);
         this.button.appendChild(label);
+        // this.button.appendChild(tooltip)
 
         this.button.addEventListener("click", () => {
             navigator.clipboard.writeText(this.textToCopy);

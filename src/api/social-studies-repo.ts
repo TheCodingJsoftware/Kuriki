@@ -2,7 +2,7 @@ import { KurikiSocialStudiesAPI } from "@api/social-studies-api";
 import { cachedFetch } from "@utils/cache-fetch";
 import { SocialStudiesOutcome } from "@models/social-studies-outcome";
 import { SocialStudiesSkill } from "@models/social-studies-skill";
-import { Cluster } from "@models/cluster";
+import { Cluster } from "@models/science-cluster";
 import { OutcomeType } from "@models/outcome-type";
 import { SkillType } from "@models/skill-type";
 import { GlossaryTerm } from "@models/glossary-term";

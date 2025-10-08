@@ -1,4 +1,4 @@
-import { Cluster } from "@models/cluster";
+import { Cluster } from "@models/social-studies-cluster";
 
 export class ClusterElement {
     element: HTMLElement;
@@ -12,13 +12,13 @@ export class ClusterElement {
         el.dataset.clusterName = cluster.name;
         el.setAttribute("aria-pressed", "false");
 
-        // const icon = document.createElement("i");
-        // icon.innerHTML = cluster.getIcon();
+        const icon = document.createElement("i");
+        icon.innerHTML = cluster.getIcon();
 
         const span = document.createElement("span");
         span.innerText = `${cluster.name}`;
 
-        // el.appendChild(icon);
+        el.appendChild(icon);
         el.appendChild(span);
         this.element = el;
     }

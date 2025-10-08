@@ -1,4 +1,4 @@
-import { Cluster } from "@models/cluster";
+import { Cluster } from "@models/science-cluster";
 import { GeneralLearningOutcome } from "@models/general-learning-outcome";
 import { Outcome, RawOutcome } from '@models/outcome';
 
@@ -21,7 +21,7 @@ export class ScienceOutcome extends Outcome<{
 
         this._data = {
             ...this._data,
-            cluster: new Cluster(clusterId, clusterName),
+            cluster: new Cluster(`${this.grade}.${clusterId}`, clusterName),
             generalLearningOutcomes: Object.entries(data.general_learning_outcomes).map(([id, description]) => new GeneralLearningOutcome(id, description))
         }
     }

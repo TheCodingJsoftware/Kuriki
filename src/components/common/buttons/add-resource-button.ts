@@ -13,7 +13,7 @@ export class AddResourceButton {
         this.button = document.createElement("button");
         this.button.id = `${this.outcomeId}-add-resource`;
         this.button.title = "Add Resource";
-        this.button.classList.add("add-resource-button");
+        this.button.classList.add("add-resource-button", "border");
 
         const icon = document.createElement("i");
         icon.textContent = "add";

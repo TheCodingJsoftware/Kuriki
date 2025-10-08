@@ -1,4 +1,4 @@
-import { Cluster } from '@models/cluster';
+import { Cluster } from '@models/social-studies-cluster';
 import { OutcomeType } from '@models/outcome-type';
 import { GeneralLearningOutcome } from '@models/general-learning-outcome';
 import { DistinctiveLearningOutcome } from '@models/distinctive-learning-outcome';
@@ -30,7 +30,7 @@ export class SocialStudiesOutcome extends Outcome<{
 
         this._data = {
             ...this._data,
-            cluster: new Cluster(clusterId, clusterName),
+            cluster: new Cluster(`${this.grade}.${clusterId}`, clusterName),
             outcomeType: new OutcomeType(outcomeTypeId, outcomeTypeName),
             generalLearningOutcome: new GeneralLearningOutcome(gloId, gloName),
             distinctiveLearningOutcome: new DistinctiveLearningOutcome(dloId, dloName)

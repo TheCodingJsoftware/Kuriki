@@ -15,7 +15,7 @@ export class CreateLessonPlanButton {
         this.button = document.createElement("button");
         this.button.id = `${outcome}-create-lesson`;
         this.button.title = "Create Lesson";
-        this.button.classList.add("create-lesson-button");
+        this.button.classList.add("create-lesson-button", "border");
 
         const icon = document.createElement("i");
         icon.textContent = "add";

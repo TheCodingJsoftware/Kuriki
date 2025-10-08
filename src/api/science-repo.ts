@@ -1,7 +1,7 @@
 import { KurikiScienceAPI } from "@api/science-api";
 import { cachedFetch } from "@utils/cache-fetch";
 import { ScienceOutcome } from "@models/science-outcome";
-import { Cluster } from "@models/cluster";
+import { Cluster } from "@models/science-cluster";
 import { GeneralLearningOutcome } from "@models/general-learning-outcome";
 
 export const ScienceRepo = {

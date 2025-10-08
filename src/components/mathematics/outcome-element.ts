@@ -31,7 +31,7 @@ export class MathematicsOutcomeElement {
         el.appendChild(icon);
 
         const span = document.createElement("span");
-        span.innerHTML = `<b>${outcome.outcomeId}</b>${getMathematicsKeywords(this.outcome)}`;
+        span.innerHTML = `<strong>${outcome.outcomeId}</strong>${getMathematicsKeywords(this.outcome)}`;
 
         const tooltip = document.createElement("div");
         tooltip.classList.add("tooltip", "top", "max");

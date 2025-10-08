@@ -12,13 +12,13 @@ export class GeneralLearningOutcomeElement {
         el.dataset.generalLearningOutcomeName = generalLearningOutcome.name;
         el.setAttribute("aria-pressed", "false");
 
-        // const icon = document.createElement("i");
-        // icon.innerHTML = generalLearningOutcomeType.getIcon();
+        const icon = document.createElement("i");
+        icon.innerHTML = generalLearningOutcome.getIcon();
 
         const span = document.createElement("span");
         span.innerText = `[${generalLearningOutcome.id}] ${generalLearningOutcome.name}`;
 
-        // el.appendChild(icon);
+        el.appendChild(icon);
         el.appendChild(span);
         this.element = el;
     }

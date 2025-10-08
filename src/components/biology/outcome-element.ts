@@ -25,7 +25,7 @@ export class BiologyOutcomeElement {
         el.appendChild(icon);
 
         const span = document.createElement("span");
-        span.innerHTML = `<b>${outcome.outcomeId}</b>${getBiologyKeywords(this.outcome)}`;
+        span.innerHTML = `<strong>${outcome.outcomeId}</strong>${getBiologyKeywords(this.outcome)}`;
 
         const tooltip = document.createElement("div");
         tooltip.classList.add("tooltip", "top", "max");
@@ -38,7 +38,7 @@ export class BiologyOutcomeElement {
 
         const tooltipDescription = document.createElement("p");
         tooltipDescription.innerHTML = highlightKeywords(
-            `${outcome.specificLearningOutcome} [${outcome.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`,
+            `${outcome.specificLearningOutcome} [GLOs: ${outcome.generalLearningOutcomes.map(glo => glo.id).join(", ")}]`,
             mathematicsQuickSearchKeyWords
         );
 

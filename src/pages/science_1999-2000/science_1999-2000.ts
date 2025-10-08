@@ -10,7 +10,7 @@ import { Grade } from "@state/grades";
 import { ScienceOutcomeElement } from "@components/science/outcome-element";
 import { ScienceOutcomeCard } from "@components/science/card-element";
 import { ScienceOutcome } from "@models/science-outcome";
-import { Cluster } from "@models/cluster";
+import { Cluster } from "@models/science-cluster";
 
 const GRADES: Record<string, Grade> = {
     "Kindergarten": "K",

@@ -29,7 +29,7 @@ export class SocialStudiesOutcomeElement {
         el.appendChild(icon);
 
         const span = document.createElement("span");
-        span.innerHTML = `<b>${outcome.outcomeId}</b>${getSocialStudiesKeywords(this.outcome)}`;
+        span.innerHTML = `<strong>${outcome.outcomeId}</strong>${getSocialStudiesKeywords(this.outcome)}`;
 
         const tooltip = document.createElement("div");
         tooltip.classList.add("tooltip", "top", "max");
