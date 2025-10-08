@@ -66,7 +66,7 @@ export class SearchOutcomeDialog extends DialogComponent {
 
         // Configure Fuse
         this.fuse = new Fuse(allOutcomes, {
-            keys: ["specificLearningOutcome", "specificLearningOutcomes"],
+            keys: ["outcomeId", "specificLearningOutcome", "specificLearningOutcomes", "generalLearningOutcome", "generalLearningOutcomes"],
             threshold: 0.4,        // fuzziness (lower = stricter, higher = more matches)
             ignoreLocation: true,  // don't force match near beginning of string
             minMatchCharLength: 2, // only match queries of length >= 2
