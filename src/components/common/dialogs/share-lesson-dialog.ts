@@ -1,5 +1,5 @@
 import { DialogComponent } from "@components/common/dialogs/dialog-component";
-import { LinkCopiedSnackbar } from "../snackbar/link-copied";
+import { LinkCopiedSnackbar } from "@components/common/snackbar/link-copied";
 
 export class ShareLessonDialog extends DialogComponent {
     constructor() {
@@ -22,34 +22,52 @@ export class ShareLessonDialog extends DialogComponent {
 
     private updateLink() {
         const shareAsPreview = this.element.querySelector("#share-as-preview") as HTMLInputElement;
-        const linkElement = this.element.querySelector("#link") as HTMLButtonElement;
+        const linkElement = this.element.querySelector("#link") as HTMLSpanElement;
 
         let link = window.location.href;
 
-        if (shareAsPreview.checked) {
-            link += "#preview-only"
+        // If checkbox is checked but link doesn't already have #preview-only, add it
+        if (shareAsPreview.checked && !link.includes("#preview-only")) {
+            link += "#preview-only";
         }
+        // If unchecked but link includes #preview-only, remove it
+        else if (!shareAsPreview.checked && link.includes("#preview-only")) {
+            link = link.replace("#preview-only", "");
+        }
+
         linkElement.innerText = link;
     }
 
     init() {
         const copyButton = this.element.querySelector("#copy-button") as HTMLButtonElement;
-        copyButton.addEventListener("click", () => {
-            const link = this.element.querySelector("#link") as HTMLButtonElement;
-            navigator.clipboard.writeText(link.textContent);
-            new LinkCopiedSnackbar();
-        })
-
         const shareAsPreview = this.element.querySelector("#share-as-preview") as HTMLInputElement;
+
+        // Determine if current URL already has #preview-only
+        const isPreviewLink = window.location.href.includes("#preview-only");
+
+        // If yes, lock the checkbox (checked and disabled)
+        if (isPreviewLink) {
+            shareAsPreview.checked = true;
+            shareAsPreview.disabled = true;
+        } else {
+            // Otherwise, load last saved preference
+            shareAsPreview.checked = localStorage.getItem("shareAsPreview") === "true";
+            shareAsPreview.disabled = false;
+        }
+
+        copyButton.addEventListener("click", () => {
+            const link = this.element.querySelector("#link") as HTMLSpanElement;
+            navigator.clipboard.writeText(link.textContent || "");
+            new LinkCopiedSnackbar();
+        });
+
         shareAsPreview.addEventListener("input", () => {
             this.updateLink();
             localStorage.setItem("shareAsPreview", shareAsPreview.checked ? "true" : "false");
-        })
-
-        shareAsPreview.checked = localStorage.getItem("shareAsPreview") === "true";
+        });
 
         window.addEventListener("resize", this.handleResize);
-        this.handleResize()
+        this.handleResize();
         this.updateLink();
     }
 }
