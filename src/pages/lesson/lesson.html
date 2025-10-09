@@ -49,8 +49,8 @@
 </head>
 
 <body>
-    <nav class="top row blur left-align hide-on-print">
-        <a href="/">
+    <nav class="top row left-align hide-on-print">
+        <a class="s" href="/">
             <i>home</i>
             <div>Home</div>
         </a>
@@ -60,6 +60,13 @@
             <i>palette</i>
             <span>Appearance</span>
         </a>
+    </nav>
+
+    <nav class="left hide-on-print m l">
+        <a class="m l" href="/">
+            <i>home</i>
+            <div>Home</div>
+        </a>
         <a class="m l" onclick="window.print()">
             <i>print</i>
             <div>Print</div>
@@ -68,15 +75,39 @@
             <i>content_copy</i>
             <div>Copy Content</div>
             <div class="badge border"><i class="tiny">robot_2</i></div>
-            <div class="tooltip max bottom">
+            <div class="tooltip max right">
                 Copies this lesson plan in Markdown format so you can paste it into ChatGPT, or other AI tools to analyze, adapt, or extend your lesson.
             </div>
         </a>
-        <a id="share-lesson">
+        <a class="m l" id="share-lesson">
             <i>share</i>
             <div>Share</div>
         </a>
-        <a id="save-button">
+        <a class="m l" id="save-button">
+            <progress class="circle small hidden"></progress>
+            <i>save</i>
+            <div>Save</div>
+        </a>
+    </nav>
+
+    <nav class="bottom row hide-on-print s">
+        <a class="s" onclick="window.print()">
+            <i>print</i>
+            <div>Print</div>
+        </a>
+        <a class="s" id="copy-content">
+            <i>content_copy</i>
+            <div>Copy Content</div>
+            <div class="badge border"><i class="tiny">robot_2</i></div>
+            <div class="tooltip max top">
+                Copies this lesson plan in Markdown format so you can paste it into ChatGPT, or other AI tools to analyze, adapt, or extend your lesson.
+            </div>
+        </a>
+        <a class="s" id="share-lesson">
+            <i>share</i>
+            <div>Share</div>
+        </a>
+        <a class="s" id="save-button">
             <progress class="circle small hidden"></progress>
             <i>save</i>
             <div>Save</div>
@@ -87,24 +118,27 @@
         <div class="shape loading-indicator max rotate"></div>
     </div>
 
+    <nav id="editor-preview-toggle" class="fixed center group connected center-align wrap primary hide-on-print" style="z-index: 9999 !important;">
+        <button id="editor-preview" class="left-round active">
+            <i>splitscreen_left</i>
+            <span class="l">Editor & Preview</span>
+        </button>
+        <button id="editor-only" class="no-round">
+            <i>edit</i>
+            <span class="l">Editor only</span>
+        </button>
+        <button id="preview-only" class="right-round">
+            <i>visibility</i>
+            <span class="l">Preview only</span>
+        </button>
+    </nav>
+
     <main class="responsive hidden">
-        <nav id="editor-preview-toggle" class="group connected center-align wrap hide-on-print">
-            <button id="editor-preview" class="left-round active">
-                <i>splitscreen_left</i>
-                <span class="m l">Editor & Preview</span>
-            </button>
-            <button id="editor-only" class="no-round">
-                <i>edit</i>
-                <span class="m l">Editor only</span>
-            </button>
-            <button id="preview-only" class="right-round">
-                <i>visibility</i>
-                <span class="m l">Preview only</span>
-            </button>
-        </nav>
         <div class="grid" id="editor-preview-container">
             <div class="s12 m6 l6" id="editor-container">
-                <article class="round hide-on-print" id="editor-pane"></article>
+                <article class="round hide-on-print" style="height: 100% !important; overflow-y: auto; overflow-x: hidden;">
+                    <div id="editor-pane"></div>
+                </article>
             </div>
             <div class="s12 m6 l6" id="preview-container">
                 <div id="preview-pane"></div>

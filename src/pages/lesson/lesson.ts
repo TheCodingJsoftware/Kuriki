@@ -633,7 +633,7 @@ class ToastEditorField implements LessonField<string> {
         this.editor = new Editor({
             el: editorContainer,
             previewStyle: "vertical",
-            height: "1000px",
+            height: "800px",
             initialEditType: "wysiwyg",
             usageStatistics: true,
             // theme: editorTheme,
@@ -1206,47 +1206,50 @@ async function saveLesson() {
         alert("Failed to save lesson. Check console for details.");
     }
 }
-
-// --- Button UI state controller
 function updateSaveButton(state: "idle" | "saving" | "success" | "error" = "idle") {
-    const saveButton = document.getElementById("save-button") as HTMLAnchorElement;
-    const saveIcon = saveButton.querySelector("i")!;
-    const saveText = saveButton.querySelector("div")!;
-    const saveSpinner = saveButton.querySelector("progress")!;
+    // Find all matching buttons (supports duplicates or class-based usage)
+    const saveButtons = document.querySelectorAll<HTMLButtonElement>("#save-button, .save-button");
 
-    switch (state) {
-        case "saving":
-            saveSpinner.classList.remove("hidden");  // show spinner
-            saveIcon.classList.add("hidden");        // hide icon
-            saveText.textContent = "Saving...";
-            saveButton.classList.add("disabled");    // prevent multiple clicks
-            break;
+    saveButtons.forEach((saveButton) => {
+        const saveIcon = saveButton.querySelector("i");
+        const saveText = saveButton.querySelector("div");
+        const saveSpinner = saveButton.querySelector("progress");
 
-        case "success":
-            saveSpinner.classList.add("hidden");
-            saveIcon.classList.remove("hidden");
-            saveText.textContent = "Saved!";
-            saveButton.classList.remove("disabled");
-            // revert text after short delay
-            setTimeout(() => updateSaveButton("idle"), 1500);
-            break;
+        if (!saveIcon || !saveText || !saveSpinner) return; // Skip malformed buttons
 
-        case "error":
-            saveSpinner.classList.add("hidden");
-            saveIcon.classList.remove("hidden");
-            saveText.textContent = "Failed!";
-            saveButton.classList.remove("disabled");
-            setTimeout(() => updateSaveButton("idle"), 2000);
-            break;
+        switch (state) {
+            case "saving":
+                saveSpinner.classList.remove("hidden");  // show spinner
+                saveIcon.classList.add("hidden");        // hide icon
+                saveText.textContent = "Saving...";
+                saveButton.classList.add("disabled");
+                break;
 
-        case "idle":
-        default:
-            saveSpinner.classList.add("hidden");
-            saveIcon.classList.remove("hidden");
-            saveText.textContent = "Save";
-            saveButton.classList.remove("disabled");
-            break;
-    }
+            case "success":
+                saveSpinner.classList.add("hidden");
+                saveIcon.classList.remove("hidden");
+                saveText.textContent = "Saved!";
+                saveButton.classList.remove("disabled");
+                setTimeout(() => updateSaveButton("idle"), 1500);
+                break;
+
+            case "error":
+                saveSpinner.classList.add("hidden");
+                saveIcon.classList.remove("hidden");
+                saveText.textContent = "Failed!";
+                saveButton.classList.remove("disabled");
+                setTimeout(() => updateSaveButton("idle"), 2000);
+                break;
+
+            case "idle":
+            default:
+                saveSpinner.classList.add("hidden");
+                saveIcon.classList.remove("hidden");
+                saveText.textContent = "Save";
+                saveButton.classList.remove("disabled");
+                break;
+        }
+    });
 }
 
 async function loadLessonById() {
@@ -1298,24 +1301,35 @@ async function handleSaveClick() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const appearanceButton = document.getElementById("appearance-button") as HTMLButtonElement;
-    appearanceButton.addEventListener("click", () => {
-        new AppearanceDialog();
+    // Utility to attach an event to all matching elements
+    function bindAll(selector: string, handler: (el: HTMLElement) => void) {
+        document.querySelectorAll<HTMLElement>(selector).forEach(handler);
+    }
+
+    // Appearance dialog buttons
+    bindAll("#appearance-button", (el) => {
+        el.addEventListener("click", () => new AppearanceDialog());
     });
 
-    const shareLessonButton = document.getElementById("share-lesson") as HTMLButtonElement;
-    shareLessonButton.addEventListener("click", () => {
-        new ShareLessonDialog();
-    })
+    // Share lesson buttons
+    bindAll("#share-lesson", (el) => {
+        el.addEventListener("click", () => new ShareLessonDialog());
+    });
 
-    const copyContentButton = document.getElementById("copy-content") as HTMLButtonElement;
-    copyContentButton.addEventListener("click", () => {
-        navigator.clipboard.writeText((window as any).preview.getMarkdown());
-        new ContentCopiedSnackbar();
-    })
+    // Copy content buttons
+    bindAll("#copy-content", (el) => {
+        el.addEventListener("click", () => {
+            navigator.clipboard.writeText((window as any).preview.getMarkdown());
+            new ContentCopiedSnackbar();
+        });
+    });
 
-    const saveButton = document.getElementById("save-button") as HTMLButtonElement;
-    saveButton.addEventListener("click", handleSaveClick);
+    // Save buttons
+    bindAll("#save-button", (el) => {
+        el.addEventListener("click", handleSaveClick);
+    });
+
+    // Initialize editor + load data
     setupEditorPreviewToggle();
     setupEditorPane();
     await loadLessonById();
