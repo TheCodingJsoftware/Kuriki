@@ -68,7 +68,7 @@ export class LessonCard {
         openButton.innerHTML = `<i>open_in_new</i><span>Open</span>`;
 
         openButton.addEventListener("click", () => {
-            window.open(`/ lesson.html ? id = ${this.lessonId} `, "_blank");
+            window.open(`/lesson.html?id=${this.lessonId}`, "_blank");
         });
 
         this.footer.append(openButton);
