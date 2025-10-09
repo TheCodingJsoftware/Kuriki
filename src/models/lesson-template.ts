@@ -8,29 +8,105 @@ export interface LessonTemplate {
 export const builtInTemplates: LessonTemplate[] = [
     {
         id: "default",
-        name: "Default Lesson Plan",
+        name: "Default Lesson Plan (Hybrid)",
         description: "Cross-curricular, resources, learning plan, reflections.",
         markdown: `
 ## Essential Questions
 
 *
 
-## Cross-Curricular/Real World Connections
+## Cross-Curricular / Real World Connections
 
 *
+
+***
 
 | Materials and Resources | Student Specific Planning |
 | ----------------------- | ------------------------- |
 | Resources, handouts, ICT, equipment, etc.<ul><li></li></ul> | Differentiation based on readiness, interests, profile<ul><li></li></ul> |
 
+***
+
 ## Learning Plan
 
-| Phase | Description | Time |
-| ----- | ----------- | ---- |
-| Activate |  | 10 minutes |
-| Acquire |  | 20 minutes |
-| Apply |  | 25 minutes |
-| Closure |  | 5 minutes |
+| Phase | Time | Description | Differentiation / Support |
+| ----- | ---- | ----------- | ------------------------- |
+| Activate | 10 minutes |  |  |
+| Acquire | 20 minutes |  |  |
+| Apply | 25 minutes |  |  |
+| Closure | 5 minutes |  |  |
+
+## Reflections
+
+*
+    `
+    },
+    {
+        id: "default-table",
+        name: "Default Lesson Plan (Tables)",
+        description: "Cross-curricular, resources, learning plan, reflections.",
+        markdown: `
+| Essential Questions | Cross-Curricular / Real World Connections |
+| ------------------- | ----------------------------------------- |
+| <ul><li></li></ul> | <ul><li></li></ul> |
+
+***
+
+| Materials and Resources | Student Specific Planning |
+| ----------------------- | ------------------------- |
+| Resources, handouts, ICT, equipment, etc.<ul><li></li></ul> | Differentiation based on readiness, interests, profile<ul><li></li></ul> |
+
+***
+
+## Learning Plan
+
+| Phase | Time | Description | Differentiation / Support |
+| ----- | ---- | ----------- | ------------------------- |
+| Activate | 10 minutes |  |  |
+| Acquire | 20 minutes |  |  |
+| Apply | 25 minutes |  |  |
+| Closure | 5 minutes |  |  |
+
+## Reflections
+
+*
+    `
+    },
+    {
+        id: "default-list",
+        name: "Default Lesson Plan (Lists)",
+        description: "Cross-curricular, resources, learning plan, reflections.",
+        markdown: `
+## Essential Questions
+
+*
+
+## Cross-Curricular / Real World Connections
+
+*
+
+## Materials and Resources
+
+Resources, handouts, ICT, equipment, etc.
+
+*
+
+## Student Specific Planning
+
+Differentiation based on readiness, interests, profile
+
+*
+
+***
+
+## Learning Plan
+
+| Phase | Time | Description | Differentiation / Support |
+| ----- | ---- | ----------- | ------------------------- |
+| Activate | 10 minutes |  |  |
+| Acquire | 20 minutes |  |  |
+| Apply | 25 minutes |  |  |
+| Closure | 5 minutes |  |  |
 
 ## Reflections
 
