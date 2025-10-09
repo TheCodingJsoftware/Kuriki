@@ -50,36 +50,29 @@
 
 <body>
     <nav class="top row left-align hide-on-print">
-        <a class="s" href="/">
+        <a class="s l" href="/">
             <i>home</i>
             <div>Home</div>
         </a>
         <h6 class="left-align m l">Lesson Plan</h6>
         <div class="max"></div>
-        <a id="appearance-button">
+        <a class="l" id="appearance-button">
             <i>palette</i>
             <span>Appearance</span>
         </a>
-    </nav>
-
-    <nav class="left hide-on-print m l">
-        <a class="m l" href="/">
-            <i>home</i>
-            <div>Home</div>
-        </a>
-        <a class="m l" onclick="window.print()">
+        <a class="l" onclick="window.print()">
             <i>print</i>
             <div>Print</div>
         </a>
-        <a class="m l" id="copy-content">
+        <a class="l" id="copy-content">
             <i>content_copy</i>
             <div>Copy Content</div>
             <div class="badge border"><i class="tiny">robot_2</i></div>
-            <div class="tooltip max right">
+            <div class="tooltip max bottom">
                 Copies this lesson plan in Markdown format so you can paste it into ChatGPT, or other AI tools to analyze, adapt, or extend your lesson.
             </div>
         </a>
-        <a class="m l" id="share-lesson">
+        <a class="l m" id="share-lesson">
             <i>share</i>
             <div>Share</div>
         </a>
@@ -87,6 +80,29 @@
             <progress class="circle small hidden"></progress>
             <i>save</i>
             <div>Save</div>
+        </a>
+    </nav>
+
+    <nav class="left hide-on-print m">
+        <a href="/">
+            <i>home</i>
+            <div>Home</div>
+        </a>
+        <a onclick="window.print()">
+            <i>print</i>
+            <div>Print</div>
+        </a>
+        <a id="copy-content">
+            <i>content_copy</i>
+            <div>Copy Content</div>
+            <div class="badge border"><i class="tiny">robot_2</i></div>
+            <div class="tooltip max right">
+                Copies this lesson plan in Markdown format so you can paste it into ChatGPT, or other AI tools to analyze, adapt, or extend your lesson.
+            </div>
+        </a>
+        <a id="appearance-button">
+            <i>palette</i>
+            <span>Appearance</span>
         </a>
     </nav>
 
