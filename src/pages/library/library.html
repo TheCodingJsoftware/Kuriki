@@ -69,7 +69,28 @@
     </div>
 
     <main class="responsive">
-        <article class="round border">
+        <div class="row wrap right-align">
+            <div class="max field label prefix border fill round" style="min-width: 256px;" id="search">
+                <i>search</i>
+                <input type="text">
+                <label for="search">Search</label>
+            </div>
+            <nav class="min right-align group connected">
+                <button class="left-round" id="grid-button">
+                    <i>grid_view</i>
+                    <div class="tooltip bottom">
+                        <span>Grid view</span>
+                    </div>
+                </button>
+                <button class="right-round" id="list-button">
+                    <i>view_list</i>
+                    <div class="tooltip bottom">
+                        <span>List view</span>
+                    </div>
+                </button>
+            </nav>
+        </div>
+        <article class="round">
             <div class="grid" id="library">
             </div>
         </article>

@@ -1,12 +1,12 @@
 import { Signal } from "@utils/signal";
 import { LessonsAPI } from "@api/lessons-api";
-import { Outcome } from "firebase/ai";
 import { builtInTemplates } from '@models/lesson-template';
+import { Outcome } from "@models/outcome";
 
 export class CreateLessonPlanButton {
     readonly button: HTMLButtonElement;
     readonly onClick = new Signal<{ key: string; value: boolean }>();
-    readonly onLessonCreated = new Signal<number>(); // ✅ emits dateKey when created
+    readonly onLessonCreated = new Signal<number>();
     private readonly outcome: Outcome;
 
     constructor(outcome: Outcome) {
@@ -32,17 +32,17 @@ export class CreateLessonPlanButton {
             const lessonData = {
                 topic: "",
                 name: "",
-                author: "Anonymous",
-                gradeLevel: "Kindergarten",
+                author: localStorage.getItem("authorName") || "Anonymous",
+                gradeLevel: this.outcome.grade,
                 date: new Date().toISOString(),
-                timeLength: "~ 45 minutes",
-                curricularOutcomes: [this.outcome],
+                timeLength: "~ 1 hour",
+                curricularOutcomes: [this.outcome.outcomeId],
                 resourceLinks: [],
                 assessmentEvidence: [],
                 notes: builtInTemplates[0]!.markdown,
             };
 
-            const outcomes = [this.outcome];
+            const outcomes = [this.outcome.outcomeId];
 
             await LessonsAPI.post(idKey, lessonData, outcomes);
 

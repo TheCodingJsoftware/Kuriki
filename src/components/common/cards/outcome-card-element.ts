@@ -54,7 +54,7 @@ export class OutcomeCard {
             await this.resourceList.refresh();
         });
 
-        this.createLessonButton = new CreateLessonPlanButton(this.outcome.outcomeId);
+        this.createLessonButton = new CreateLessonPlanButton(this.outcome);
         this.createLessonButton.onLessonCreated.connect(async () => {
             await this.lessonsList.refresh();
         })

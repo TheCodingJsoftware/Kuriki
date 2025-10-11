@@ -3,16 +3,11 @@ import "@utils/firebase";
 import "@static/css/style.css"
 import "beercss";
 import "material-dynamic-colors";
-import { getIcon } from 'material-file-icons';
+import { ResourceData } from "@models/resource-data";
+import { ResourceList } from "@components/common/resources/list-element";
+import { ResourceCard } from "@components/common/resources/card-element";
+import { debounce } from "@utils/debounce";
 
-interface ResourceData {
-    icon: string,
-    name: string;
-    description: string;
-    url: string;
-    category?: string;
-    tags?: string[];
-}
 type ViewMode = "grid" | "list";
 
 const RESOURCES: ResourceData[] = [
@@ -106,93 +101,6 @@ const RESOURCES: ResourceData[] = [
     }
 ];
 
-class ResourceCard {
-    constructor(private data: ResourceData) { }
-
-    render(): HTMLElement {
-        const article = document.createElement("article");
-        article.classList.add("round", "border", "s12", "m6", "l4"); // dynamic size
-
-        const topNav = document.createElement("nav");
-        topNav.classList.add("row");
-        article.appendChild(topNav);
-
-        const iconData = getIcon(this.data.icon);
-        const iconDiv = document.createElement("div");
-        iconDiv.classList.add("file-icon", "tiny-margin");
-        iconDiv.innerHTML = iconData.svg;
-        topNav.appendChild(iconDiv);
-
-        const h6 = document.createElement("span");
-        h6.classList.add("large-text", "bold", "max");
-        h6.textContent = this.data.name;
-        topNav.appendChild(h6);
-
-        if (this.data.description) {
-            const p = document.createElement("p");
-            p.textContent = this.data.description;
-            article.appendChild(p);
-        }
-
-        // if (this.data.tags?.length) {
-        //     const tagDiv = document.createElement("nav");
-        //     tagDiv.classList.add("row", "wrap", "no-space");
-        //     this.data.tags.forEach(tag => {
-        //         const span = document.createElement("span");
-        //         span.textContent = tag;
-        //         span.classList.add("chip", "small", "tiny-margin");
-        //         tagDiv.appendChild(span);
-        //     });
-        //     article.appendChild(tagDiv);
-        // }
-
-        const actionNav = document.createElement("nav");
-        actionNav.classList.add("row", "no-space", "right-align");
-        article.appendChild(actionNav);
-
-        const a = document.createElement("a");
-        a.href = this.data.url;
-        a.target = "_blank";
-        a.classList.add("button", "primary");
-        a.innerHTML = `<span>Open</span><i>open_in_new</i>`;
-        actionNav.appendChild(a);
-
-        return article;
-    }
-}
-
-class ResourceList {
-    constructor(private data: ResourceData) { }
-
-    render(): HTMLElement {
-        const li = document.createElement("li");
-        li.classList.add("wave")
-        li.addEventListener("click", () => window.open(this.data.url, "_blank"));
-
-        const icon = getIcon(this.data.icon);
-        const iconDiv = document.createElement("div");
-        iconDiv.classList.add("file-icon");
-        iconDiv.innerHTML = icon.svg; // inject raw SVG
-        li.appendChild(iconDiv);
-
-        const maxDiv = document.createElement("div");
-        maxDiv.classList.add("max");
-
-        const h6 = document.createElement("h6");
-        h6.classList.add("small", "wrap");
-        h6.textContent = this.data.name;
-        maxDiv.appendChild(h6);
-
-        // if (this.data.description) {
-        //     const desc = document.createElement("div");
-        //     desc.classList.add("wrap", "no-line")
-        //     desc.textContent = this.data.description;
-        //     maxDiv.appendChild(desc);
-        // }
-        li.appendChild(maxDiv);
-        return li;
-    }
-}
 
 document.addEventListener("DOMContentLoaded", () => {
     const resourcesDiv = document.getElementById("resources") as HTMLDivElement;
@@ -245,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             resourcesDiv.appendChild(section);
         }
+
         if (!resourcesDiv.hasChildNodes()) {
             const p = document.createElement("p");
             p.textContent = "No resources found.";
@@ -260,14 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const hay = `${r.name} ${r.description} ${(r.tags ?? []).join(" ")}`.toLowerCase();
             return hay.includes(needle);
         });
-    };
-
-    const debounce = <T extends (...args: any[]) => void>(fn: T, ms = 150) => {
-        let t: number | undefined;
-        return (...args: Parameters<T>) => {
-            if (t) clearTimeout(t);
-            t = window.setTimeout(() => fn(...args), ms);
-        };
     };
 
     render(RESOURCES);

@@ -222,6 +222,9 @@ class AuthorInput implements LessonField<string> {
         this.icon.textContent = "group";
 
         this.input = document.createElement("input");
+        this.input.addEventListener("input", () => {
+            localStorage.setItem("authorName", this.input.value);
+        });
         this.input.id = this.id;
         this.input.type = "text";
 
