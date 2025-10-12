@@ -2,7 +2,7 @@ import { ResourceAPI } from "@api/resources-api";
 import { Outcome } from "@models/outcome";
 import { enhanceLinks } from "@utils/enhance-links";
 
-export class ResourceListContainer {
+export class ArchiveListContainer {
     readonly element: HTMLDivElement;
     private readonly resourceList: HTMLOListElement;
     private readonly title: HTMLHeadingElement;

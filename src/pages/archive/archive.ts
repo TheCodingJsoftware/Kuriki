@@ -3,14 +3,14 @@ import "@utils/firebase";
 import "@static/css/style.css"
 import "beercss";
 import "material-dynamic-colors";
-import { ResourceData } from "@models/resource-data";
-import { ResourceList } from "@components/common/resources/list-element";
-import { ResourceCard } from "@components/common/resources/card-element";
+import { ArchiveData } from "@models/archive-data";
+import { ArchiveList } from "@components/common/archives/list-element";
+import { ArchiveCard } from "@components/common/archives/card-element";
 import { debounce } from "@utils/debounce";
 
 type ViewMode = "grid" | "list";
 
-const RESOURCES: ResourceData[] = [
+const ARCHIVES: ArchiveData[] = [
     {
         icon: ".pdf",
         name: "K-8 Mathematics Framework (2013)",
@@ -103,22 +103,22 @@ const RESOURCES: ResourceData[] = [
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const resourcesDiv = document.getElementById("resources") as HTMLDivElement;
+    const archivesDiv = document.getElementById("archive") as HTMLDivElement;
     const searchInput = document.querySelector("#search input") as HTMLInputElement;
     const gridButton = document.getElementById("grid-button") as HTMLButtonElement;
     const listButton = document.getElementById("list-button") as HTMLButtonElement;
 
-    let viewMode: ViewMode = (localStorage.getItem("resourceViewMode") as ViewMode) || "list";
+    let viewMode: ViewMode = (localStorage.getItem("archiveViewMode") as ViewMode) || "list";
 
-    const groupByCategory = (list: ResourceData[]) =>
-        list.reduce<Record<string, ResourceData[]>>((acc, r) => {
+    const groupByCategory = (list: ArchiveData[]) =>
+        list.reduce<Record<string, ArchiveData[]>>((acc, r) => {
             const cat = r.category || "Uncategorized";
             (acc[cat] ||= []).push(r);
             return acc;
         }, {});
 
-    function render(list: ResourceData[]) {
-        resourcesDiv.innerHTML = "";
+    function render(list: ArchiveData[]) {
+        archivesDiv.innerHTML = "";
         const grouped = groupByCategory(list);
 
         for (const [category, items] of Object.entries(grouped)) {
@@ -129,7 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
             section.classList.add("border", "round", "padding", "s12");
 
             if (viewMode === "list") {
-                section.classList.add("surface-container");
+                section.classList.add("surface-container", "elevate");
+                section.classList.remove("border");
             } else {
                 section.classList.remove("surface-container");
             }
@@ -141,45 +142,45 @@ document.addEventListener("DOMContentLoaded", () => {
             if (viewMode === "list") {
                 const ul = document.createElement("ul");
                 ul.classList.add("list", "border");
-                sorted.forEach(item => ul.appendChild(new ResourceList(item).render()));
+                sorted.forEach(item => ul.appendChild(new ArchiveList(item).render()));
                 section.appendChild(ul);
             } else {
                 const grid = document.createElement("div");
                 grid.classList.add("grid");
 
-                sorted.forEach(item => grid.appendChild(new ResourceCard(item).render()));
+                sorted.forEach(item => grid.appendChild(new ArchiveCard(item).render()));
                 section.appendChild(grid);
             }
 
-            resourcesDiv.appendChild(section);
+            archivesDiv.appendChild(section);
         }
 
-        if (!resourcesDiv.hasChildNodes()) {
+        if (!archivesDiv.hasChildNodes()) {
             const p = document.createElement("p");
             p.textContent = "No resources found.";
             p.classList.add("s12");
-            resourcesDiv.appendChild(p);
+            archivesDiv.appendChild(p);
         }
     }
 
-    const filterResources = (q: string) => {
+    const filterArchives = (q: string) => {
         const needle = q.trim().toLowerCase();
-        if (!needle) return RESOURCES;
-        return RESOURCES.filter(r => {
+        if (!needle) return ARCHIVES;
+        return ARCHIVES.filter(r => {
             const hay = `${r.name} ${r.description} ${(r.tags ?? []).join(" ")}`.toLowerCase();
             return hay.includes(needle);
         });
     };
 
-    render(RESOURCES);
+    render(ARCHIVES);
 
-    searchInput.addEventListener("input", debounce(() => render(filterResources(searchInput.value))));
+    searchInput.addEventListener("input", debounce(() => render(filterArchives(searchInput.value))));
 
     // nav buttons
     function setView(mode: ViewMode) {
         viewMode = mode;
-        localStorage.setItem("resourceViewMode", mode);
-        render(filterResources(searchInput.value));
+        localStorage.setItem("archiveViewMode", mode);
+        render(filterArchives(searchInput.value));
         document.querySelectorAll("nav.group button").forEach(b => b.classList.remove("active"));
         const btnId =
             mode === "grid" ? "grid-button" :

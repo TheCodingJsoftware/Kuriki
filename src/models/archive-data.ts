@@ -1,4 +1,4 @@
-export interface ResourceData {
+export interface ArchiveData {
     icon: string,
     name: string;
     description: string;

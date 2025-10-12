@@ -55,11 +55,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             libraryDiv.appendChild(p);
             return;
         }
+        const section = document.createElement("section");
+        section.classList.add("border", "round", "padding", "s12");
+
+        if (viewMode === "list") {
+            section.classList.add("surface-container", "elevate");
+            section.classList.remove("border");
+        } else {
+            section.classList.remove("surface-container");
+        }
 
         if (viewMode === "grid") {
+            section.classList.add("grid");
             for (const [id, lesson] of entries) {
                 const card = new LessonCard(id, lesson);
-                libraryDiv.appendChild(card.render());
+                section.appendChild(card.render());
             }
         } else {
             const ul = document.createElement("ul");
@@ -68,8 +78,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const listItem = new LessonList(id, lesson);
                 ul.appendChild(listItem.render());
             }
-            libraryDiv.appendChild(ul);
+            section.appendChild(ul);
         }
+
+        libraryDiv.appendChild(section);
     }
 
     function setView(mode: ViewMode) {

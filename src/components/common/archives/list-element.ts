@@ -1,8 +1,8 @@
-import { ResourceData } from "@models/resource-data";
+import { ArchiveData } from "@models/archive-data";
 import { getIcon } from 'material-file-icons';
 
-export class ResourceList {
-    constructor(private data: ResourceData) { }
+export class ArchiveList {
+    constructor(private data: ArchiveData) { }
 
     render(): HTMLElement {
         const li = document.createElement("li");
