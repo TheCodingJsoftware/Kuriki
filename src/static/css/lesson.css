@@ -208,6 +208,7 @@ table :is(thead,
 
 	#preview-pane {
 		width: 100% !important;
+		margin-bottom: 20px;
 	}
 
 	#preview-pane,
