@@ -18,137 +18,90 @@ import { OutcomeFinder } from "@utils/outcome-finder";
 export class LessonList {
     readonly element: HTMLElement;
     readonly header: HTMLElement;
-    readonly lessonName: HTMLSpanElement;
-    readonly topicTitle: HTMLSpanElement;
-    readonly author: HTMLSpanElement;
+    readonly title: HTMLSpanElement;
+    readonly subtitle: HTMLSpanElement;
     readonly outcomesContainer: HTMLElement;
-    readonly lessonId: string;
     readonly lesson: LessonRecord;
+    readonly lessonId: string;
 
     constructor(lessonId: string, lesson: LessonRecord) {
         this.lessonId = lessonId;
         this.lesson = lesson;
-
         const data: ILesson = this.lesson.data;
 
-        // ---------- Container ----------
-        const container = document.createElement("div");
-        container.classList.add("lesson-list", "wave");
+        const container = document.createElement("li");
+        container.classList.add("lesson-list-item", "wave");
+        container.addEventListener("click", () => {
+            window.location.href = `/lesson.html?id=${this.lessonId}`;
+        })
 
-        const details = document.createElement("details");
-        container.appendChild(details);
+        this.header = document.createElement("div");
+        this.header.classList.add("max");
 
-        const summary = document.createElement("summary");
-        summary.classList.add("row", "align-center");
-        details.appendChild(summary);
+        this.title = document.createElement("h6");
+        this.title.classList.add("bold", "small", "wrap");
+        this.title.innerText = data.name || "Untitled Lesson";
 
-        // ---------- Header ----------
-        this.header = document.createElement("header");
-        this.header.classList.add("vertical", "align-center");
+        this.subtitle = document.createElement("div");
+        this.subtitle.classList.add("italic", "wrap");
+        this.subtitle.innerText = `${data.topic || "No topic"} - by ${data.author}`;
 
-        this.lessonName = document.createElement("span");
-        this.lessonName.classList.add("bold", "wrap");
-        this.lessonName.innerText = data.name || "Untitled Lesson";
+        this.header.appendChild(this.title);
+        this.header.appendChild(this.subtitle);
 
-        this.topicTitle = document.createElement("span");
-        this.topicTitle.classList.add("italic", "wrap");
-        this.topicTitle.innerText = data.topic;
+        container.appendChild(this.header);
 
-        this.author = document.createElement("span");
-        this.author.classList.add("italic", "wrap");
-        this.author.innerText = `by ${data.author}`;
+        // ----- Outcomes as chips -----
+        this.outcomesContainer = document.createElement("div");
+        this.outcomesContainer.classList.add("row", "no-space", "scroll");
 
-        this.header.appendChild(this.lessonName);
-        this.header.appendChild(this.topicTitle);
-        this.header.appendChild(this.author);
-
-        const spacer = document.createElement("div");
-        spacer.classList.add("max");
-
-        this.outcomesContainer = document.createElement("nav")
-        this.outcomesContainer.classList.add("row", "wrap", "no-space", "padding")
-
-        // ---------- Outcomes ----------
         if (data.curricularOutcomes.length === 0) {
-            const p = document.createElement("p");
-            p.textContent = "No outcomes selected";
-            this.outcomesContainer.appendChild(p);
+            const chip = document.createElement("button");
+            chip.classList.add("chip");
+            chip.innerText = "No outcomes";
+            this.outcomesContainer.appendChild(chip);
+        } else {
+            for (const id of data.curricularOutcomes) {
+                const chip = document.createElement("button");
+                chip.classList.add("chip", "tiny-margin");
+                chip.innerText = id;
+                chip.addEventListener("click", async (event) => {
+                    event.stopPropagation();
+                    const outcome = await OutcomeFinder.getById(id);
+                    if (outcome instanceof MathematicsOutcome) {
+                        const card = new MathematicsOutcomeCard(outcome);
+                        new OutcomeCardDialog(card.render());
+                    } else if (outcome instanceof SocialStudiesOutcome) {
+                        const card = new SocialStudiesOutcomeCard(outcome);
+                        new OutcomeCardDialog(card.render());
+                    } else if (outcome instanceof BiologyOutcome) {
+                        const card = new BiologyOutcomeCard(outcome);
+                        new OutcomeCardDialog(card.render());
+                    } else if (outcome instanceof ScienceOutcome) {
+                        const card = new ScienceOutcomeCard(outcome);
+                        new OutcomeCardDialog(card.render());
+                    } else {
+                        return;
+                    }
+                });
+                this.outcomesContainer.appendChild(chip);
+            }
         }
 
-        const openButton = document.createElement("a");
-        openButton.classList.add("button");
-        openButton.innerHTML = `<i>open_in_new</i><span>Open</span>`;
-        openButton.href = `/lesson.html?id=${this.lessonId}`
+        this.header.append(this.outcomesContainer);
 
-        summary.appendChild(this.header);
-        summary.appendChild(spacer);
-        summary.append(openButton);
+        // ----- Right column (open button) -----
+        // const openButton = document.createElement("a");
+        // openButton.classList.add("button");
+        // openButton.innerHTML = `<i>open_in_new</i><span>Open</span>`;
+        // openButton.href = `/lesson.html?id=${this.lessonId}`;
 
-        // ---------- Assemble ----------
-        details.append(summary);
-        details.append(this.outcomesContainer);
-
-        const headerRow = document.createElement("hr");
-
-        container.appendChild(headerRow);
+        // container.append(openButton);
 
         this.element = container;
-
-        this.loadOutcomes();
     }
 
-    async loadOutcomes() {
-        if (this.lesson.data.curricularOutcomes.length === 0) {
-            return;
-        }
-
-        this.outcomesContainer.innerHTML = '';
-        for (const id of this.lesson.data.curricularOutcomes) {
-
-            const outcome = await OutcomeFinder.getById(id);
-            let outcomeElement: HTMLElement;
-
-            if (outcome instanceof MathematicsOutcome) {
-                const el = new MathematicsOutcomeElement(outcome);
-                el.element.addEventListener("click", () => {
-                    const card = new MathematicsOutcomeCard(outcome);
-                    new OutcomeCardDialog(card.render());
-                })
-                el.showIcon();
-                outcomeElement = el.render();
-            } else if (outcome instanceof SocialStudiesOutcome) {
-                const el = new SocialStudiesOutcomeElement(outcome);
-                el.element.addEventListener("click", () => {
-                    const card = new SocialStudiesOutcomeCard(outcome);
-                    new OutcomeCardDialog(card.render());
-                })
-                el.showIcon();
-                outcomeElement = el.render();
-            } else if (outcome instanceof BiologyOutcome) {
-                const el = new BiologyOutcomeElement(outcome);
-                el.element.addEventListener("click", () => {
-                    const card = new BiologyOutcomeCard(outcome);
-                    new OutcomeCardDialog(card.render());
-                });
-                el.showIcon();
-                outcomeElement = el.render();
-            } else if (outcome instanceof ScienceOutcome) {
-                const el = new ScienceOutcomeElement(outcome);
-                el.element.addEventListener("click", () => {
-                    const card = new ScienceOutcomeCard(outcome);
-                    new OutcomeCardDialog(card.render());
-                })
-                el.showIcon();
-                outcomeElement = el.render();
-            } else {
-                continue;
-            }
-
-            this.outcomesContainer.appendChild(outcomeElement);
-        }
-    }
-
-    public render(): HTMLElement {
+    render(): HTMLElement {
         return this.element;
     }
 }
