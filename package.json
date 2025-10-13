@@ -56,6 +56,7 @@
     "dependencies": {
         "@toast-ui/editor": "^3.1.0",
         "beercss": "^3.12.11",
+        "easy-qrcode": "^0.1.0",
         "firebase": "^12.4.0",
         "flatpickr": "^4.6.13",
         "fuse.js": "^7.1.0",

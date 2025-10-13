@@ -32,6 +32,7 @@ import { MathematicsOutcomeCard } from "@components/mathematics/card-element";
 import { BiologyOutcomeCard } from "@components/biology/card-element";
 import { ScienceOutcomeCard } from "@components/science/card-element";
 import { OutcomeCardDialog } from "@components/common/dialogs/outcome-card-dialog";
+import { Creator, ErrorCorrectionLevel, MaskPattern, Renderer } from "easy-qrcode";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
 let autoSaveTimer: number | undefined;
@@ -141,7 +142,7 @@ class TopicInput implements LessonField<string> {
     constructor() {
         // wrapper div
         this.element = document.createElement("div");
-        this.element.classList.add("field", "border", "round", "label");
+        this.element.classList.add("field", "border", "round", "label", "s12", "m6", "l6");
 
         // input
         this.input = document.createElement("input");
@@ -155,7 +156,7 @@ class TopicInput implements LessonField<string> {
 
         // tooltip (inside button, like your HTML)
         this.tooltip = document.createElement("div");
-        this.tooltip.classList.add("tooltip", "max", "right");
+        this.tooltip.classList.add("tooltip", "max", "bottom");
         this.tooltip.innerHTML = `
             Use the same <strong>unit title</strong> and <strong>author name</strong> for all lesson plans in a unit to ensure they are grouped together.<br><br>
             Leave blank if it is not part of a unit.
@@ -184,7 +185,7 @@ class LessonNameInput implements LessonField<string> {
 
     constructor() {
         this.element = document.createElement("div");
-        this.element.classList.add("field", "border", "round", "label");
+        this.element.classList.add("field", "border", "round", "label", "s12", "m6", "l6");
 
         this.input = document.createElement("input");
         this.input.id = this.id;
@@ -216,7 +217,7 @@ class AuthorInput implements LessonField<string> {
 
     constructor() {
         this.element = document.createElement("div");
-        this.element.classList.add("field", "border", "round", "prefix", "label");
+        this.element.classList.add("field", "border", "round", "prefix", "label", "s12");
 
         this.icon = document.createElement("i");
         this.icon.textContent = "group";
@@ -288,7 +289,7 @@ class GradeLevelSelect implements LessonField<string> {
     constructor() {
         // wrapper div
         this.element = document.createElement("div");
-        this.element.classList.add("field", "border", "round", "label");
+        this.element.classList.add("field", "border", "round", "label", "fill", "s12", "m4", "l4");
 
         // select
         this.select = document.createElement("select");
@@ -348,7 +349,7 @@ class TimeLengthSelect implements LessonField<string> {
     constructor() {
         // wrapper
         this.element = document.createElement("div");
-        this.element.classList.add("field", "border", "round", "suffix", "label");
+        this.element.classList.add("field", "border", "round", "suffix", "label", "fill", "s12", "m4", "l4");
 
         // select
         this.select = document.createElement("select");
@@ -396,7 +397,7 @@ class DateField implements LessonField<string> {
     constructor() {
         // wrapper
         this.element = document.createElement("div");
-        this.element.classList.add("field", "prefix", "border", "round", "label");
+        this.element.classList.add("field", "prefix", "border", "round", "label", "fill", "s12", "m4", "l4");
 
         // icon
         this.icon = document.createElement("i");
@@ -452,7 +453,6 @@ class DateField implements LessonField<string> {
         this.picker.setDate(value, true); // true = trigger onChange
     }
 }
-
 class CurricularOutcomesSection implements LessonField<string[]> {
     element: HTMLElement;
     header: HTMLHeadingElement;
@@ -596,7 +596,6 @@ class CurricularOutcomesSection implements LessonField<string[]> {
         this.renderList();
     }
 }
-
 class ToastEditorField implements LessonField<string> {
     element: HTMLDivElement;
     editor: Editor;
@@ -673,7 +672,7 @@ class TemplateSelect {
 
     constructor(onSelect: (t: LessonTemplate) => void) {
         this.element = document.createElement("div");
-        this.element.classList.add("field", "border", "round", "label");
+        this.element.classList.add("field", "border", "round", "label", "fill");
 
         this.select = document.createElement("select");
         this.refresh();
@@ -1054,7 +1053,9 @@ ${this.notes.getValue() || "_Nothing yet_"}
         `;
     }
 
-} class Preview {
+}
+
+class Preview {
     private element: HTMLDivElement;
     private viewer: Viewer;
     private lastMarkdown = "";
@@ -1090,6 +1091,25 @@ ${this.notes.getValue() || "_Nothing yet_"}
     }
 }
 
+function generateQRCode() {
+    const qrCreator = new Creator({
+        version: 4,
+        enableECI: false,
+        errorCorrectionLevel: ErrorCorrectionLevel.M,
+        maskPattern: MaskPattern.PATTERN000,
+    });
+    const pageUrl = window.location.href;
+    qrCreator.add(pageUrl);
+    qrCreator.create();
+    const matrix = qrCreator.getMatrix();
+    const qrRenderer = new Renderer();
+    const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
+    const qrSize = matrix.length * 4;
+    canvas.width = qrSize;
+    canvas.height = qrSize;
+    qrRenderer.drawCanvas(matrix, canvas);
+}
+
 function setupEditorPane() {
     const topicInput = new TopicInput();
     const lessonNameInput = new LessonNameInput();
@@ -1120,7 +1140,8 @@ function setupEditorPane() {
     });
     const saveTemplateBtn = new SaveTemplateButton(lessonNotes, templateSelect);
 
-    const editorPane = document.getElementById("editor-pane")!;
+    const grid = document.createElement("div") as HTMLDivElement;
+    grid.classList.add("grid");
     [
         topicInput,
         lessonNameInput,
@@ -1128,6 +1149,11 @@ function setupEditorPane() {
         gradeLevelSelect,
         dateField,
         timeLengthSelect,
+    ].forEach(f => grid.appendChild(f.element));
+
+    const editorPane = document.getElementById("editor-pane")!;
+    editorPane.appendChild(grid);
+    [
         curricularOutcomesSection,
         resourceLinks,
         assessmentEvidence,
@@ -1209,6 +1235,7 @@ async function saveLesson() {
         alert("Failed to save lesson. Check console for details.");
     }
 }
+
 function updateSaveButton(state: "idle" | "saving" | "success" | "error" = "idle") {
     // Find all matching buttons (supports duplicates or class-based usage)
     const saveButtons = document.querySelectorAll<HTMLButtonElement>("#save-button, .save-button");
@@ -1337,6 +1364,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupEditorPane();
     await loadLessonById();
     lessonPlanLoaded = true;
+    generateQRCode();
 });
 
 document.addEventListener("keydown", (e) => {
