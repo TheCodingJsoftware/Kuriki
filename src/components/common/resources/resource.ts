@@ -2,7 +2,7 @@ import { ResourceAPI } from "@api/resources-api";
 import { Outcome } from "@models/outcome";
 import { enhanceLinks } from "@utils/enhance-links";
 
-export class ArchiveListContainer {
+export class ResourceListContainer {
     readonly element: HTMLDivElement;
     private readonly resourceList: HTMLOListElement;
     private readonly title: HTMLHeadingElement;
@@ -83,6 +83,10 @@ export class ArchiveListContainer {
                 a.target = "_blank";
                 a.dataset.url = resource;
                 a.innerText = resource;
+
+                const icon = document.createElement("i");
+                icon.innerText = "open_in_new";
+                a.appendChild(icon);
 
                 li.appendChild(a);
                 this.resourceList.appendChild(li);

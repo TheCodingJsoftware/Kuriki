@@ -1,7 +1,7 @@
 import { CopyOutcomeButton } from "@components/common/buttons/copy-outcome-button";
 import { AddResourceButton } from "@components/common/buttons/add-resource-button";
 import { CreateLessonPlanButton } from "@components/common/buttons/create-lesson-button";
-import { ArchiveListContainer } from "@components/common/archives/archive";
+import { ResourceListContainer } from "@components/common/resources/resource";
 import { LessonListContainer } from "@components/common/lessons/lessons";
 import { Outcome } from "@models/outcome";
 
@@ -16,7 +16,7 @@ export class OutcomeCard {
     readonly copyButton: CopyOutcomeButton;
     readonly addResourceButton: AddResourceButton;
     readonly createLessonButton: CreateLessonPlanButton;
-    readonly resourceList: ArchiveListContainer;
+    readonly resourceList: ResourceListContainer;
     readonly lessonsList: LessonListContainer;
 
 
@@ -59,7 +59,7 @@ export class OutcomeCard {
             await this.lessonsList.refresh();
         })
 
-        this.resourceList = new ArchiveListContainer(this.outcome);
+        this.resourceList = new ResourceListContainer(this.outcome);
         this.lessonsList = new LessonListContainer(this.outcome);
 
         // Append children

@@ -80,7 +80,6 @@ export class LessonListContainer {
                 const a = document.createElement("a");
                 a.className = "link underline tiny-padding wave small-round";
                 a.href = `lesson.html?id=${id}`;
-                a.target = "_blank";
                 a.innerText = `${lesson.data.name}: ${lesson.data.topic} by ${lesson.data.author}`;
 
                 const icon = document.createElement("i");
