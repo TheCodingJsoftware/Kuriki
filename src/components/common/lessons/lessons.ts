@@ -81,6 +81,7 @@ export class LessonListContainer {
                 a.className = "link underline tiny-padding wave small-round";
                 a.href = `lesson.html?id=${id}`;
                 a.innerText = `${lesson.data.name}: ${lesson.data.topic} by ${lesson.data.author}`;
+                a.title = a.innerText;
 
                 const icon = document.createElement("i");
                 icon.innerText = "open_in_new";

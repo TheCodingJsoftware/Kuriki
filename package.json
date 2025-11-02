@@ -54,10 +54,10 @@
         "deploy": "npm run build && firebase deploy --only hosting"
     },
     "dependencies": {
-        "@toast-ui/editor": "^3.1.0",
-        "beercss": "^3.12.11",
+        "@toast-ui/editor": "^3.2.2",
+        "beercss": "^3.12.13",
         "easy-qrcode": "^0.1.0",
-        "firebase": "^12.4.0",
+        "firebase": "^12.5.0",
         "flatpickr": "^4.6.13",
         "fuse.js": "^7.1.0",
         "idb": "^8.0.3",
@@ -69,7 +69,7 @@
         "compression-webpack-plugin": "^11.1.0",
         "copy-webpack-plugin": "^13.0.1",
         "css-loader": "^7.1.2",
-        "esbuild": "^0.25.10",
+        "esbuild": "^0.25.12",
         "esbuild-loader": "^4.4.0",
         "fork-ts-checker-webpack-plugin": "^9.1.0",
         "glob-all": "^3.3.1",

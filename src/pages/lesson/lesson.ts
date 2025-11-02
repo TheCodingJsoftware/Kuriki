@@ -1093,7 +1093,7 @@ class Preview {
 
 function generateQRCode() {
     const qrCreator = new Creator({
-        version: 4,
+        version: 5,
         enableECI: false,
         errorCorrectionLevel: ErrorCorrectionLevel.M,
         maskPattern: MaskPattern.PATTERN000,
@@ -1180,6 +1180,7 @@ function setupEditorPane() {
 
     function updatePreview() {
         preview.update(builder.buildMarkdown());
+        updatePageTitle();
     }
 
     // Attach listeners to each field
@@ -1314,8 +1315,24 @@ async function loadLessonById() {
 
         const main = document.querySelector("main") as HTMLElement;
         main.classList.remove("hidden");
+
+        updatePageTitle();
     } catch (err) {
         console.error("Failed to load lesson:", err);
+    }
+}
+
+function updatePageTitle() {
+    const topicInput = document.getElementById("topic-title") as HTMLInputElement;
+    const lessonNameInput = document.getElementById("lesson-name") as HTMLInputElement;
+    const authorInput = document.getElementById("author-name") as HTMLInputElement;
+
+    if (topicInput.value || lessonNameInput.value) {
+        document.title = lessonNameInput.value + " - " + topicInput.value + " by " + authorInput.value;
+    } else if (lessonNameInput.value) {
+        document.title = lessonNameInput.value + " by " + authorInput.value;
+    } else {
+        document.title = "New Lesson";
     }
 }
 
@@ -1349,7 +1366,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Copy content buttons
     bindAll("#copy-content", (el) => {
         el.addEventListener("click", () => {
-            navigator.clipboard.writeText((window as any).preview.getMarkdown());
+            navigator.clipboard.writeText((window as any).preview.getMarkdown() + "Write your response in markdown format, do not write raw html as lists.");
             new ContentCopiedSnackbar();
         });
     });

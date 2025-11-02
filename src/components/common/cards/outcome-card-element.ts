@@ -59,8 +59,8 @@ export class OutcomeCard {
             await this.lessonsList.refresh();
         })
 
-        this.resourceList = new ResourceListContainer(this.outcome);
         this.lessonsList = new LessonListContainer(this.outcome);
+        this.resourceList = new ResourceListContainer(this.outcome);
 
         // Append children
         container.appendChild(this.header);

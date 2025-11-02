@@ -92,7 +92,7 @@ export class ResourceListContainer {
                 this.resourceList.appendChild(li);
             }
 
-            enhanceLinks(50);
+            enhanceLinks(35);
         } catch (err) {
             console.error("Failed to load resources:", err);
             this.showEmptyMessage("Failed to load resources. Please try again later.");
