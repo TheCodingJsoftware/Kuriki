@@ -1,13 +1,9 @@
 import type { LessonRecord } from "@api/lessons-api";
 import { BiologyOutcomeCard } from "@components/biology/card-element";
-import { BiologyOutcomeElement } from "@components/biology/outcome-element";
 import { OutcomeCardDialog } from "@components/common/dialogs/outcome-card-dialog";
 import { MathematicsOutcomeCard } from "@components/mathematics/card-element";
-import { MathematicsOutcomeElement } from "@components/mathematics/outcome-element";
 import { ScienceOutcomeCard } from "@components/science/card-element";
-import { ScienceOutcomeElement } from "@components/science/outcome-element";
 import { SocialStudiesOutcomeCard } from "@components/social_studies/card-element";
-import { SocialStudiesOutcomeElement } from "@components/social_studies/outcome-element";
 import { BiologyOutcome } from "@models/biology-outcome";
 import type { ILesson } from "@models/lesson";
 import { MathematicsOutcome } from "@models/mathematics-outcome";

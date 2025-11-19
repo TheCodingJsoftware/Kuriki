@@ -56,8 +56,12 @@
     "dependencies": {
         "@toast-ui/editor": "^3.2.2",
         "beercss": "^3.12.13",
+<<<<<<< HEAD
         "easy-qrcode": "^0.1.0",
         "firebase": "^12.5.0",
+=======
+        "firebase": "^12.6.0",
+>>>>>>> 0df6283 (chore: update dependencies in package.json)
         "flatpickr": "^4.6.13",
         "fuse.js": "^7.1.0",
         "idb": "^8.0.3",
@@ -69,7 +73,11 @@
         "compression-webpack-plugin": "^11.1.0",
         "copy-webpack-plugin": "^13.0.1",
         "css-loader": "^7.1.2",
+<<<<<<< HEAD
         "esbuild": "^0.25.12",
+=======
+        "esbuild": "^0.27.0",
+>>>>>>> 0df6283 (chore: update dependencies in package.json)
         "esbuild-loader": "^4.4.0",
         "fork-ts-checker-webpack-plugin": "^9.1.0",
         "glob-all": "^3.3.1",
