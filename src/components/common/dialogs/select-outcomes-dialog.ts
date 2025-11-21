@@ -4,19 +4,33 @@ import { SocialStudiesRepo } from "@api/social-studies-repo";
 import { MathematicsRepo } from "@api/mathematics-repo";
 import { BiologyRepo } from "@api/biology-repo";
 import { ScienceRepo } from "@api/science-repo";
+
 import { Outcome } from "@models/outcome";
 import { MathematicsOutcome } from "@models/mathematics-outcome";
 import { SocialStudiesOutcome } from "@models/social-studies-outcome";
 import { BiologyOutcome } from "@models/biology-outcome";
 import { ScienceOutcome } from "@models/science-outcome";
+
 import { MathematicsOutcomeElement } from '@components/mathematics/outcome-element';
 import { SocialStudiesOutcomeElement } from "@components/social_studies/outcome-element";
 import { BiologyOutcomeElement } from "@components/biology/outcome-element";
 import { ScienceOutcomeElement } from "@components/science/outcome-element";
+
 import { debounce } from "@utils/debounce";
 
+/** ------------------------------
+ *  SEARCHABLE OUTCOME WRAPPER
+ *  ------------------------------ */
+type SearchableOutcome = {
+    outcomeId: string;
+    grade: string;
+    text: string;     // merged SLO text
+    ref: Outcome;     // reference to actual object
+};
+
 export class SelectOutcomesDialog extends DialogComponent {
-    private fuse: Fuse<Outcome> | null = null;
+    private fuse: Fuse<SearchableOutcome> | null = null;
+    private index: SearchableOutcome[] = [];   // search index
     private allOutcomes: Outcome[] = [];
     private selected: Set<string> = new Set();
     private resolver?: (value: Outcome[]) => void;
@@ -46,15 +60,14 @@ export class SelectOutcomesDialog extends DialogComponent {
         });
     }
 
-    /** Open the dialog modally and return selected outcomes when done */
+    /** Open the dialog modally */
     open(): Promise<Outcome[]> {
-        return new Promise<Outcome[]>((resolve) => {
+        return new Promise((resolve) => {
             this.resolver = resolve;
             this.init();
         });
     }
 
-    /** Close and resolve modal result */
     private resolveAndClose(outcomes: Outcome[]) {
         if (this.resolver) this.resolver(outcomes);
         super.close();
@@ -68,21 +81,25 @@ export class SelectOutcomesDialog extends DialogComponent {
         await this.getAllOutcomes();
 
         searchInput.addEventListener("input", debounce(() => {
-            this.search(searchInput.value);
+            this.search(searchInput.value.trim());
         }, 150));
 
-        doneBtn.addEventListener("click", () => {
-            this.resolveAndClose(this.getSelectedOutcomes());
-        });
-        cancelBtn.addEventListener("click", () => {
-            this.resolveAndClose([]);
-        });
+        doneBtn.addEventListener("click", () =>
+            this.resolveAndClose(this.getSelectedOutcomes())
+        );
+
+        cancelBtn.addEventListener("click", () =>
+            this.resolveAndClose([])
+        );
 
         setTimeout(() => searchInput.focus(), 200);
         window.addEventListener("resize", this.handleResize);
         this.handleResize();
     }
 
+    /** -------------------------
+     *  LOAD + BUILD SEARCH INDEX
+     *  ------------------------- */
     async getAllOutcomes() {
         const [ss, math, bio, sci] = await Promise.all([
             SocialStudiesRepo.getOutcomes(),
@@ -92,37 +109,69 @@ export class SelectOutcomesDialog extends DialogComponent {
         ]);
 
         this.allOutcomes = [...ss, ...math, ...bio, ...sci];
-        this.fuse = new Fuse(this.allOutcomes, {
-            keys: ["specificLearningOutcome", "specificLearningOutcomes"],
-            threshold: 0.4,
+
+        // Build a uniform search index
+        this.index = this.allOutcomes.map((o) => ({
+            outcomeId: o.outcomeId,
+            grade: o.grade,
+            text: [
+                o.specificLearningOutcome,
+                (o as any).specificLearningOutcomes?.join(" "),
+                (o as any).generalLearningOutcome,
+                (o as any).generalLearningOutcomes?.join(" ")
+            ].filter(Boolean).join(" "),
+            ref: o
+        }));
+
+        // Build Fuse
+        this.fuse = new Fuse(this.index, {
+            keys: ["outcomeId", "grade", "text"],
+            threshold: 0.45,           // more tolerant
             ignoreLocation: true,
             minMatchCharLength: 2,
+            includeScore: true
         });
     }
 
+    /** -------------------------
+     *  SEARCH (Fuse + fallback)
+     *  ------------------------- */
     search(query: string) {
-        const resultsContainer = this.element.querySelector("#results") as HTMLDivElement;
-        resultsContainer.innerHTML = "";
+        const container = this.element.querySelector("#results") as HTMLDivElement;
+        container.innerHTML = "";
 
         if (!query) {
-            resultsContainer.innerHTML = `<p>Type to search outcomes...</p>`;
+            container.innerHTML = `<p>Type to search outcomes...</p>`;
             return;
         }
 
-        const results = this.fuse ? this.fuse.search(query, { limit: this.MAX_RESULTS }) : [];
-        const matched = results.map(r => r.item);
+        let fuseResults: Outcome[] = [];
 
-        if (matched.length === 0) {
-            resultsContainer.innerHTML = `<p>No results found</p>`;
+        if (this.fuse) {
+            fuseResults = this.fuse.search(query, { limit: this.MAX_RESULTS })
+                .map(r => r.item.ref);
+        }
+
+        // 🔥 Fallback exact/substring search (fixes full-sentence issues)
+        const lower = query.toLowerCase();
+        const fallback = this.index
+            .filter(o => o.text.toLowerCase().includes(lower))
+            .map(o => o.ref);
+
+        // Combine and unique results
+        const combined = [...new Map([...fuseResults, ...fallback].map(o => [o.outcomeId, o])).values()];
+
+        if (combined.length === 0) {
+            container.innerHTML = `<p>No results found</p>`;
             return;
         }
 
-        for (const outcome of matched) {
-            const el = this.createSelectableElement(outcome);
-            resultsContainer.appendChild(el);
+        for (const outcome of combined.slice(0, this.MAX_RESULTS)) {
+            container.appendChild(this.createSelectableElement(outcome));
         }
     }
 
+    /** Render outcome with click handler */
     createSelectableElement(outcome: Outcome): HTMLElement {
         let wrapper: HTMLElement;
 
@@ -143,20 +192,22 @@ export class SelectOutcomesDialog extends DialogComponent {
             el.showIcon();
             wrapper = el.render();
         } else {
-            const div = document.createElement("div");
-            div.textContent = outcome.specificLearningOutcome;
-            wrapper = div;
+            wrapper = document.createElement("div");
+            wrapper.textContent = outcome.specificLearningOutcome;
         }
 
         wrapper.classList.add("selectable-outcome");
-        if (this.selected.has(outcome.outcomeId)) wrapper.classList.add("selected");
+
+        if (this.selected.has(outcome.outcomeId))
+            wrapper.classList.add("selected");
 
         wrapper.addEventListener("click", () => {
-            if (this.selected.has(outcome.outcomeId)) {
-                this.selected.delete(outcome.outcomeId);
+            const id = outcome.outcomeId;
+            if (this.selected.has(id)) {
+                this.selected.delete(id);
                 wrapper.classList.remove("selected");
             } else {
-                this.selected.add(outcome.outcomeId);
+                this.selected.add(id);
                 wrapper.classList.add("selected");
             }
         });
@@ -164,6 +215,7 @@ export class SelectOutcomesDialog extends DialogComponent {
         return wrapper;
     }
 
+    /** Return selected outcomes */
     getSelectedOutcomes(): Outcome[] {
         return this.allOutcomes.filter(o => this.selected.has(o.outcomeId));
     }

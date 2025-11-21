@@ -10,7 +10,7 @@ import "@static/css/lesson.css";
 import "flatpickr/dist/themes/dark.css";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import { LessonsAPI } from "@api/lessons-api";
-import { ShareLessonDialog } from "@components/common/dialogs/share-lesson-dialog";
+import { ShareWorksheetDialog } from "@components/common/dialogs/share-worksheet-dialog";
 import { ContentCopiedSnackbar } from "@components/common/snackbar/content-copied";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
@@ -155,7 +155,7 @@ class Preview {
 function setupEditorPane() {
 }
 
-async function saveAssignment() {
+async function saveWorksheet() {
     const urlParams = new URLSearchParams(window.location.search);
     const idParam = urlParams.get("id") || window.location.hash.replace("#", "");
     if (!idParam) {
@@ -242,7 +242,7 @@ function updateSaveButton(state: "idle" | "saving" | "success" | "error" = "idle
     });
 }
 
-async function loadAssignmentById() {
+async function loadWorksheetById() {
     const params = new URLSearchParams(window.location.search);
     const idParam = params.get("id");
     if (!idParam) return;
@@ -283,7 +283,7 @@ async function handleSaveClick() {
     updateSaveButton("saving");
     clearTimeout(autoSaveTimer);
     try {
-        await saveAssignment();          // reuse your saveLesson() function
+        await saveWorksheet();          // reuse your saveLesson() function
         updateSaveButton("success");
     } catch (err) {
         updateSaveButton("error");
@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Share lesson buttons
     bindAll("#share-lesson", (el) => {
-        el.addEventListener("click", () => new ShareLessonDialog());
+        el.addEventListener("click", () => new ShareWorksheetDialog());
     });
 
     // Copy content buttons
@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initialize editor + load data
     setupEditorPreviewToggle();
     setupEditorPane();
-    await loadAssignmentById();
+    await loadWorksheetById();
     lessonPlanLoaded = true;
 });
 

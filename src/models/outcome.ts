@@ -21,6 +21,11 @@ export class Outcome<T extends {
     grade: string;
     specificLearningOutcome: string;
 }> {
+
+    outcomeId: string;
+    grade: string;
+    specificLearningOutcome: string;
+
     protected _data: T;
 
     constructor(data: RawOutcome) {
@@ -29,11 +34,11 @@ export class Outcome<T extends {
             grade: data.grade,
             specificLearningOutcome: data.specific_learning_outcome
         } as T;
-    }
 
-    get outcomeId() { return this._data.outcomeId; }
-    get grade() { return this._data.grade; }
-    get specificLearningOutcome() { return this._data.specificLearningOutcome; }
+        this.outcomeId = this._data.outcomeId;
+        this.grade = this._data.grade;
+        this.specificLearningOutcome = this._data.specificLearningOutcome;
+    }
 
     public toString(): string {
         return `${this.outcomeId} ${this.specificLearningOutcome}`
