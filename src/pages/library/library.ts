@@ -44,9 +44,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     function render(list: Record<string, LessonRecord>) {
         libraryDiv.innerHTML = "";
 
-        const entries = Object.entries(list).sort(([, a], [, b]) =>
-            a.data.name.localeCompare(b.data.name, undefined, { numeric: true })
-        );
+        const entries = Object.entries(list).sort(([, a], [, b]) => {
+            const nameCompare = a.data.topic.localeCompare(b.data.topic, undefined, { numeric: true });
+            if (nameCompare !== 0) return nameCompare;
+            return a.data.name.localeCompare(b.data.name, undefined, { numeric: true });
+        });
 
         if (!entries.length) {
             const p = document.createElement("p");

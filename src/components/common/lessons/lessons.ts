@@ -69,7 +69,15 @@ export class LessonListContainer {
 
             const lessons = await LessonsAPI.getByOutcome(this.outcome.outcomeId);
 
-            const entries = Object.entries(lessons?.data ?? {});
+            const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+
+            const entries = Object.entries(lessons?.data ?? {}).sort(([, a], [, b]) => {
+                const nameCompare = collator.compare(a.data.name, b.data.name);
+                if (nameCompare !== 0) return nameCompare;
+
+                return collator.compare(a.data.topic, b.data.topic);
+            });
+
             if (entries.length === 0) {
                 this.showEmptyMessage("No lessons have been added yet.");
                 return;

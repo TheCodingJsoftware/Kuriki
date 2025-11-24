@@ -68,7 +68,9 @@ export class ResourceListContainer {
 
             const resources = await ResourceAPI.getByOutcome(this.outcome.outcomeId);
 
-            const items = resources?.data ?? [];
+            const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+
+            const items = (resources?.data ?? []).sort((a, b) => collator.compare(a, b));
             if (!items.length) {
                 this.showEmptyMessage("No resources linked to this outcome yet.");
                 return;
