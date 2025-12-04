@@ -602,7 +602,7 @@ class ToastEditorField implements LessonField<string> {
     header: HTMLHeadingElement;
     id: string;
 
-    constructor(id: string, labelText: string, helperText?: string) {
+    constructor(id: string, labelText: string, helperText?: string, height: string = "800px") {
         this.id = id;
 
         // wrapper
@@ -635,7 +635,7 @@ class ToastEditorField implements LessonField<string> {
         this.editor = new Editor({
             el: editorContainer,
             previewStyle: "vertical",
-            height: "800px",
+            height: height,
             initialEditType: "wysiwyg",
             usageStatistics: true,
             // theme: editorTheme,
@@ -723,6 +723,12 @@ class SaveTemplateButton {
 class LessonNotesEditor extends ToastEditorField {
     constructor() {
         super("lesson-notes", "Lesson Notes");
+    }
+}
+
+class TeacherNotesEditor extends ToastEditorField {
+    constructor() {
+        super("teacher-notes", "Teacher Notes", "", "250px");
     }
 }
 
@@ -1012,6 +1018,7 @@ class LessonBuilder {
         private grade: GradeLevelSelect,
         private date: DateField,
         private time: TimeLengthSelect,
+        private teacherNotes: TeacherNotesEditor,
         private outcomes: CurricularOutcomesSection,
         private resources: ResourceLinksSection,
         private assessment: AssessmentEvidenceSection,
@@ -1027,6 +1034,8 @@ class LessonBuilder {
 **Grade:** ${this.grade.getValue() || ""}
 **Date:** ${this.date.getValue() || ""}
 **Time:** ${this.time.getValue() || ""}
+
+${this.teacherNotes.getValue() ? `#### Teacher Notes:\n>${this.teacherNotes.getValue()}` : ""}
 
 ---
 
@@ -1117,6 +1126,7 @@ function setupEditorPane() {
     const gradeLevelSelect = new GradeLevelSelect();
     const dateField = new DateField();
     const timeLengthSelect = new TimeLengthSelect();
+    const teacherNotes = new TeacherNotesEditor();
     const curricularOutcomesSection = new CurricularOutcomesSection();
     const resourceLinks = new ResourceLinksSection();
     const assessmentEvidence = new AssessmentEvidenceSection();
@@ -1128,6 +1138,7 @@ function setupEditorPane() {
     (window as any).gradeLevelSelect = gradeLevelSelect;
     (window as any).dateField = dateField;
     (window as any).timeLengthSelect = timeLengthSelect;
+    (window as any).teacherNotes = teacherNotes;
     (window as any).curricularOutcomesSection = curricularOutcomesSection;
     (window as any).resourceLinks = resourceLinks;
     (window as any).assessmentEvidence = assessmentEvidence;
@@ -1149,6 +1160,7 @@ function setupEditorPane() {
         gradeLevelSelect,
         dateField,
         timeLengthSelect,
+        teacherNotes,
     ].forEach(f => grid.appendChild(f.element));
 
     const editorPane = document.getElementById("editor-pane")!;
@@ -1170,6 +1182,7 @@ function setupEditorPane() {
         gradeLevelSelect,
         dateField,
         timeLengthSelect,
+        teacherNotes,
         curricularOutcomesSection,
         resourceLinks,
         assessmentEvidence,
@@ -1189,6 +1202,7 @@ function setupEditorPane() {
         el.addEventListener("input", updatePreview)
     );
     lessonNotes.editor.on("change", updatePreview);
+    teacherNotes.editor.on("change", updatePreview);
     curricularOutcomesSection.onChange = updatePreview;
     resourceLinks.onChange = updatePreview;
     assessmentEvidence.onChange = updatePreview;
@@ -1213,6 +1227,7 @@ async function saveLesson() {
         gradeLevel: (document.getElementById("grade-level") as HTMLSelectElement)?.value || "",
         date: (document.getElementById("date-time-input") as HTMLInputElement)?.value || "",
         timeLength: (document.getElementById("time-length") as HTMLSelectElement)?.value || "",
+        teacherNotes: "",
         curricularOutcomes: [],
         resourceLinks: [],
         assessmentEvidence: [],
@@ -1220,6 +1235,7 @@ async function saveLesson() {
     };
 
     // If your field instances are available globally or in scope:
+    data.teacherNotes = (window as any).teacherNotes.getValue();
     data.notes = (window as any).lessonNotes.getValue();
     data.curricularOutcomes = (window as any).curricularOutcomesSection.getValue();
     data.resourceLinks = (window as any).resourceLinks.getValue();
@@ -1304,6 +1320,7 @@ async function loadLessonById() {
         (window as any).gradeLevelSelect.setValue(data.gradeLevel || "");
         (window as any).dateField.setValue(data.date || "");
         (window as any).timeLengthSelect.setValue(data.timeLength || "");
+        (window as any).teacherNotes.setValue(data.teacherNotes || "");
         (window as any).lessonNotes.setValue(data.notes || "");
         await (window as any).curricularOutcomesSection.setValues(data.curricularOutcomes || []);
         (window as any).resourceLinks.setValues(data.resourceLinks || []);

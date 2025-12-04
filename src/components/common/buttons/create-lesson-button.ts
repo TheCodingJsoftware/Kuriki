@@ -36,6 +36,7 @@ export class CreateLessonPlanButton {
                 gradeLevel: this.outcome.grade,
                 date: new Date().toISOString(),
                 timeLength: "~ 1 hour",
+                teacherNotes: "",
                 curricularOutcomes: [this.outcome.outcomeId],
                 resourceLinks: [],
                 assessmentEvidence: [],

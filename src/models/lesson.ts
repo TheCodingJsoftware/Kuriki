@@ -11,6 +11,7 @@ export interface ILesson {
     resourceLinks: string[];
     assessmentEvidence: AssessmentRow[];
     notes: string;           // Markdown from ToastEditorField
+    teacherNotes: string;           // Markdown from ToastEditorField
 }
 
 export class Lesson implements ILesson {
@@ -24,6 +25,7 @@ export class Lesson implements ILesson {
     resourceLinks: string[];
     assessmentEvidence: AssessmentRow[];
     notes: string;           // Markdown from ToastEditorField
+    teacherNotes: string;           // Markdown from ToastEditorField
 
     constructor(init?: Partial<Lesson>) {
         this.topic = init?.topic ?? "";
@@ -36,6 +38,7 @@ export class Lesson implements ILesson {
         this.resourceLinks = init?.resourceLinks ?? [];
         this.assessmentEvidence = init?.assessmentEvidence ?? [];
         this.notes = init?.notes ?? "";
+        this.teacherNotes = init?.teacherNotes ?? "";
     }
 
     /** Serialize to JSON string */
