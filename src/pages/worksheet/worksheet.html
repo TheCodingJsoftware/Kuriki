@@ -124,14 +124,42 @@
     <main class="responsive hidden">
         <div class="grid" id="editor-preview-container">
             <div class="s12 m6 l6" id="editor-container">
-                <article class="round hide-on-print" style="height: 100% !important; overflow-y: auto; overflow-x: hidden;">
-                    <div id="editor-pane"></div>
-                </article>
+                <div id="editor-pane" style="height: 100% !important; overflow-y: auto; overflow-x: hidden;">
+                    <article class="round small-margin">
+                        <div class="field label border round">
+                            <input type="text" id="topic">
+                            <label>Topic</label>
+                        </div>
+                        <div class="field label border round">
+                            <input type="text" id="name">
+                            <label>Name</label>
+                        </div>
+                        <div class="field label border round">
+                            <input type="text" id="author">
+                            <label>Author</label>
+                        </div>
+                        <div class="field label border round">
+                            <input type="text" id="grade-level">
+                            <label>Grade Level</label>
+                        </div>
+                        <div class="field label border round">
+                            <input type="text" id="date">
+                            <label>Date</label>
+                        </div>
+                        <h6>Teacher Notes</h6>
+                        <div id="teacher-notes-container"></div>
+                    </article>
+                    <div id="block-list" class="swapy-container"></div>
+                </div>
             </div>
             <div class="s12 m6 l6" id="preview-container">
                 <div id="preview-pane"></div>
             </div>
         </div>
+        <button class="extra-margin fixed bottom right extra" id="add-block">
+            <i>add</i>
+            <span>Add Block</span>
+        </button>
     </main>
 </body>
 

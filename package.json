@@ -56,13 +56,14 @@
     "dependencies": {
         "@toast-ui/editor": "^3.2.2",
         "beercss": "^3.12.13",
+        "easy-qrcode": "^0.1.0",
         "firebase": "^12.6.0",
         "flatpickr": "^4.6.13",
         "fuse.js": "^7.1.0",
         "idb": "^8.0.3",
-        "easy-qrcode": "^0.1.0",
         "material-dynamic-colors": "^1.1.2",
-        "material-file-icons": "^2.4.0"
+        "material-file-icons": "^2.4.0",
+        "swapy": "^1.0.5"
     },
     "devDependencies": {
         "@types/firebase": "^3.2.3",

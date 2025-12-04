@@ -1,21 +1,26 @@
 import "@utils/theme";
 import "@utils/firebase";
-import "@static/css/style.css"
+import "@static/css/style.css";
+import "@static/css/worksheet.css";
 import "beercss";
 import "material-dynamic-colors";
-import { AppearanceDialog } from "@components/common/dialogs/appearance-dialog";
-import Editor from "@toast-ui/editor";
-import Viewer from "@toast-ui/editor/dist/toastui-editor-viewer";
-import "@static/css/lesson.css";
-import "flatpickr/dist/themes/dark.css";
 import "@toast-ui/editor/dist/toastui-editor.css";
-import { LessonsAPI } from "@api/lessons-api";
+
+import { createSwapy } from "swapy";
+
+import { AppearanceDialog } from "@components/common/dialogs/appearance-dialog";
 import { ShareWorksheetDialog } from "@components/common/dialogs/share-worksheet-dialog";
 import { ContentCopiedSnackbar } from "@components/common/snackbar/content-copied";
 
+import { WorksheetsAPI } from "@api/worksheets-api";
+import { Block } from "@components/worksheet/block";
+import { SwapyManager } from "@components/swapy/swapy-manager";
+import Editor from "@toast-ui/editor";
+
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
+
+let worksheetLoaded = false;
 let autoSaveTimer: number | undefined;
-let lessonPlanLoaded: boolean = false;
 
 function setupEditorPreviewToggle() {
     const main = document.querySelector("main") as HTMLElement;
@@ -105,233 +110,193 @@ function setupEditorPreviewToggle() {
     }
 }
 
-class AssignmentBuilder {
-    constructor(
-    ) { }
 
-    /** Builds markdown for the Preview */
-    buildMarkdown(): string {
-        return ``;
-    }
+export function updateSaveButton(state: "idle" | "saving" | "success" | "error" = "idle") {
+    const buttons = document.querySelectorAll<HTMLButtonElement>("#save-button, .save-button");
 
-}
+    buttons.forEach(btn => {
+        const icon = btn.querySelector("i");
+        const text = btn.querySelector("div");
+        const spinner = btn.querySelector("progress");
 
-class Preview {
-    private element: HTMLDivElement;
-    private viewer: Viewer;
-    private lastMarkdown = "";
-
-    constructor(containerId: string = "preview-pane") {
-        const container = document.getElementById(containerId) as HTMLDivElement;
-        if (!container) throw new Error(`#${containerId} not found`);
-
-        this.element = container;
-
-        const editorTheme = ui("mode") === "dark" ? "dark" : "light";
-        this.viewer = new Viewer({
-            el: this.element,
-            initialValue: "Nothing to preview yet...",
-            usageStatistics: false,
-            theme: editorTheme,
-        });
-    }
-
-    update(markdown: string) {
-        this.lastMarkdown = markdown || "Nothing to preview yet...";
-        this.viewer.setMarkdown(this.lastMarkdown);
-
-        if (lessonPlanLoaded) {
-            if (autoSaveTimer) clearTimeout(autoSaveTimer);
-            autoSaveTimer = window.setTimeout(() => handleSaveClick(), 5000);
-        }
-    }
-
-    /** Return the latest Markdown text */
-    getMarkdown(): string {
-        return this.lastMarkdown;
-    }
-}
-
-function setupEditorPane() {
-}
-
-async function saveWorksheet() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const idParam = urlParams.get("id") || window.location.hash.replace("#", "");
-    if (!idParam) {
-        alert("No assignment ID in URL.");
-        return;
-    }
-
-    const assignmentId = parseInt(idParam, 10);
-
-    const data = {
-        topic: (document.getElementById("topic-title") as HTMLInputElement)?.value || "",
-        name: (document.getElementById("lesson-name") as HTMLInputElement)?.value || "",
-        author: (document.getElementById("author-name") as HTMLInputElement)?.value || "",
-        gradeLevel: (document.getElementById("grade-level") as HTMLSelectElement)?.value || "",
-        date: (document.getElementById("date-time-input") as HTMLInputElement)?.value || "",
-        timeLength: (document.getElementById("time-length") as HTMLSelectElement)?.value || "",
-        curricularOutcomes: [],
-        resourceLinks: [],
-        assessmentEvidence: [],
-        notes: "",
-    };
-
-    // If your field instances are available globally or in scope:
-    data.notes = (window as any).lessonNotes.getValue();
-    data.curricularOutcomes = (window as any).curricularOutcomesSection.getValue();
-    data.resourceLinks = (window as any).resourceLinks.getValue();
-    data.assessmentEvidence = (window as any).assessmentEvidence.getValue();
-
-    const outcomes = data.curricularOutcomes;
-
-    try {
-        await LessonsAPI.post(assignmentId, data, outcomes);
-        // console.log("Lesson saved:", lessonId);
-        // alert("Lesson saved successfully!");
-    } catch (err) {
-        console.error("Failed to save lesson:", err);
-        alert("Failed to save lesson. Check console for details.");
-    }
-}
-
-function updateSaveButton(state: "idle" | "saving" | "success" | "error" = "idle") {
-    // Find all matching buttons (supports duplicates or class-based usage)
-    const saveButtons = document.querySelectorAll<HTMLButtonElement>("#save-button, .save-button");
-
-    saveButtons.forEach((saveButton) => {
-        const saveIcon = saveButton.querySelector("i");
-        const saveText = saveButton.querySelector("div");
-        const saveSpinner = saveButton.querySelector("progress");
-
-        if (!saveIcon || !saveText || !saveSpinner) return; // Skip malformed buttons
+        if (!icon || !text || !spinner) return;
 
         switch (state) {
             case "saving":
-                saveSpinner.classList.remove("hidden");  // show spinner
-                saveIcon.classList.add("hidden");        // hide icon
-                saveText.textContent = "Saving...";
-                saveButton.classList.add("disabled");
+                spinner.classList.remove("hidden");
+                icon.classList.add("hidden");
+                text.textContent = "Saving...";
+                btn.classList.add("disabled");
                 break;
 
             case "success":
-                saveSpinner.classList.add("hidden");
-                saveIcon.classList.remove("hidden");
-                saveText.textContent = "Saved!";
-                saveButton.classList.remove("disabled");
+                spinner.classList.add("hidden");
+                icon.classList.remove("hidden");
+                text.textContent = "Saved!";
+                btn.classList.remove("disabled");
                 setTimeout(() => updateSaveButton("idle"), 1500);
                 break;
 
             case "error":
-                saveSpinner.classList.add("hidden");
-                saveIcon.classList.remove("hidden");
-                saveText.textContent = "Failed!";
-                saveButton.classList.remove("disabled");
+                spinner.classList.add("hidden");
+                icon.classList.remove("hidden");
+                text.textContent = "Failed!";
+                btn.classList.remove("disabled");
                 setTimeout(() => updateSaveButton("idle"), 2000);
                 break;
 
-            case "idle":
             default:
-                saveSpinner.classList.add("hidden");
-                saveIcon.classList.remove("hidden");
-                saveText.textContent = "Save";
-                saveButton.classList.remove("disabled");
+                spinner.classList.add("hidden");
+                icon.classList.remove("hidden");
+                text.textContent = "Save";
+                btn.classList.remove("disabled");
                 break;
         }
     });
 }
 
-async function loadWorksheetById() {
-    const params = new URLSearchParams(window.location.search);
-    const idParam = params.get("id");
-    if (!idParam) return;
-
-    const id = parseInt(idParam, 10);
-    try {
-        const response = await LessonsAPI.getById(id);
-        const lesson = response.data;
-
-        if (!lesson || !lesson.data) return;
-
-        // Now safely extract and set field values
-        const { data } = lesson;
-
-        (window as any).topicInput.setValue(data.topic || "");
-        (window as any).lessonNameInput.setValue(data.name || "");
-        (window as any).authorInput.setValue(data.author || "");
-        (window as any).gradeLevelSelect.setValue(data.gradeLevel || "");
-        (window as any).dateField.setValue(data.date || "");
-        (window as any).timeLengthSelect.setValue(data.timeLength || "");
-        (window as any).lessonNotes.setValue(data.notes || "");
-        await (window as any).curricularOutcomesSection.setValues(data.curricularOutcomes || []);
-        (window as any).resourceLinks.setValues(data.resourceLinks || []);
-        (window as any).assessmentEvidence.setValues(data.assessmentEvidence || []);
-        (window as any).preview.update((window as any).builder.buildMarkdown());
-
-        const progress = document.getElementById("progress") as HTMLDivElement;
-        progress.remove();
-
-        const main = document.querySelector("main") as HTMLElement;
-        main.classList.remove("hidden");
-    } catch (err) {
-        console.error("Failed to load lesson:", err);
-    }
+/** Attach handler to all matching elements */
+function bindAll(selector: string, handler: (el: HTMLElement) => void) {
+    document.querySelectorAll<HTMLElement>(selector).forEach(handler);
 }
 
-async function handleSaveClick() {
-    updateSaveButton("saving");
-    clearTimeout(autoSaveTimer);
-    try {
-        await saveWorksheet();          // reuse your saveLesson() function
-        updateSaveButton("success");
-    } catch (err) {
-        updateSaveButton("error");
-    }
+let swapy: any = null;
+
+function refreshSwapy() {
+    const container = document.querySelector("#block-list")!;
+
+    // Remove old instance (if any)
+    if (swapy) swapy.enable(false);
+
+    // The container must have slots
+    container.querySelectorAll(".slot").forEach(s => s.remove());
+
+    // Wrap each block inside a slot
+    // container.querySelectorAll("[data-swapy-item]").forEach(item => {
+    //     const slot = document.createElement("div");
+    //     slot.classList.add("slot");
+    //     slot.setAttribute("data-swapy-slot", "slot-" + item.getAttribute("data-swapy-item"));
+    //     item.replaceWith(slot);
+    //     slot.appendChild(item);
+    // });
+
+    // Create new instance
+    swapy = createSwapy(container, {
+        animation: "dynamic"
+    });
+
+    // Listen for reordering
+    swapy.onSwap((event: any) => {
+        console.log("New order:", event.newSlotItemMap.asArray);
+        // TODO: update WorksheetBlocks order later
+    });
+}
+
+
+function addNewBlock(): Block {
+    const block = new Block();
+    SwapyManager.get()
+        .createSlotWithItem(block.id, block.element)
+        .slot.element.scrollIntoView(true);
+    block.mount();
+    SwapyManager.get().update();
+    return block;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // Utility to attach an event to all matching elements
-    function bindAll(selector: string, handler: (el: HTMLElement) => void) {
-        document.querySelectorAll<HTMLElement>(selector).forEach(handler);
-    }
 
-    // Appearance dialog buttons
+    // -----------------------------
+    // Appearance dialog
+    // -----------------------------
     bindAll("#appearance-button", (el) => {
         el.addEventListener("click", () => new AppearanceDialog());
     });
 
-    // Share lesson buttons
+    // -----------------------------
+    // Share worksheet dialog
+    // -----------------------------
     bindAll("#share-lesson", (el) => {
         el.addEventListener("click", () => new ShareWorksheetDialog());
     });
 
-    // Copy content buttons
+    // -----------------------------
+    // Copy preview markdown
+    // -----------------------------
     bindAll("#copy-content", (el) => {
         el.addEventListener("click", () => {
-            navigator.clipboard.writeText((window as any).preview.getMarkdown());
+            const md = (window as any).preview?.getMarkdown() || "";
+            navigator.clipboard.writeText(md);
             new ContentCopiedSnackbar();
         });
     });
 
-    // Save buttons
+    // -----------------------------
+    // Manual save
+    // -----------------------------
     bindAll("#save-button", (el) => {
-        el.addEventListener("click", handleSaveClick);
+        el.addEventListener("click", async () => {
+            updateSaveButton("saving");
+            // await handleWorksheetSave();
+        });
     });
 
-    // Initialize editor + load data
+    const blockList = document.querySelector("#block-list") as HTMLElement;
+    SwapyManager.init(blockList);
+
+    bindAll("#add-block", (el) => {
+        el.addEventListener("click", () => addNewBlock());
+    });
+
+    addNewBlock();
+
+    const teacherNotesContainer = document.getElementById("teacher-notes-container") as HTMLElement;
+    new Editor({
+        el: teacherNotesContainer,
+        previewStyle: "vertical",
+        height: "250px",
+        initialEditType: "wysiwyg",
+        usageStatistics: true,
+    });
+
+    // -----------------------------
+    // Initialize UI
+    // -----------------------------
     setupEditorPreviewToggle();
-    setupEditorPane();
-    await loadWorksheetById();
-    lessonPlanLoaded = true;
+    // setupWorksheetEditorPane();
+
+    // -----------------------------
+    // Load worksheet from API
+    // -----------------------------
+    // await loadWorksheetById();
+    // worksheetLoaded = true;
+
+    // Remove loading overlay
+    document.getElementById("progress")?.remove();
+    document.querySelector("main")?.classList.remove("hidden");
 });
 
+// -------------------------------
+// Ctrl + S → Save worksheet
+// -------------------------------
 document.addEventListener("keydown", (e) => {
-    // Check for Ctrl+S (Windows/Linux) or ⌘+S (macOS)
-    const isSaveShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s";
-
-    if (isSaveShortcut) {
+    const isShortcut = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s";
+    if (isShortcut) {
         e.preventDefault();
-        handleSaveClick();
+        updateSaveButton("saving");
+        // handleWorksheetSave();
     }
 });
+
+// -------------------------------
+// Auto-save timer support
+// (Preview triggers this)
+// -------------------------------
+(window as any).queueWorksheetAutoSave = () => {
+    if (!worksheetLoaded) return;
+    if (autoSaveTimer) clearTimeout(autoSaveTimer);
+
+    autoSaveTimer = window.setTimeout(async () => {
+        updateSaveButton("saving");
+        // await handleWorksheetSave();
+    }, 5000);
+};

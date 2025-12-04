@@ -1,67 +1,49 @@
 export enum WorksheetBlockType {
     Question = "question",
-
     SectionHeader = "section_header",
     Divider = "divider",
     BlankSpace = "blank_space",
     PageBreak = "page_break"
 }
 
+/**
+ * Unified block type that stores ALL possible fields.
+ * The active UI is determined by `currentType`.
+ */
 export interface IWorksheetBlock {
     id: string;
-    type: WorksheetBlockType;
-}
 
-export interface IQuestionBlock extends IWorksheetBlock {
-    type: WorksheetBlockType.Question;
+    /** Which block type is active (controls UI + preview) */
+    currentType: WorksheetBlockType;
 
-    /** Question number (1,2,3...) */
-    number: number;
-
-    /** How many points this question is worth */
-    points: number;
-
-    /** Markdown for the actual question text */
-    questionMarkdown: string;
-
-    /** Optional markdown answer */
+    // -------------------------
+    // QUESTION FIELDS
+    // -------------------------
+    points?: number;                    // default 5
+    questionMarkdown?: string;
     answerMarkdown?: string;
-
-    /** Whether to show/print the answer */
     showAnswer?: boolean;
-
-    /** Optional teacher notes (also markdown) */
     notesMarkdown?: string;
+
+    // -------------------------
+    // HEADER FIELDS
+    // -------------------------
+    title?: string;
+    headerType?: string;
+
+    // -------------------------
+    // BLANK SPACE
+    // -------------------------
+    size?: number;
+
+    // -------------------------
+    // nothing needed for divider / page break
+    // but we could later store custom styles if wanted
+    // -------------------------
 }
 
-export interface ISectionHeader extends IWorksheetBlock {
-    type: WorksheetBlockType.SectionHeader;
-    title: string;
-}
-
-export interface IDivider extends IWorksheetBlock {
-    type: WorksheetBlockType.Divider;
-}
-
-export interface IBlankSpace extends IWorksheetBlock {
-    type: WorksheetBlockType.BlankSpace;
-    /**
-     * Spacing amount (e.g., px, or a multiplier like 1–5)
-     * Renderer can decide how to interpret this.
-     */
-    size: number;
-}
-
-export interface IPageBreak extends IWorksheetBlock {
-    type: WorksheetBlockType.PageBreak;
-}
-
-export type WorksheetBlock =
-    | IQuestionBlock
-    | ISectionHeader
-    | IDivider
-    | IBlankSpace
-    | IPageBreak;
+/** List of blocks inside the worksheet */
+export type WorksheetBlock = IWorksheetBlock;
 
 export interface IWorksheet {
     topic: string;
@@ -69,6 +51,7 @@ export interface IWorksheet {
     author: string;
     gradeLevel: string;
     date: string;
+    teacherNotes: string;
     curricularOutcomes: string[];
     blocks: WorksheetBlock[];
 }
@@ -79,6 +62,7 @@ export class Worksheet implements IWorksheet {
     author = "";
     gradeLevel = "";
     date = "";
+    teacherNotes = "";
     curricularOutcomes: string[] = [];
     blocks: WorksheetBlock[] = [];
 
@@ -86,17 +70,14 @@ export class Worksheet implements IWorksheet {
         Object.assign(this, init);
     }
 
-    /** Convert class to JSON string */
     toJSON(): string {
         return JSON.stringify(this, null, 2);
     }
 
-    /** Convert class to plain JS object */
     toObject(): IWorksheet {
         return { ...this };
     }
 
-    /** Load from JSON string */
     static fromJSON(json: string): Worksheet {
         return new Worksheet(JSON.parse(json));
     }
@@ -104,10 +85,7 @@ export class Worksheet implements IWorksheet {
     /** Sum of all question points */
     getTotalPoints(): number {
         return this.blocks
-            .filter(b => b.type === WorksheetBlockType.Question)
-            .reduce((sum, b) => {
-                const q = b as IQuestionBlock;
-                return sum + q.points;
-            }, 0);
+            .filter(b => b.currentType === WorksheetBlockType.Question)
+            .reduce((sum, b) => sum + (b.points ?? 0), 0);
     }
 }

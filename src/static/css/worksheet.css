@@ -1,0 +1,292 @@
+.highlight {
+    background-color: var(--primary);
+    color: var(--on-primary);
+    font-weight: bold;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.handle {
+    cursor: move;
+}
+
+.slot {
+    min-height: 60px;
+    border-radius: 32px;
+    padding: 3px;
+    position: relative;
+}
+
+.slot::after {
+    /* content: attr(data-swapy-slot); */
+    /* position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 12pt; */
+    color: var(--on-primary-container);
+}
+
+.slot[data-swapy-highlighted] {
+    background: var(--surface-variant);
+    border: 1px solid var(--primary) !important;
+    transition: background-color var(--speed3) ease-in-out, border-color var(--speed1) ease;
+}
+
+
+/* .item[data-swapy-dragging] {
+    opacity: 0.6;
+} */
+
+[data-swapy-item] article:not(.hidden) {
+    margin: 3px;
+}
+
+[data-swapy-item] article.hidden {
+    margin: 0;
+    /* or omit if default */
+}
+
+.swapy-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    /* this replaces grid gaps safely */
+}
+
+@font-face {
+    font-family: 'Latin Modern Roman';
+    font-weight: normal;
+    font-style: normal;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-regular.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Roman';
+    font-weight: bold;
+    font-style: normal;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bold.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Roman';
+    font-weight: normal;
+    font-style: italic;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-italic.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Roman';
+    font-weight: bold;
+    font-style: italic;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bolditalic.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Mono';
+    font-weight: normal;
+    font-style: normal;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-regular.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Mono';
+    font-weight: normal;
+    font-style: italic;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-italic.woff') format('woff');
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+@media (min-width: 601px) {
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* make editor + preview one row with 2 columns */
+    #editor-preview-container {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    #editor-container,
+    #preview-container {
+        flex: 1 1 50%;
+        /* equal width columns */
+        height: 100%;
+        overflow-y: auto;
+        /* independent scroll */
+        overflow-x: hidden;
+        box-sizing: border-box;
+        padding: 1rem;
+    }
+
+    /* Optional: keep internal content full-height */
+    #editor-pane,
+    #preview-pane {
+        min-height: 100%;
+    }
+}
+
+
+/* === MOBILE: stack vertically === */
+
+@media (max-width: 600px) {
+    body {
+        overflow: auto;
+        height: auto;
+    }
+
+    #editor-preview-container {
+        display: block;
+        /* stack */
+        height: auto;
+    }
+
+    #editor-container,
+    #preview-container {
+        height: auto;
+        overflow: visible;
+        padding: 0.5rem;
+    }
+}
+
+#preview-pane .toastui-editor-contents {
+    font-family: 'Latin Modern Roman', serif;
+}
+
+.toastui-editor-ww-container {
+    background-color: var(--container) !important;
+}
+
+.toastui-editor-contents h1,
+.toastui-editor-contents h2,
+.toastui-editor-contents h3,
+.toastui-editor-contents h4,
+.toastui-editor-contents h5,
+.toastui-editor-contents h6,
+.toastui-editor-contents li,
+.toastui-editor-ww-container .toastui-editor-contents td p,
+.toastui-editor-ww-container .toastui-editor-contents p,
+.scroll>table,
+table :is(thead,
+    tbody,
+    tfoot,
+    tr,
+    td),
+.toastui-editor-contents p {
+    color: var(--on-background) !important;
+}
+
+.toastui-editor-contents table th {
+    background-color: var(--surface-container-high) !important;
+}
+
+#preview-pane .toastui-editor-contents table th {
+    background-color: #555 !important;
+}
+
+.toastui-editor-defaultUI-toolbar {
+    background-color: var(--surface-container-highest) !important;
+    border-top-right-radius: 1.5em !important;
+    border-top-left-radius: 1.5em !important;
+}
+
+.toastui-editor-defaultUI {
+    border-color: var(--outline) !important;
+    border-radius: 1.5em !important;
+}
+
+.toastui-editor-mode-switch {
+    border-top: none !important;
+    background-color: var(--fill) !important;
+}
+
+.toastui-editor-mode-switch .tab-item {
+    background-color: var(--fill) !important;
+    color: var(--on-primary) !important;
+}
+
+.toastui-editor-mode-switch .tab-item {
+    background-color: var(--surface-container) !important;
+    color: var(--on-surface-container) !important;
+    border: none !important;
+    border-radius: 1.5em !important;
+    margin: .125rem !important;
+}
+
+.toastui-editor-mode-switch .tab-item:hover {
+    background: var(--active) !important;
+}
+
+.toastui-editor-mode-switch .tab-item.active {
+    background-color: var(--secondary-container) !important;
+    color: var(--on-secondary-container) !important;
+}
+
+@media print {
+    body {
+        background-color: white !important;
+        color: black !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+
+    #editor-preview-container {
+        display: block !important;
+        /* stack vertically */
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    #editor-container {
+        display: none !important;
+        /* hide editor on print */
+    }
+
+    #preview-container {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    #preview-pane {
+        width: 100% !important;
+        margin-bottom: 20px;
+    }
+
+    #preview-pane,
+    #preview-pane p,
+    #preview-pane tbody td,
+    #preview-pane h1,
+    #preview-pane h2,
+    #preview-pane h3,
+    #preview-pane h4,
+    #preview-pane h5,
+    #preview-pane h6 {
+        background-color: white !important;
+        color: black !important;
+        border-color: black !important;
+    }
+
+    .hide-on-print {
+        display: none !important;
+    }
+}

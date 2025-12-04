@@ -31,10 +31,10 @@ export const builtInTemplates: LessonTemplate[] = [
 
 | Phase | Time | Description | Differentiation / Support |
 | ----- | ---- | ----------- | ------------------------- |
-| Activate | 10 minutes |  |  |
-| Acquire | 20 minutes |  |  |
-| Apply | 25 minutes |  |  |
-| Closure | 5 minutes |  |  |
+| Activate<br>*How will students prepare for learning?* | 10 minutes |  |  |
+| Acquire<br>*What strategies facilitate learning for groups and individuals?* | 20 minutes |  |  |
+| Apply<br>*How will students demonstrate or transfer their learning?* | 25 minutes |  |  |
+| Closure<br>*How will students reflect on or consolidate their learning?* | 5 minutes |  |  |
 
 ## Reflections
 
@@ -62,10 +62,10 @@ export const builtInTemplates: LessonTemplate[] = [
 
 | Phase | Time | Description | Differentiation / Support |
 | ----- | ---- | ----------- | ------------------------- |
-| Activate | 10 minutes |  |  |
-| Acquire | 20 minutes |  |  |
-| Apply | 25 minutes |  |  |
-| Closure | 5 minutes |  |  |
+| Activate<br>*How will students prepare for learning?* | 10 minutes |  |  |
+| Acquire<br>*What strategies facilitate learning for groups and individuals?* | 20 minutes |  |  |
+| Apply<br>*How will students demonstrate or transfer their learning?* | 25 minutes |  |  |
+| Closure<br>*How will students reflect on or consolidate their learning?* | 5 minutes |  |  |
 
 ## Reflections
 
