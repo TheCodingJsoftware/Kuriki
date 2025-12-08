@@ -7,6 +7,8 @@ import { LessonRecord, LessonsAPI } from "@api/lessons-api";
 import { LessonCard } from "@components/lesson/card-element";
 import { LessonList } from "@components/lesson/list-element";
 import { debounce } from "@utils/debounce";
+import { builtInTemplates } from "@models/lesson-template";
+import { WorksheetsAPI } from "@api/worksheets-api";
 
 type ViewMode = "grid" | "list";
 
@@ -113,4 +115,48 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     gridButton.addEventListener("click", () => setView("grid"));
     listButton.addEventListener("click", () => setView("list"));
+
+    const backToTopButton = document.getElementById("back-to-top-button") as HTMLButtonElement;
+    backToTopButton.addEventListener("click", () => window.scrollTo(0, 0));
+
+    const createLessonPlanButton = document.getElementById("create-lesson-plan-button") as HTMLButtonElement;
+    createLessonPlanButton.addEventListener("click", async () => {
+        const idKey = Number(new Date().getTime().toString());
+
+        const lessonData = {
+            topic: "",
+            name: "",
+            author: localStorage.getItem("authorName") || "Anonymous",
+            gradeLevel: "",
+            date: new Date().toISOString(),
+            timeLength: "~ 1 hour",
+            teacherNotes: "",
+            curricularOutcomes: [],
+            resourceLinks: [],
+            assessmentEvidence: [],
+            notes: builtInTemplates[0]!.markdown,
+        };
+
+        await LessonsAPI.post(idKey, lessonData, []);
+        window.open(`/lesson.html?id=${idKey}`, "_blank");
+    });
+
+    const createWorksheetButton = document.getElementById("create-worksheet-button") as HTMLButtonElement;
+    createWorksheetButton.addEventListener("click", async () => {
+        const idKey = Number(new Date().getTime().toString());
+
+        const worksheetData = {
+            topic: "",
+            name: "",
+            author: localStorage.getItem("authorName") || "Anonymous",
+            gradeLevel: "",
+            date: new Date().toISOString(),
+            teacherNotes: "",
+            curricularOutcomes: [],
+            blocks: []
+        };
+
+        await WorksheetsAPI.post(idKey, worksheetData, []);
+        window.open(`/worksheet.html?id=${idKey}`, "_blank");
+    });
 });
