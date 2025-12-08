@@ -54,8 +54,8 @@
         "deploy": "npm run build && firebase deploy --only hosting"
     },
     "dependencies": {
-        "@toast-ui/editor": "^3.1.0",
-        "beercss": "^3.13.0",
+        "@toast-ui/editor": "^3.2.2",
+        "beercss": "^3.13.1",
         "easy-qrcode": "^0.1.0",
         "firebase": "^12.6.0",
         "flatpickr": "^4.6.13",
