@@ -40,6 +40,8 @@ export interface IWorksheetBlock {
     // nothing needed for divider / page break
     // but we could later store custom styles if wanted
     // -------------------------
+
+    hidden?: boolean;
 }
 
 /** List of blocks inside the worksheet */

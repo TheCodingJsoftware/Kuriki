@@ -13,7 +13,7 @@ export class SwapyManager {
 
         this.swapy = createSwapy(this.container, {
             animation: "spring",
-            swapMode: "hover",
+            swapMode: "drop",
             autoScrollOnDrag: true,
         });
     }

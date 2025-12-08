@@ -5,14 +5,9 @@ import "@static/css/worksheet.css";
 import "beercss";
 import "material-dynamic-colors";
 import "@toast-ui/editor/dist/toastui-editor.css";
-
-import { createSwapy } from "swapy";
-
 import { AppearanceDialog } from "@components/common/dialogs/appearance-dialog";
 import { ShareWorksheetDialog } from "@components/common/dialogs/share-worksheet-dialog";
 import { ContentCopiedSnackbar } from "@components/common/snackbar/content-copied";
-
-import { WorksheetsAPI } from "@api/worksheets-api";
 import { Block } from "@components/worksheet/block";
 import { SwapyManager } from "@components/swapy/swapy-manager";
 import Editor from "@toast-ui/editor";
@@ -159,39 +154,6 @@ export function updateSaveButton(state: "idle" | "saving" | "success" | "error" 
 function bindAll(selector: string, handler: (el: HTMLElement) => void) {
     document.querySelectorAll<HTMLElement>(selector).forEach(handler);
 }
-
-let swapy: any = null;
-
-function refreshSwapy() {
-    const container = document.querySelector("#block-list")!;
-
-    // Remove old instance (if any)
-    if (swapy) swapy.enable(false);
-
-    // The container must have slots
-    container.querySelectorAll(".slot").forEach(s => s.remove());
-
-    // Wrap each block inside a slot
-    // container.querySelectorAll("[data-swapy-item]").forEach(item => {
-    //     const slot = document.createElement("div");
-    //     slot.classList.add("slot");
-    //     slot.setAttribute("data-swapy-slot", "slot-" + item.getAttribute("data-swapy-item"));
-    //     item.replaceWith(slot);
-    //     slot.appendChild(item);
-    // });
-
-    // Create new instance
-    swapy = createSwapy(container, {
-        animation: "dynamic"
-    });
-
-    // Listen for reordering
-    swapy.onSwap((event: any) => {
-        console.log("New order:", event.newSlotItemMap.asArray);
-        // TODO: update WorksheetBlocks order later
-    });
-}
-
 
 function addNewBlock(): Block {
     const block = new Block();

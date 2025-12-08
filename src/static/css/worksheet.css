@@ -16,6 +16,10 @@
     cursor: move;
 }
 
+.block-collapsed .block-content {
+    display: none;
+}
+
 .slot {
     min-height: 60px;
     border-radius: 32px;

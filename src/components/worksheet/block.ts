@@ -31,7 +31,26 @@ export class Block {
         this.element.innerHTML = `
             <div class="row">
                 <div class="handle" data-swapy-handle><i>drag_indicator</i></div>
-                <nav class="max toolbar round fill">
+                <h6 class="max" id="${id}-title">Block</h6>
+                <button id="${id}-duplicate" class="chip square">
+                    <i>content_copy</i>
+                    <div class="tooltip">
+                        Duplicate
+                    </div>
+                </button>
+                <button class="circle error chip" id="${id}-delete">
+                    <i>delete</i>
+                </button>
+                <label class="checkbox icon">
+                    <input type="checkbox" id="${id}-hidden">
+                    <span>
+                        <i>expand_less</i>
+                        <i>expand_more</i>
+                    </span>
+                </label>
+            </div>
+            <div id="${id}-content" class="block-content">
+                <nav class="margin max toolbar round fill">
                     <a class="active" data-ui="#${id}-question">
                         <i>help</i>
                         <span class="l">Question</span>
@@ -53,12 +72,6 @@ export class Block {
                         <span class="l">Page Break</span>
                     </a>
                 </nav>
-                <button class="circle error" id="${id}-delete">
-                    <i>delete</i>
-                </button>
-            </div>
-
-            <div class="block-content">
                 <div class="page padding active" id="${id}-question">
                     <div class="prefix field label border round">
                         <i>star</i>
@@ -89,7 +102,7 @@ export class Block {
                         <label>Header</label>
                         <i>arrow_drop_down</i>
                     </div>
-                    <div class="field label border round no-margin">
+                    <div class="field label border round">
                         <input type="text" id="${id}-title">
                         <label>Title</label>
                     </div>
@@ -130,8 +143,29 @@ export class Block {
         });
     }
 
+    setHidden(state: boolean) {
+        const content = this.element.querySelector(`#${this.id}-content`) as HTMLElement;
+
+        // Update the block's hidden property
+        (this as any).hidden = state;
+
+        if (state) {
+            this.element.classList.add("block-collapsed");
+        } else {
+            this.element.classList.remove("block-collapsed");
+        }
+    }
+
     mount() {
         const id = this.id;
+
+        const hiddenCheckbox = this.element.querySelector(`#${id}-hidden`) as HTMLInputElement;
+        hiddenCheckbox.addEventListener("change", () => {
+            this.setHidden(hiddenCheckbox.checked);
+        });
+
+        // Restore UI on mount
+        this.setHidden(hiddenCheckbox.checked);
 
         const questionEl = this.element.querySelector(`#${id}-question-container`) as HTMLElement;
         const answerEl = this.element.querySelector(`#${id}-answer-container`) as HTMLElement;
