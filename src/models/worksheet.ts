@@ -1,9 +1,9 @@
 export enum WorksheetBlockType {
     Question = "question",
-    SectionHeader = "section_header",
+    SectionHeader = "header",
     Divider = "divider",
-    BlankSpace = "blank_space",
-    PageBreak = "page_break"
+    BlankSpace = "space",
+    PageBreak = "break"
 }
 
 /**
@@ -23,13 +23,13 @@ export interface IWorksheetBlock {
     questionMarkdown?: string;
     answerMarkdown?: string;
     showAnswer?: boolean;
-    notesMarkdown?: string;
+    questionSpaceSize?: number;
 
     // -------------------------
     // HEADER FIELDS
     // -------------------------
-    title?: string;
     headerType?: string;
+    title?: string;
 
     // -------------------------
     // BLANK SPACE
@@ -70,6 +70,10 @@ export class Worksheet implements IWorksheet {
 
     constructor(init?: Partial<Worksheet>) {
         Object.assign(this, init);
+    }
+
+    load(data: IWorksheet) {
+        Object.assign(this, data);
     }
 
     toJSON(): string {

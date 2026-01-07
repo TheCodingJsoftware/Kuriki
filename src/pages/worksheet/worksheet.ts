@@ -11,11 +11,60 @@ import { ContentCopiedSnackbar } from "@components/common/snackbar/content-copie
 import { Block } from "@components/worksheet/block";
 import { SwapyManager } from "@components/swapy/swapy-manager";
 import Editor from "@toast-ui/editor";
+import { SnackbarComponent } from "@components/common/snackbar/snackbar";
+import { WorksheetsAPI } from "@api/worksheets-api";
+import { Worksheet, WorksheetBlock, WorksheetBlockType } from "@models/worksheet";
+import { Preview } from "@components/worksheet/preview";
+import "katex/dist/katex.min.css";
+import { CurricularOutcomesSection } from "@components/lesson/curricular-outcome-selection";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
 
 let worksheetLoaded = false;
 let autoSaveTimer: number | undefined;
+
+const worksheet = new Worksheet();
+let preview = new Preview(worksheet);
+let blocks: Block[] = [];
+
+let topicInput = document.getElementById("topic") as HTMLInputElement;
+let nameInput = document.getElementById("name") as HTMLInputElement;
+let authorInput = document.getElementById("author") as HTMLInputElement;
+let gradeLevelInput = document.getElementById("grade-level") as HTMLInputElement;
+let dateInput = document.getElementById("date") as HTMLInputElement;
+let teacherNotesEditor: Editor | null = null;
+let outcomeContainer = document.getElementById("outcome-container") as HTMLDivElement;
+let outcomeSelection = new CurricularOutcomesSection();
+
+topicInput.addEventListener("input", async () => {
+    worksheet.topic = topicInput.value;
+    if (!worksheetLoaded) return;
+    await preview.render();
+});
+
+nameInput.addEventListener("input", async () => {
+    worksheet.name = nameInput.value;
+    if (!worksheetLoaded) return;
+    await preview.render();
+});
+
+authorInput.addEventListener("input", async () => {
+    worksheet.author = authorInput.value;
+    if (!worksheetLoaded) return;
+    await preview.render();
+});
+
+gradeLevelInput.addEventListener("input", async () => {
+    worksheet.gradeLevel = gradeLevelInput.value;
+    if (!worksheetLoaded) return;
+    await preview.render();
+});
+
+dateInput.addEventListener("input", async () => {
+    worksheet.date = dateInput.value;
+    if (!worksheetLoaded) return;
+    await preview.render();
+});
 
 function setupEditorPreviewToggle() {
     const main = document.querySelector("main") as HTMLElement;
@@ -105,6 +154,10 @@ function setupEditorPreviewToggle() {
     }
 }
 
+function syncWorksheetBlocksFromUI() {
+    worksheet.blocks = blocks.map(b => b.toObject());
+}
+
 
 export function updateSaveButton(state: "idle" | "saving" | "success" | "error" = "idle") {
     const buttons = document.querySelectorAll<HTMLButtonElement>("#save-button, .save-button");
@@ -155,17 +208,215 @@ function bindAll(selector: string, handler: (el: HTMLElement) => void) {
     document.querySelectorAll<HTMLElement>(selector).forEach(handler);
 }
 
+function uid() {
+    return `block-${crypto.randomUUID()}`;
+}
+
 function addNewBlock(): Block {
-    const block = new Block();
+    const blockData = {
+        id: uid(),
+        currentType: WorksheetBlockType.Question,
+        points: 5,
+        questionMarkdown: "",
+        questionSpaceSize: 1,
+        answerMarkdown: "",
+        showAnswer: false,
+        notesMarkdown: "",
+        title: "Block",
+        headerType: "Header 1",
+        size: 1,
+        hidden: false,
+    };
+
+    const block = new Block(blockData);
+    block.onChanged.connect(async (e) => {
+        syncWorksheetBlocksFromUI();
+        if (!worksheetLoaded) return;
+        await preview.render();
+    })
+    block.onDuplicate.connect(async (id) => {
+        const b = blocks.find(b => b.id === id);
+        if (!b) return;
+
+        const newBlockData = {
+            ...b?.block,
+            id: uid(),
+        }
+
+        const block = addBlock(newBlockData);
+        blocks.push(block);
+        syncWorksheetBlocksFromUI();
+        if (!worksheetLoaded) return;
+        await preview.render();
+    })
+    block.onDelete.connect(async (id) => {
+        blocks = blocks.filter(b => b.id !== id);
+        syncWorksheetBlocksFromUI();
+        if (!worksheetLoaded) return;
+        await preview.render();
+    });
     SwapyManager.get()
         .createSlotWithItem(block.id, block.element)
         .slot.element.scrollIntoView(true);
     block.mount();
+    worksheet.blocks.push(blockData);
     SwapyManager.get().update();
     return block;
 }
 
+function addBlock(block: WorksheetBlock): Block {
+    const b = new Block(block);
+    b.onChanged.connect(async (e) => {
+        syncWorksheetBlocksFromUI();
+        if (!worksheetLoaded) return;
+        await preview.render();
+    });
+    b.onDuplicate.connect(async (id) => {
+        const b = blocks.find(b => b.id === id);
+
+        if (!b) return;
+        const newBlockData = {
+            ...b?.block,
+            id: uid(),
+        }
+
+        const block = addBlock(newBlockData);
+        blocks.push(block);
+        syncWorksheetBlocksFromUI();
+        if (!worksheetLoaded) return;
+        await preview.render();
+    })
+    b.onDelete.connect(async (id) => {
+        blocks = blocks.filter(b => b.id !== id);
+        syncWorksheetBlocksFromUI();
+        if (!worksheetLoaded) return;
+        await preview.render();
+    });
+    SwapyManager.get().createSlotWithItem(b.id, b.element)
+    b.mount();
+    SwapyManager.get().update();
+    return b;
+}
+
+async function loadWorksheet(id: number) {
+    const data = await WorksheetsAPI.getById(id);
+    worksheet.load(data.data.data);
+
+    topicInput.value = worksheet.topic;
+    nameInput.value = worksheet.name;
+    authorInput.value = worksheet.author;
+    gradeLevelInput.value = worksheet.gradeLevel;
+    dateInput.value = worksheet.date;
+    teacherNotesEditor?.setMarkdown(worksheet.teacherNotes?.replaceAll("$$", "\\$\\$"));
+
+    outcomeSelection.setValues(worksheet.curricularOutcomes);
+    outcomeContainer.append(outcomeSelection.element);
+
+    worksheet.blocks.forEach(b => {
+        const block = addBlock(b);
+        blocks.push(block);
+    });
+
+    SwapyManager.get().update();
+    await preview.render();
+}
+
+async function handleWorksheetSave() {
+    try {
+        const id = getWorksheetId();
+
+        worksheet.topic = topicInput.value;
+        worksheet.name = nameInput.value;
+        worksheet.author = authorInput.value;
+        worksheet.gradeLevel = gradeLevelInput.value;
+        worksheet.date = dateInput.value;
+        worksheet.teacherNotes = teacherNotesEditor?.getMarkdown() || "";
+        worksheet.curricularOutcomes = outcomeSelection.getValues();
+
+        syncWorksheetBlocksFromUI();
+
+        await WorksheetsAPI.post(id, worksheet.toObject(), worksheet.curricularOutcomes)
+            .then(() => {
+                updateSaveButton("success");
+            })
+            .catch(() => {
+                updateSaveButton("error");
+            });
+    } catch (err) {
+        console.error(err);
+        updateSaveButton("error");
+    }
+}
+
+function getWorksheetId(): number {
+    const url = new URL(window.location.href);
+    const id = url.searchParams.get("id");
+    return Number(id);
+}
+
+async function loadWorksheetById() {
+    const id = getWorksheetId();
+    if (id) {
+        await loadWorksheet(Number(id));
+    } else {
+        new SnackbarComponent({
+            message: "No worksheet ID found in URL",
+            type: "error",
+            onClose: () => { }
+        });
+    }
+}
+
+async function swapyOrderChanged(event: any) {
+    const map: Map<string, string> | undefined = event?.newSlotItemMap?.asMap;
+    if (!map) return;
+
+    // map is: NEW_SLOT_ID -> ITEM_ID   (based on your working example)
+    // We want blocks ordered by NEW_SLOT_ID (1..n)
+    const entries = Array.from(map.entries()); // [ [newSlotId, itemId], ... ]
+
+    // sort by numeric slot id if your slots are "1", "2", ...
+    entries.sort((a, b) => Number(a[0]) - Number(b[0]));
+
+    const orderedItemIds = entries.map(([, itemId]) => itemId);
+
+    const byId = new Map(blocks.map(b => [b.id, b] as const));
+    const nextBlocks = orderedItemIds.map(id => byId.get(id)).filter(Boolean) as Block[];
+
+    // Safety: don't apply a bad reorder
+    if (nextBlocks.length !== blocks.length) {
+        console.warn("Reorder mismatch", {
+            orderedItemIds,
+            blocks: blocks.map(b => b.id),
+            nextBlocks: nextBlocks.map(b => b.id),
+            map: entries,
+        });
+        return;
+    }
+
+    blocks = nextBlocks;
+
+    // keep worksheet + preview consistent
+    syncWorksheetBlocksFromUI();
+    if (!worksheetLoaded) return;
+    await preview.render();
+}
+
+
+
 document.addEventListener("DOMContentLoaded", async () => {
+    const worksheetDetails = document.querySelector("#worksheet-details") as HTMLDetailsElement;
+
+    // Restore state
+    worksheetDetails.open = localStorage.getItem("worksheetDetailsOpen") === "true";
+
+    // Persist state
+    worksheetDetails.addEventListener("toggle", () => {
+        localStorage.setItem(
+            "worksheetDetailsOpen",
+            String(worksheetDetails.open)
+        );
+    });
 
     // -----------------------------
     // Appearance dialog
@@ -198,26 +449,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     bindAll("#save-button", (el) => {
         el.addEventListener("click", async () => {
             updateSaveButton("saving");
-            // await handleWorksheetSave();
+            await handleWorksheetSave();
         });
     });
 
     const blockList = document.querySelector("#block-list") as HTMLElement;
     SwapyManager.init(blockList);
+    SwapyManager.get().onChanged.connect((event) => swapyOrderChanged(event));
+
 
     bindAll("#add-block", (el) => {
-        el.addEventListener("click", () => addNewBlock());
+        el.addEventListener("click", async () => {
+            const newBlock = addNewBlock();
+            blocks.push(newBlock);
+            if (!worksheetLoaded) return;
+            await preview.render();
+        });
     });
 
-    addNewBlock();
-
     const teacherNotesContainer = document.getElementById("teacher-notes-container") as HTMLElement;
-    new Editor({
+    teacherNotesEditor = new Editor({
         el: teacherNotesContainer,
         previewStyle: "vertical",
         height: "250px",
         initialEditType: "wysiwyg",
         usageStatistics: true,
+    });
+    teacherNotesEditor.on("change", async () => {
+        worksheet.teacherNotes = teacherNotesEditor?.getMarkdown() || "";
+        if (!worksheetLoaded) return;
+        await preview.render();
     });
 
     // -----------------------------
@@ -229,8 +490,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // -----------------------------
     // Load worksheet from API
     // -----------------------------
-    // await loadWorksheetById();
-    // worksheetLoaded = true;
+    await loadWorksheetById();
+    worksheetLoaded = true;
 
     // Remove loading overlay
     document.getElementById("progress")?.remove();
@@ -245,20 +506,19 @@ document.addEventListener("keydown", (e) => {
     if (isShortcut) {
         e.preventDefault();
         updateSaveButton("saving");
-        // handleWorksheetSave();
+        handleWorksheetSave();
     }
+    // -------------------------------
+    // Auto-save timer support
+    // (Preview triggers this)
+    // -------------------------------
+    (window as any).queueWorksheetAutoSave = () => {
+        if (!worksheetLoaded) return;
+        if (autoSaveTimer) clearTimeout(autoSaveTimer);
+
+        autoSaveTimer = window.setTimeout(async () => {
+            updateSaveButton("saving");
+            await handleWorksheetSave();
+        }, 5000);
+    };
 });
-
-// -------------------------------
-// Auto-save timer support
-// (Preview triggers this)
-// -------------------------------
-(window as any).queueWorksheetAutoSave = () => {
-    if (!worksheetLoaded) return;
-    if (autoSaveTimer) clearTimeout(autoSaveTimer);
-
-    autoSaveTimer = window.setTimeout(async () => {
-        updateSaveButton("saving");
-        // await handleWorksheetSave();
-    }, 5000);
-};

@@ -1,3 +1,49 @@
+@font-face {
+    font-family: 'Latin Modern Roman';
+    font-weight: normal;
+    font-style: normal;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-regular.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Roman';
+    font-weight: bold;
+    font-style: normal;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bold.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Roman';
+    font-weight: normal;
+    font-style: italic;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-italic.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Roman';
+    font-weight: bold;
+    font-style: italic;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bolditalic.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Mono';
+    font-weight: normal;
+    font-style: normal;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-regular.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Latin Modern Mono';
+    font-weight: normal;
+    font-style: italic;
+    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-italic.woff') format('woff');
+}
+
+#preview-pane {
+    font-family: 'Latin Modern Roman', serif;
+}
+
 .highlight {
     background-color: var(--primary);
     color: var(--on-primary);
@@ -63,46 +109,76 @@
     /* this replaces grid gaps safely */
 }
 
-@font-face {
-    font-family: 'Latin Modern Roman';
-    font-weight: normal;
-    font-style: normal;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-regular.woff') format('woff');
-}
+@media screen {
+    .page-break {
+        height: 24px;
+        border-top: 2px dashed var(--outline-variant);
+        margin: 24px 0;
+    }
 
-@font-face {
-    font-family: 'Latin Modern Roman';
-    font-weight: bold;
-    font-style: normal;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bold.woff') format('woff');
-}
+    .page-break::after {
+        content: "page break";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
 
-@font-face {
-    font-family: 'Latin Modern Roman';
-    font-weight: normal;
-    font-style: italic;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-italic.woff') format('woff');
-}
+        background-color: var(--surface);
+        border: 0.0175rem solid var(--outline-variant);
+        border-radius: 0.5rem;
+        padding: 0 12px;
 
-@font-face {
-    font-family: 'Latin Modern Roman';
-    font-weight: bold;
-    font-style: italic;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bolditalic.woff') format('woff');
-}
+        text-transform: uppercase;
 
-@font-face {
-    font-family: 'Latin Modern Mono';
-    font-weight: normal;
-    font-style: normal;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-regular.woff') format('woff');
-}
+        width: max-content;
+        white-space: nowrap;
+    }
 
-@font-face {
-    font-family: 'Latin Modern Mono';
-    font-weight: normal;
-    font-style: italic;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-italic.woff') format('woff');
+    .question-space {
+        border: 1px dashed var(--outline-variant);
+        border-radius: 0.5rem;
+    }
+
+    .question-space::after {
+        content: "space";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        background-color: var(--surface);
+        border: 0.0175rem solid var(--outline-variant);
+        border-radius: 0.5rem;
+        padding: 0 12px;
+
+        text-transform: uppercase;
+
+        width: max-content;
+        white-space: nowrap;
+    }
+
+    .blank-space {
+        border: 1px dashed var(--outline-variant);
+        border-radius: 0.5rem;
+    }
+
+    .blank-space::after {
+        content: "blank space";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        background-color: var(--surface);
+        border: 0.0175rem solid var(--outline-variant);
+        border-radius: 0.5rem;
+        padding: 0 12px;
+
+        text-transform: uppercase;
+
+        width: max-content;
+        white-space: nowrap;
+    }
 }
 
 html,
@@ -252,6 +328,10 @@ table :is(thead,
         height: auto !important;
     }
 
+    .page-break {
+        page-break-after: always !important;
+    }
+
     #editor-preview-container {
         display: block !important;
         /* stack vertically */
@@ -273,7 +353,6 @@ table :is(thead,
 
     #preview-pane {
         width: 100% !important;
-        margin-bottom: 20px;
     }
 
     #preview-pane,

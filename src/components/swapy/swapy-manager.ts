@@ -1,9 +1,11 @@
 import { createSwapy } from "swapy";
 import { SwapySlot } from "@components/swapy/swapy-slot";
 import { SwapyItem } from "@components/swapy/swapy-item";
+import { Signal } from "@utils/signal";
 
 export class SwapyManager {
     private static instance: SwapyManager | null = null;
+    public readonly onChanged = new Signal<any>();
 
     private container: HTMLElement;
     private swapy: any;
@@ -15,6 +17,10 @@ export class SwapyManager {
             animation: "spring",
             swapMode: "drop",
             autoScrollOnDrag: true,
+        });
+        this.swapy.enable(true);
+        this.swapy.onSwap((event: any) => {
+            this.onChanged.emit(event);
         });
     }
 
@@ -30,6 +36,10 @@ export class SwapyManager {
             throw new Error("SwapyManager not initialized yet.");
         }
         return SwapyManager.instance;
+    }
+
+    getItems() {
+        return this.container.children;
     }
 
     createSlotWithItem(id: string, content: HTMLElement) {

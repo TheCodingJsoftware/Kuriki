@@ -49,14 +49,12 @@ export class SelectOutcomesDialog extends DialogComponent {
                     <label for="search">Search outcomes</label>
                 </div>
                 <p>Select one or more outcomes below:</p>
-                <div id="results"></div>
-            </div>`,
-            footerContent: `
-                <nav class="no-margin bottom right-align surface-container-high">
-                    <button class="button border" id="cancel-btn">Cancel</button>
-                    <button class="button primary" id="done-btn">Done</button>
-                </nav>`,
-            isModal: true,
+                <div style="max-height: 400px; overflow-y: scroll;" class="small-round" id="results"></div>
+            </div>
+            <nav class="no-margin bottom right-align surface-container-high">
+                <button class="button border" id="cancel-btn">Cancel</button>
+                <button class="button primary" id="done-btn">Done</button>
+            </nav>`,
         });
     }
 

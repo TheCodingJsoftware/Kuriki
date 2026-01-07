@@ -17,8 +17,7 @@ export class SwapyItem implements ISwapyItem {
         this.id = id;
 
         const el = document.createElement("div");
-
-        el.setAttribute("data-swapy-item", `item-${id}`);
+        el.dataset.swapyItem = id;
         el.appendChild(content);
 
         this.element = el;

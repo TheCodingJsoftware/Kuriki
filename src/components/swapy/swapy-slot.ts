@@ -9,8 +9,7 @@ export class SwapySlot implements ISwapySlot {
 
         const slot = document.createElement("div");
         slot.classList.add("slot")
-        slot.setAttribute("data-swapy-slot", `slot-${id}`);
-
+        slot.dataset.swapySlot = id;
         slot.appendChild(item.element);
 
         this.element = slot;

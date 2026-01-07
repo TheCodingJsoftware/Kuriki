@@ -31,7 +31,7 @@ export class SnackbarComponent {
             duration: options.duration ?? 6000,
             action: options.action,
             icon: options.icon ?? "info",
-            onClose: options.onClose
+            onClose: options.onClose ?? onclose
         };
 
         this.snackbar = document.createElement("div");
