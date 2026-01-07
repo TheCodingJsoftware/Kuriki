@@ -337,6 +337,14 @@ table :is(thead,
 
     .page-break {
         page-break-after: always !important;
+        page-break-before: always !important;
+        break-after: always !important;
+        break-before: always !important;
+    }
+
+    .worksheet-block {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
     }
 
     #editor-preview-container {
