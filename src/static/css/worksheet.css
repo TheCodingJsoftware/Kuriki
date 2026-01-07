@@ -214,6 +214,13 @@ body {
         /* independent scroll */
         overflow-x: hidden;
         box-sizing: border-box;
+    }
+
+    #editor-container {
+        margin: 1rem;
+    }
+
+    #preview-container {
         padding: 1rem;
     }
 

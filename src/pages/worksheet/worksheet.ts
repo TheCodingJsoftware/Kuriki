@@ -467,6 +467,64 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 
+    bindAll("#add-block-question", (el) => {
+        el.addEventListener("click", async () => {
+            const newBlock = addNewBlock();
+            newBlock.showPage(WorksheetBlockType.Question);
+            blocks.push(newBlock);
+            if (!worksheetLoaded) return;
+            await preview.render();
+        });
+    });
+
+    bindAll("#add-block-header", (el) => {
+        el.addEventListener("click", async () => {
+            const newBlock = addNewBlock();
+            newBlock.block.currentType = WorksheetBlockType.SectionHeader;
+            newBlock.setBlockType(WorksheetBlockType.SectionHeader);
+            newBlock.showPage(`#${newBlock.id}-${WorksheetBlockType.SectionHeader}`);
+            blocks.push(newBlock);
+            if (!worksheetLoaded) return;
+            await preview.render();
+        });
+    });
+
+    bindAll("#add-block-section", (el) => {
+        el.addEventListener("click", async () => {
+            const newBlock = addNewBlock();
+            newBlock.block.currentType = WorksheetBlockType.Divider;
+            newBlock.setBlockType(WorksheetBlockType.Divider);
+            newBlock.showPage(`#${newBlock.id}-${WorksheetBlockType.Divider}`);
+            blocks.push(newBlock);
+            if (!worksheetLoaded) return;
+            await preview.render();
+        });
+    });
+
+    bindAll("#add-block-space", (el) => {
+        el.addEventListener("click", async () => {
+            const newBlock = addNewBlock();
+            newBlock.block.currentType = WorksheetBlockType.BlankSpace;
+            newBlock.setBlockType(WorksheetBlockType.BlankSpace);
+            newBlock.showPage(`#${newBlock.id}-${WorksheetBlockType.BlankSpace}`);
+            blocks.push(newBlock);
+            if (!worksheetLoaded) return;
+            await preview.render();
+        });
+    });
+
+    bindAll("#add-block-break", (el) => {
+        el.addEventListener("click", async () => {
+            const newBlock = addNewBlock();
+            newBlock.block.currentType = WorksheetBlockType.PageBreak;
+            newBlock.setBlockType(WorksheetBlockType.PageBreak);
+            newBlock.showPage(`#${newBlock.id}-${WorksheetBlockType.PageBreak}`);
+            blocks.push(newBlock);
+            if (!worksheetLoaded) return;
+            await preview.render();
+        });
+    });
+
     const teacherNotesContainer = document.getElementById("teacher-notes-container") as HTMLElement;
     teacherNotesEditor = new Editor({
         el: teacherNotesContainer,
