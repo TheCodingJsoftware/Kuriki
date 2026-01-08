@@ -4,8 +4,9 @@ import "@static/css/style.css";
 import "beercss";
 import "material-dynamic-colors";
 
+import { enhanceLinks } from "@utils/enhance-links";
 import { LessonsAPI, type LessonRecord } from "@api/lessons-api";
-import { WorksheetsAPI, type WorksheetRecord } from "@api/worksheets-api"; // adjust if your type name differs
+import { WorksheetsAPI, type WorksheetRecord } from "@api/worksheets-api";
 
 import { LessonCard } from "@components/lesson/card-element";
 import { LessonList } from "@components/lesson/list-element";
@@ -16,36 +17,54 @@ import { WorksheetList } from "@components/worksheet/list-element";
 import { debounce } from "@utils/debounce";
 import { builtInTemplates } from "@models/lesson-template";
 
+import { ResourceAPI } from "@api/resources-api";
+import { OutcomeFinder } from "@utils/outcome-finder";
+import { MathematicsOutcome } from "@models/mathematics-outcome";
+import { MathematicsOutcomeElement } from "@components/mathematics/outcome-element";
+import { MathematicsOutcomeCard } from "@components/mathematics/card-element";
+import { OutcomeCardDialog } from "@components/common/dialogs/outcome-card-dialog";
+import { SocialStudiesOutcome } from "@models/social-studies-outcome";
+import { SocialStudiesOutcomeElement } from "@components/social_studies/outcome-element";
+import { SocialStudiesOutcomeCard } from "@components/social_studies/card-element";
+import { BiologyOutcome } from "@models/biology-outcome";
+import { BiologyOutcomeElement } from "@components/biology/outcome-element";
+import { BiologyOutcomeCard } from "@components/biology/card-element";
+import { ScienceOutcome } from "@models/science-outcome";
+import { ScienceOutcomeElement } from "@components/science/outcome-element";
+import { ScienceOutcomeCard } from "@components/science/card-element";
+
 type ViewMode = "grid" | "list";
-type LibraryType = "lesson" | "worksheet";
+type LibraryType = "lesson" | "worksheet" | "resources";
 
 type LibraryConfig<T> = {
-    type: LibraryType;
+    type: Exclude<LibraryType, "resources">;
     emptyText: string;
 
     getAll(): Promise<{ data: Record<string, T> }>;
 
-    // used by filter
     toSearchText(item: T): string;
 
-    // used by sort
     getTopic(item: T): string;
     getName(item: T): string;
 
-    // used by render
     renderCard(id: string, item: T): HTMLElement;
     renderListItem(id: string, item: T): HTMLElement;
 };
 
+type OutcomeResources = Record<string, string[]>;
+
 document.addEventListener("DOMContentLoaded", async () => {
     const libraryDiv = document.getElementById("library") as HTMLDivElement;
     const searchInput = document.querySelector("#search input") as HTMLInputElement;
+    const searchOutput = document.querySelector("#search output") as HTMLOutputElement | null;
+
     const gridButton = document.getElementById("grid-button") as HTMLButtonElement;
     const listButton = document.getElementById("list-button") as HTMLButtonElement;
     const loadingIndicator = document.getElementById("loading-indicator") as HTMLDivElement;
 
     const tabLesson = document.getElementById("tab-lesson") as HTMLAnchorElement;
     const tabWorksheet = document.getElementById("tab-worksheet") as HTMLAnchorElement;
+    const tabResources = document.getElementById("tab-resources") as HTMLAnchorElement;
 
     const backToTopButton = document.getElementById("back-to-top-button") as HTMLButtonElement;
 
@@ -55,8 +74,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     let viewMode: ViewMode = (localStorage.getItem("libraryViewMode") as ViewMode) || "list";
     let libraryType: LibraryType = (localStorage.getItem("libraryType") as LibraryType) || "lesson";
 
-    // Keep data cached per tab so switching tabs is instant
+    // Cache per tab
     const cache: Partial<Record<LibraryType, Record<string, unknown>>> = {};
+    let resources: OutcomeResources | null = null;
 
     const lessonConfig: LibraryConfig<LessonRecord> = {
         type: "lesson",
@@ -100,15 +120,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function setActiveTabUI() {
-        // BeerCSS "active" works fine on <a>
         tabLesson?.classList.toggle("active", libraryType === "lesson");
         tabWorksheet?.classList.toggle("active", libraryType === "worksheet");
+        tabResources?.classList.toggle("active", libraryType === "resources");
+    }
+
+    function updateSearchHint() {
+        if (!searchOutput) return;
+
+        if (libraryType === "lesson") {
+            searchOutput.textContent = "Search: name, topic, author, grade, outcomes, links, notes";
+        } else if (libraryType === "worksheet") {
+            searchOutput.textContent = "Search: name, topic, author, grade, outcomes, teacher notes";
+        } else {
+            searchOutput.textContent = "Search: outcome code or URL";
+        }
     }
 
     function setViewButtonsUI() {
+        const isResources = libraryType === "resources";
+
+        // resources is always a list
+        gridButton.disabled = isResources;
+        listButton.disabled = isResources;
+
         document.querySelectorAll("nav.group button").forEach(b => b.classList.remove("active"));
-        const activeId = viewMode === "grid" ? "grid-button" : "list-button";
-        document.getElementById(activeId)?.classList.add("active");
+        if (!isResources) {
+            const activeId = viewMode === "grid" ? "grid-button" : "list-button";
+            document.getElementById(activeId)?.classList.add("active");
+        }
     }
 
     function filterRecords<T>(records: Record<string, T>, query: string, config: LibraryConfig<T>): Record<string, T> {
@@ -163,7 +203,103 @@ document.addEventListener("DOMContentLoaded", async () => {
         libraryDiv.appendChild(section);
     }
 
-    async function ensureLoaded(type: LibraryType) {
+    async function renderResources(data: OutcomeResources, query: string) {
+        libraryDiv.innerHTML = "";
+
+        const q = query.trim().toLowerCase();
+
+        const entries = Object.entries(data)
+            .filter(([outcome, links]) => {
+                if (!q) return true;
+                const hay = `${outcome}\n${links.join("\n")}`.toLowerCase();
+                return hay.includes(q);
+            })
+            .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }));
+
+        if (!entries.length) {
+            const p = document.createElement("p");
+            p.textContent = "No resources found.";
+            p.classList.add("s12");
+            libraryDiv.appendChild(p);
+            return;
+        }
+
+        const section = document.createElement("article");
+        section.classList.add("round", "surface-container", "s12");
+
+        for (const [id, links] of entries) {
+            let outcomeElement: HTMLElement;
+            const outcome = await OutcomeFinder.getById(id);
+            if (!outcome) { return };
+
+
+            if (outcome instanceof MathematicsOutcome) {
+                const el = new MathematicsOutcomeElement(outcome);
+                el.element.addEventListener("click", () => {
+                    const card = new MathematicsOutcomeCard(outcome);
+                    new OutcomeCardDialog(card.render());
+                })
+                el.showIcon();
+                outcomeElement = el.render();
+            } else if (outcome instanceof SocialStudiesOutcome) {
+                const el = new SocialStudiesOutcomeElement(outcome);
+                el.element.addEventListener("click", () => {
+                    const card = new SocialStudiesOutcomeCard(outcome);
+                    new OutcomeCardDialog(card.render());
+                })
+                el.showIcon();
+                outcomeElement = el.render();
+            } else if (outcome instanceof BiologyOutcome) {
+                const el = new BiologyOutcomeElement(outcome);
+                el.element.addEventListener("click", () => {
+                    const card = new BiologyOutcomeCard(outcome);
+                    new OutcomeCardDialog(card.render());
+                });
+                el.showIcon();
+                outcomeElement = el.render();
+            } else if (outcome instanceof ScienceOutcome) {
+                const el = new ScienceOutcomeElement(outcome);
+                el.element.addEventListener("click", () => {
+                    const card = new ScienceOutcomeCard(outcome);
+                    new OutcomeCardDialog(card.render());
+                })
+                el.showIcon();
+                outcomeElement = el.render();
+            } else {
+                continue;
+            }
+
+            outcomeElement.classList.add("s12");
+            outcomeElement.classList.remove("small-margin");
+            outcomeElement.classList.add("margin");
+            section.appendChild(outcomeElement);
+
+            const ul = document.createElement("ul");
+            ul.classList.add("list", "border", "s12");
+
+            for (const url of links) {
+                const li = document.createElement("li");
+                li.className = "wave"
+
+                const a = document.createElement("a");
+                a.href = url;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.textContent = url;
+                a.dataset.url = url;
+
+                li.appendChild(a);
+                ul.appendChild(li);
+            }
+
+            section.appendChild(ul);
+        }
+
+        libraryDiv.appendChild(section);
+        enhanceLinks(250);
+    }
+
+    async function ensureLoaded(type: Exclude<LibraryType, "resources">) {
         if (cache[type]) return;
 
         const config = type === "lesson" ? lessonConfig : worksheetConfig;
@@ -172,10 +308,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     async function refresh() {
+        setActiveTabUI();
+        updateSearchHint();
+        setViewButtonsUI();
+
+        // Resources tab (always list)
+        if (libraryType === "resources") {
+            libraryDiv.innerHTML = "";
+            loadingIndicator?.classList.remove("hidden");
+
+            try {
+                if (!resources) {
+                    const res = await ResourceAPI.getAll();
+                    // API returns { status, data: Record<string, string[]> }
+                    resources = res.data as OutcomeResources;
+                }
+
+                loadingIndicator?.remove();
+                renderResources(resources, searchInput.value);
+            } catch (err) {
+                console.error("Failed to load resources:", err);
+                loadingIndicator?.remove();
+                libraryDiv.innerHTML = "<p>Error loading resources.</p>";
+            }
+
+            return;
+        }
+
+        // Lessons / Worksheets
         const config = getActiveConfig();
 
         libraryDiv.innerHTML = "";
-        // Keep indicator if it exists
         loadingIndicator?.classList.remove("hidden");
 
         try {
@@ -186,9 +349,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             loadingIndicator?.remove();
             render(filtered, config);
-
-            setActiveTabUI();
-            setViewButtonsUI();
         } catch (err) {
             console.error("Failed to load library:", err);
             loadingIndicator?.remove();
@@ -209,8 +369,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // initial
-    setActiveTabUI();
-    setViewButtonsUI();
     await refresh();
 
     // search
@@ -225,15 +383,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         e.preventDefault();
         setType("lesson");
     });
+
     tabWorksheet?.addEventListener("click", (e) => {
         e.preventDefault();
         setType("worksheet");
     });
 
+    tabResources?.addEventListener("click", (e) => {
+        e.preventDefault();
+        setType("resources");
+    });
+
     // misc
     backToTopButton.addEventListener("click", () => window.scrollTo(0, 0));
 
-    // create buttons stay as-is
+    // create buttons
     createLessonPlanButton.addEventListener("click", async () => {
         const idKey = Number(new Date().getTime().toString());
 

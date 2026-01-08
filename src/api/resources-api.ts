@@ -1,25 +1,32 @@
 const RESOURCE_API_ENDPOINT = "https://hbnitv.net/api/kuriki/resources";
 
-type Resource = {
+export type OutcomeResources = Record<string, string[]>;
+
+export type ResourceResponse = {
     status: string;
     data: string[];
 };
 
+export type ResourceAllResponse = {
+    status: string;
+    data: OutcomeResources;
+};
+
 export class ResourceAPI {
-    static async getAll() {
+    static async getAll(): Promise<ResourceAllResponse> {
         const res = await fetch(RESOURCE_API_ENDPOINT);
         if (!res.ok) throw new Error(`ResourceAPI GET all failed: ${res.statusText}`);
         return res.json();
     }
 
-    static async getByOutcome(outcomeId: string): Promise<Resource> {
+    static async getByOutcome(outcomeId: string): Promise<ResourceResponse> {
         const url = `${RESOURCE_API_ENDPOINT}?outcomeId=${encodeURIComponent(outcomeId)}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`ResourceAPI GET by outcomeId failed: ${res.statusText}`);
         return res.json();
     }
 
-    static async getByUrl(urlString: string): Promise<Resource> {
+    static async getByUrl(urlString: string): Promise<ResourceResponse> {
         const url = `${RESOURCE_API_ENDPOINT}?url=${encodeURIComponent(urlString)}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`ResourceAPI GET by URL failed: ${res.statusText}`);
