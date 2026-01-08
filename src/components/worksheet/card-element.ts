@@ -18,18 +18,18 @@ export class WorksheetCard {
     readonly subtitle: HTMLSpanElement;
     readonly footer: HTMLElement;
     readonly outcomesContainer: HTMLElement;
-    readonly lessonId: string;
-    readonly lesson: WorksheetRecord;
+    readonly worksheetId: string;
+    readonly worksheet: WorksheetRecord;
 
     constructor(worksheetId: string, worksheet: WorksheetRecord) {
-        this.lessonId = worksheetId;
-        this.lesson = worksheet;
+        this.worksheetId = worksheetId;
+        this.worksheet = worksheet;
 
-        const data: IWorksheet = this.lesson.data;
+        const data: IWorksheet = this.worksheet.data;
 
         // ---------- Container ----------
         const container = document.createElement("article");
-        container.classList.add("lesson-card", "border", "round", "s12", "m6", "l4");
+        container.classList.add("worksheet-card", "border", "round", "s12", "m6", "l4");
 
         // ---------- Header ----------
         this.header = document.createElement("header");
@@ -37,7 +37,7 @@ export class WorksheetCard {
 
         this.title = document.createElement("span");
         this.title.classList.add("bold", "large-text");
-        this.title.innerText = data.name || "Untitled Lesson";
+        this.title.innerText = data.name || "Untitled Worksheet";
 
         this.subtitle = document.createElement("span");
         this.subtitle.classList.add("italic");
@@ -89,7 +89,7 @@ export class WorksheetCard {
         const openButton = document.createElement("a");
         openButton.classList.add("button");
         openButton.innerHTML = `<i>open_in_new</i><span>Open</span>`;
-        openButton.href = `/lesson.html?id=${this.lessonId}`
+        openButton.href = `/worksheet.html?id=${this.worksheetId}`
 
         this.footer.append(openButton);
 

@@ -90,7 +90,7 @@ export class WorksheetList {
         // const openButton = document.createElement("a");
         // openButton.classList.add("button");
         // openButton.innerHTML = `<i>open_in_new</i><span>Open</span>`;
-        // openButton.href = `/lesson.html?id=${this.lessonId}`;
+        // openButton.href = `/worksheet.html?id=${this.worksheetId}`;
 
         // container.append(openButton);
 
