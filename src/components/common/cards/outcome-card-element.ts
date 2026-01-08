@@ -4,6 +4,8 @@ import { CreateLessonPlanButton } from "@components/common/buttons/create-lesson
 import { ResourceListContainer } from "@components/common/resources/resource";
 import { LessonListContainer } from "@components/common/lessons/lessons";
 import { Outcome } from "@models/outcome";
+import { WorksheetListContainer } from "@components/common/worksheets/worksheets";
+import { CreateWorksheetButton } from "@components/common/buttons/create-worksheet-button";
 
 export class OutcomeCard {
     outcome: Outcome;
@@ -16,8 +18,10 @@ export class OutcomeCard {
     readonly copyButton: CopyOutcomeButton;
     readonly addResourceButton: AddResourceButton;
     readonly createLessonButton: CreateLessonPlanButton;
+    readonly createWorksheetButton: CreateWorksheetButton;
     readonly resourceList: ResourceListContainer;
     readonly lessonsList: LessonListContainer;
+    readonly worksheetList: WorksheetListContainer;
 
 
     constructor(outcome: Outcome) {
@@ -59,8 +63,14 @@ export class OutcomeCard {
             await this.lessonsList.refresh();
         })
 
+        this.createWorksheetButton = new CreateWorksheetButton(this.outcome);
+        this.createWorksheetButton.onWorksheetCreated.connect(async () => {
+            await this.worksheetList.refresh();
+        })
+
         this.lessonsList = new LessonListContainer(this.outcome);
         this.resourceList = new ResourceListContainer(this.outcome);
+        this.worksheetList = new WorksheetListContainer(this.outcome);
 
         // Append children
         container.appendChild(this.header);
@@ -70,6 +80,8 @@ export class OutcomeCard {
         container.appendChild(document.createElement("hr"));
         container.appendChild(this.lessonsList.render());
         container.appendChild(this.createLessonButton.render());
+        container.appendChild(this.worksheetList.render());
+        container.appendChild(this.createWorksheetButton.render());
         container.appendChild(this.resourceList.render());
         container.appendChild(this.addResourceButton.render());
 

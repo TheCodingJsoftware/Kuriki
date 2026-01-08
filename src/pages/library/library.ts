@@ -202,16 +202,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         libraryDiv.appendChild(section);
     }
-
     async function renderResources(data: OutcomeResources, query: string) {
         libraryDiv.innerHTML = "";
 
         const q = query.trim().toLowerCase();
 
         const entries = Object.entries(data)
-            .filter(([outcome, links]) => {
+            .filter(([outcomeId, links]) => {
                 if (!q) return true;
-                const hay = `${outcome}\n${links.join("\n")}`.toLowerCase();
+                const hay = `${outcomeId}\n${links.join("\n")}`.toLowerCase();
                 return hay.includes(q);
             })
             .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }));
@@ -224,21 +223,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        const section = document.createElement("article");
-        section.classList.add("round", "surface-container", "s12");
+        // Optional wrapper so layout is consistent (and still separated by articles)
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("grid", "s12", "border", "round", "padding"); // or just "s12" if you don't want a grid
 
         for (const [id, links] of entries) {
-            let outcomeElement: HTMLElement;
             const outcome = await OutcomeFinder.getById(id);
-            if (!outcome) { return };
+            if (!outcome) continue;
 
+            let outcomeElement: HTMLElement | null = null;
 
             if (outcome instanceof MathematicsOutcome) {
                 const el = new MathematicsOutcomeElement(outcome);
                 el.element.addEventListener("click", () => {
                     const card = new MathematicsOutcomeCard(outcome);
                     new OutcomeCardDialog(card.render());
-                })
+                });
                 el.showIcon();
                 outcomeElement = el.render();
             } else if (outcome instanceof SocialStudiesOutcome) {
@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 el.element.addEventListener("click", () => {
                     const card = new SocialStudiesOutcomeCard(outcome);
                     new OutcomeCardDialog(card.render());
-                })
+                });
                 el.showIcon();
                 outcomeElement = el.render();
             } else if (outcome instanceof BiologyOutcome) {
@@ -262,42 +262,56 @@ document.addEventListener("DOMContentLoaded", async () => {
                 el.element.addEventListener("click", () => {
                     const card = new ScienceOutcomeCard(outcome);
                     new OutcomeCardDialog(card.render());
-                })
+                });
                 el.showIcon();
                 outcomeElement = el.render();
             } else {
                 continue;
             }
 
+            // ✅ One container per outcome
+            const article = document.createElement("article");
+            article.classList.add("round", "border", "padding", "s12", "m6", "l6");
+
             outcomeElement.classList.add("s12");
-            outcomeElement.classList.remove("small-margin");
-            outcomeElement.classList.add("margin");
-            section.appendChild(outcomeElement);
+            outcomeElement.querySelector(".tooltip")?.classList.add("bottom")
+            article.appendChild(outcomeElement);
 
             const ul = document.createElement("ul");
             ul.classList.add("list", "border", "s12");
 
             for (const url of links) {
                 const li = document.createElement("li");
-                li.className = "wave"
+                li.className = "wave";
 
+                const div = document.createElement("div");
+                div.className = "row max";
                 const a = document.createElement("a");
+                a.className = "max left-align link";
                 a.href = url;
                 a.target = "_blank";
                 a.rel = "noopener noreferrer";
-                a.textContent = url;
                 a.dataset.url = url;
+                a.textContent = url;
+                a.setAttribute("referrer", "noopener noreferrer");
+                div.appendChild(a);
 
-                li.appendChild(a);
+                const icon = document.createElement("i");
+                icon.textContent = "open_in_new";
+                div.appendChild(icon);
+
+                li.appendChild(div);
                 ul.appendChild(li);
             }
 
-            section.appendChild(ul);
+            article.appendChild(ul);
+            wrapper.appendChild(article);
         }
 
-        libraryDiv.appendChild(section);
-        enhanceLinks(250);
+        libraryDiv.appendChild(wrapper);
+        enhanceLinks(75);
     }
+
 
     async function ensureLoaded(type: Exclude<LibraryType, "resources">) {
         if (cache[type]) return;
@@ -395,7 +409,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // misc
-    backToTopButton.addEventListener("click", () => window.scrollTo(0, 0));
+    backToTopButton.addEventListener("click", () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    });
+
 
     // create buttons
     createLessonPlanButton.addEventListener("click", async () => {
