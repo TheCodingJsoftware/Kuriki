@@ -329,12 +329,12 @@ table :is(thead,
 
 /* Preview highlight */
 #preview-pane .worksheet-block.is-active {
-    background-color: var(--surface-variant);
+    background-color: color-mix(in srgb, var(--surface-variant) 40%, transparent);
     color: var(--on-surface);
     border-radius: 0.625rem;
     outline: .125rem solid var(--primary);
     outline-offset: 0.55rem;
-    box-shadow: 0 0 0 0.225rem var(--surface-variant);
+    box-shadow: 0 0 0 0.225rem color-mix(in srgb, var(--surface-variant) 40%, transparent);
 
     transition:
         outline-offset var(--speed2) ease,
@@ -415,6 +415,23 @@ table :is(thead,
 
     #preview-pane {
         width: 100% !important;
+    }
+
+    /* Never show editor highlight states in print */
+    #preview-pane .worksheet-block.is-active,
+    #preview-pane .worksheet-block:hover,
+    #preview-pane .worksheet-block:focus,
+    #preview-pane .worksheet-block:focus-within {
+        outline: none !important;
+        outline-offset: 0 !important;
+        box-shadow: none !important;
+
+        /* remove any tinting */
+        background: transparent !important;
+        background-color: transparent !important;
+
+        /* if you ever used borders for highlight */
+        border-color: transparent !important;
     }
 
     #preview-pane,

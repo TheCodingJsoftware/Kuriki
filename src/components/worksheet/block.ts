@@ -272,7 +272,7 @@ export class Block {
             this.questionEditor.on("change", () => {
                 this.block.questionMarkdown = this.questionEditor.getMarkdown();
                 this.emitChanged({ questionMarkdown: this.block.questionMarkdown }, "questionMarkdown");
-                setPreviewActiveBlock(this.id)
+                setPreviewActiveBlock(this.id, false)
             });
             this.questionEditor?.on("focus", () => setPreviewActiveBlock(this.id));
         }
@@ -289,7 +289,7 @@ export class Block {
             this.answerEditor.on("change", () => {
                 this.block.answerMarkdown = this.answerEditor.getMarkdown();
                 this.emitChanged({ answerMarkdown: this.block.answerMarkdown }, "answerMarkdown");
-                setPreviewActiveBlock(this.id)
+                setPreviewActiveBlock(this.id, false)
             });
             this.answerEditor?.on("focus", () => setPreviewActiveBlock(this.id));
         }

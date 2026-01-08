@@ -17,14 +17,14 @@ export class Preview {
         headerElement.innerHTML = `
             <nav class="row center-align">
                 <strong>${escapeHtml(this.worksheet.topic)}</strong>
-                <strong class="max center-align">${escapeHtml(this.worksheet.name)}</strong>
+                <h6 class="max center-align">${escapeHtml(this.worksheet.name)}</h6>
                 <strong>Due: ${escapeHtml(this.worksheet.date)}</strong>
             </nav>
             <hr>
             <nav class="row">
-                <blockquote class="worksheet-notes max">
+                <div class="worksheet-notes max padding">
                     ${await renderWorksheetMarkdown(this.worksheet.teacherNotes || "")}
-                </blockquote>
+                </div>
                 <div>Name <hr class="small-width"></div>
             </nav>
             <hr>
