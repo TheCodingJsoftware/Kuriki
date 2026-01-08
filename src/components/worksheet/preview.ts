@@ -1,6 +1,8 @@
 import { Worksheet, WorksheetBlockType } from "@models/worksheet";
 import { renderWorksheetMarkdown } from "@utils/worksheet-preview-renderer";
 
+let activePreviewBlockId: string | null = null;
+
 export class Preview {
     private readonly container: HTMLDivElement;
 
@@ -37,6 +39,7 @@ export class Preview {
 
             const blockElement = document.createElement("div");
             blockElement.className = "worksheet-block";
+            blockElement.id = block.id;
 
             switch (block.currentType) {
 
@@ -114,6 +117,15 @@ export class Preview {
 
         // Optional: keep your autosave hook
         (window as any).queueWorksheetAutoSave?.();
+
+        // Re-apply highlight after re-render
+        if (activePreviewBlockId) {
+            const target = this.container.querySelector<HTMLElement>(
+                `.worksheet-block#${CSS.escape(activePreviewBlockId)}`
+            );
+            target?.classList.add("is-active");
+        }
+
     }
 }
 
@@ -121,4 +133,21 @@ function escapeHtml(text: string): string {
     const div = document.createElement("div");
     div.innerText = text ?? "";
     return div.innerHTML;
+}
+
+export function setPreviewActiveBlock(blockId: string | null, scroll = true) {
+    activePreviewBlockId = blockId;
+
+    const pane = document.getElementById("preview-pane");
+    if (!pane) return;
+
+    pane.querySelectorAll(".worksheet-block.is-active")
+        .forEach(el => el.classList.remove("is-active"));
+
+    if (!blockId) return;
+
+    const target = pane.querySelector<HTMLElement>(`.worksheet-block#${CSS.escape(blockId)}`);
+    target?.classList.add("is-active");
+
+    if (scroll) target?.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }

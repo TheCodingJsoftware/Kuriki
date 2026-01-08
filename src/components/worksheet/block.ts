@@ -2,6 +2,7 @@ import { SwapyManager } from "@components/swapy/swapy-manager";
 import { IWorksheetBlock, WorksheetBlock, WorksheetBlockType } from "@models/worksheet";
 import Editor from "@toast-ui/editor";
 import { Signal } from "@utils/signal";
+import { setPreviewActiveBlock } from "./preview";
 
 
 export type BlockChangedPayload = {
@@ -271,7 +272,9 @@ export class Block {
             this.questionEditor.on("change", () => {
                 this.block.questionMarkdown = this.questionEditor.getMarkdown();
                 this.emitChanged({ questionMarkdown: this.block.questionMarkdown }, "questionMarkdown");
+                setPreviewActiveBlock(this.id)
             });
+            this.questionEditor?.on("focus", () => setPreviewActiveBlock(this.id));
         }
 
         if (!this.answerEditor) {
@@ -286,8 +289,22 @@ export class Block {
             this.answerEditor.on("change", () => {
                 this.block.answerMarkdown = this.answerEditor.getMarkdown();
                 this.emitChanged({ answerMarkdown: this.block.answerMarkdown }, "answerMarkdown");
+                setPreviewActiveBlock(this.id)
             });
+            this.answerEditor?.on("focus", () => setPreviewActiveBlock(this.id));
         }
+        this.element.addEventListener("pointerenter", () => {
+            setPreviewActiveBlock(this.id);
+        });
+
+        // highlight when any input inside the block gets focus
+        this.element.addEventListener("focusin", () => setPreviewActiveBlock(this.id));
+
+        // optional: clear when leaving the block
+        // this.element.addEventListener("focusout", (e) => {
+        //     // only clear if focus left the whole block
+        //     if (!this.element.contains(e.relatedTarget as Node)) setPreviewActiveBlock(null);
+        // });
     }
 
     showPage(selector: string) {

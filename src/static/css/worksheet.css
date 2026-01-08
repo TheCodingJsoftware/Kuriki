@@ -327,6 +327,22 @@ table :is(thead,
     color: var(--on-secondary-container) !important;
 }
 
+/* Preview highlight */
+#preview-pane .worksheet-block.is-active {
+    background-color: var(--surface-variant);
+    color: var(--on-surface);
+    border-radius: 0.625rem;
+    outline: .125rem solid var(--primary);
+    outline-offset: 0.55rem;
+    box-shadow: 0 0 0 0.225rem var(--surface-variant);
+
+    transition:
+        outline-offset var(--speed2) ease,
+        color var(--speed2) ease,
+        box-shadow var(--speed2) ease,
+        background-color var(--speed2) ease;
+}
+
 @media print {
     body {
         background-color: white !important;
