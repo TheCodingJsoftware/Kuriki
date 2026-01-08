@@ -218,13 +218,13 @@ function addNewBlock(): Block {
         currentType: WorksheetBlockType.Question,
         points: 5,
         questionMarkdown: "",
-        questionSpaceSize: 1,
+        questionSpaceSize: 5,
         answerMarkdown: "",
         showAnswer: false,
         notesMarkdown: "",
         title: "Block",
         headerType: "Header 1",
-        size: 1,
+        size: 5,
         hidden: false,
     };
 

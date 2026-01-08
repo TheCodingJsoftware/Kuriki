@@ -418,4 +418,14 @@ table :is(thead,
     .hide-on-print {
         display: none !important;
     }
+
+    @page {
+        margin: 20mm;
+
+        @top-right {
+            content: counter(page);
+            font-size: 14px;
+            color: black;
+        }
+    }
 }
