@@ -335,11 +335,42 @@ table :is(thead,
         height: auto !important;
     }
 
+
+    /* Make the printable area a normal document flow */
+    html,
+    body,
+    main,
+    #editor-preview-container,
+    #preview-container,
+    #preview-pane {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* If BeerCSS adds flex/grid on common containers, neutralize it */
+    .grid,
+    .flex,
+    .columns,
+    .column,
+    .container,
+    .swapy-container,
+    .slot,
+    [data-swapy-slot],
+    [data-swapy-item] {
+        display: block !important;
+        overflow: visible !important;
+    }
+
+    /* Avoid positioned stuff interfering with page layout */
+    .slot,
+    .page-break {
+        position: static !important;
+    }
+
     .page-break {
         page-break-after: always !important;
-        page-break-before: always !important;
         break-after: always !important;
-        break-before: always !important;
     }
 
     .worksheet-block {
