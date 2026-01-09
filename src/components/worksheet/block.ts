@@ -69,7 +69,7 @@ export class Block {
                 </label>
             </div>
             <div id="${id}-content" class="block-content">
-                <nav class="margin max toolbar round fill" id="${id}-block-type">
+                <nav class="margin max toolbar round scroll surface-container-high" id="${id}-block-type">
                     <a class="active" data-ui="#${id}-question">
                         <i>help</i>
                         <span class="l">Question</span>
@@ -88,7 +88,7 @@ export class Block {
                     </a>
                     <a data-ui="#${id}-break">
                         <i>insert_page_break</i>
-                        <span class="l">Page Break</span>
+                        <span class="l">Break</span>
                     </a>
                 </nav>
                 <div class="page padding active" id="${id}-question">
@@ -293,6 +293,12 @@ export class Block {
             });
             this.answerEditor?.on("focus", () => setPreviewActiveBlock(this.id));
         }
+
+        this.element.addEventListener("dblclick", () => {
+            this.hiddenCheckbox.checked = !this.hiddenCheckbox.checked;
+            this.setHidden(this.hiddenCheckbox.checked);
+        })
+
         this.element.addEventListener("pointerenter", () => {
             setPreviewActiveBlock(this.id);
         });
