@@ -40,7 +40,7 @@ export class Block {
         // ensure data model id matches runtime id
         this.block.id = this.id;
 
-        this.element.classList.add("round");
+        this.element.classList.add("round", "no-padding");
         this.render();
     }
 
@@ -48,25 +48,31 @@ export class Block {
         const id = this.id;
 
         this.element.innerHTML = `
+        <div class="handle absolute responsive center center-align" style="max-height: 24px; z-index: 1; width: 60%;" data-swapy-handle><i>drag_handle</i></div>
+        <div class="padding">
             <div class="row">
-                <div class="handle" data-swapy-handle><i>drag_indicator</i></div>
                 <span class="max bold large-text no-line" id="${id}-title">Block</span>
-                <button id="${id}-duplicate" class="chip square">
-                    <i>content_copy</i>
-                    <div class="tooltip">
-                        Duplicate
-                    </div>
-                </button>
-                <button class="circle error chip" id="${id}-delete">
-                    <i>delete</i>
-                </button>
-                <label class="checkbox icon">
-                    <input type="checkbox" id="${id}-hidden">
-                    <span>
-                        <i>expand_less</i>
-                        <i>expand_more</i>
-                    </span>
-                </label>
+                <nav class="group split">
+                    <button id="${id}-duplicate" class="circle left-round small">
+                        <i>control_point_duplicate</i>
+                        <div class="tooltip">
+                            Duplicate
+                        </div>
+                    </button>
+                    <button class="circle error small no-round" id="${id}-delete">
+                        <i>delete</i>
+                        <div class="tooltip">
+                            Delete
+                        </div>
+                    </button>
+                    <label class="checkbox circle icon small primary small-padding right-round">
+                        <input type="checkbox" id="${id}-hidden">
+                        <span class="on-primary">
+                            <i class="large" style="color: var(--on-primary);">expand_less</i>
+                            <i class="large" style="color: var(--on-primary);">expand_more</i>
+                        </span>
+                    </label>
+                </nav>
             </div>
             <div id="${id}-content" class="block-content">
                 <nav class="margin max toolbar round scroll surface-container-high" id="${id}-block-type">
@@ -121,6 +127,7 @@ export class Block {
                             <option>Header 2</option>
                             <option>Header 3</option>
                             <option>Header 4</option>
+                            <option>Header 5</option>
                             <option>Header 6</option>
                         </select>
                         <label>Header</label>
@@ -147,6 +154,7 @@ export class Block {
                     <div class="page-break-label">Page Break</div>
                 </div>
             </div>
+        </div>
         `;
     }
 

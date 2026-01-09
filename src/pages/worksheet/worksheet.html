@@ -156,6 +156,22 @@
                                         <input type="text" id="date">
                                         <label>Due Date</label>
                                     </div>
+                                    <div class="s12 m12 l6 field label border round">
+                                        <select id="worksheet-font">
+                                            <option value="system">System Default</option>
+                                            <option value="latin">Latin Modern Roman</option>
+                                            <option value="arial">Arial</option>
+                                            <option value="verdana">Verdana</option>
+                                            <option value="lexend">Lexend</option>
+                                            <option value="opendyslexic">OpenDyslexic</option>
+                                        </select>
+                                        <label>Font</label>
+                                    </div>
+                                    <div class="s12 m12 l6 prefix field label border round">
+                                        <i>format_size</i>
+                                        <input type="number" id="worksheet-font-size" min="8" max="36" step="1" value="12">
+                                        <label>Font Size (pt)</label>
+                                    </div>
                                 </div>
                                 <h6>Teacher Notes</h6>
                                 <div id="teacher-notes-container"></div>
@@ -166,13 +182,14 @@
                             </details>
                         </article>
                         <div id="block-list" class="swapy-container"></div>
+                        <div class="large-height"></div>
                     </div>
                 </div>
                 <div class="s12 m6 l6" id="preview-container">
                     <div id="preview-pane"></div>
                 </div>
             </div>
-            <div class="min extra-margin transparent fixed bottom right hide-on-print">
+            <div class="min extra-margin transparent fixed bottom right hide-on-print" id="add-blocks">
                 <button class="extra circle medium-elevate">
                     <i>add</i>
                 </button>

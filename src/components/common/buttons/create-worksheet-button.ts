@@ -37,6 +37,8 @@ export class CreateWorksheetButton {
                 curricularOutcomes: [this.outcome.outcomeId],
                 teacherNotes: "",
                 blocks: [],
+                font: "system",
+                fontSize: 12
             };
 
             const outcomes = [this.outcome.outcomeId];

@@ -35,7 +35,48 @@ let dateInput = document.getElementById("date") as HTMLInputElement;
 let teacherNotesEditor: Editor | null = null;
 let outcomeContainer = document.getElementById("outcome-container") as HTMLDivElement;
 let outcomeSelection = new CurricularOutcomesSection();
+let fontSelect = document.getElementById("worksheet-font") as HTMLSelectElement;
+let fontSizeInput = document.getElementById("worksheet-font-size") as HTMLInputElement;
 
+function resolveFont(value: string): string {
+    switch (value) {
+        case "latin":
+            return `'Latin Modern Roman', serif`;
+        case "opendyslexic":
+            return `"OpenDyslexic", Verdana, Arial, sans-serif`;
+        case "lexend":
+            return `"Lexend", Verdana, Arial, sans-serif`;
+        case "verdana":
+            return `Verdana, Arial, sans-serif`;
+        case "arial":
+            return `Arial, sans-serif`;
+        case "system":
+        default:
+            return `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`;
+    }
+}
+
+
+function applyWorksheetTypography() {
+    const fontKey = fontSelect.value || "system";
+    const pt = Math.max(8, Math.min(36, Number(fontSizeInput.value || 12)));
+
+    document.documentElement.style.setProperty("--ws-font-family", resolveFont(fontKey));
+    document.documentElement.style.setProperty("--ws-font-size", `${pt}pt`);
+}
+fontSelect.addEventListener("change", async () => {
+    worksheet.font = fontSelect.value;          // add to model (next section)
+    applyWorksheetTypography();
+    if (!worksheetLoaded) return;
+    await preview.render();
+});
+
+fontSizeInput.addEventListener("input", async () => {
+    worksheet.fontSize = Number(fontSizeInput.value); // add to model (next section)
+    applyWorksheetTypography();
+    if (!worksheetLoaded) return;
+    await preview.render();
+});
 topicInput.addEventListener("input", async () => {
     worksheet.topic = topicInput.value;
     if (!worksheetLoaded) return;
@@ -147,6 +188,8 @@ function setupEditorPreviewToggle() {
         applyView(hash); // override storage if hash is present
         const editorPreviewToggle = document.getElementById("editor-preview-toggle") as HTMLDivElement;
         editorPreviewToggle.classList.add("hidden");
+        const addButton = document.getElementById("add-blocks") as HTMLElement;
+        addButton.classList.add("hidden");
     } else {
         // Otherwise fallback to last saved mode or default
         const lastMode = (localStorage.getItem("lessonViewMode") as ViewMode) || "editor-preview";
@@ -308,6 +351,8 @@ async function loadWorksheet(id: number) {
     gradeLevelInput.value = worksheet.gradeLevel;
     dateInput.value = worksheet.date;
     teacherNotesEditor?.setMarkdown(worksheet.teacherNotes?.replaceAll("$$", "\\$\\$"));
+    fontSelect.value = worksheet.font || "latin";
+    fontSizeInput.value = String(worksheet.fontSize || 12);
 
     outcomeSelection.setValues(worksheet.curricularOutcomes);
     outcomeContainer.append(outcomeSelection.element);
@@ -319,6 +364,7 @@ async function loadWorksheet(id: number) {
 
     SwapyManager.get().update();
     await preview.render();
+    applyWorksheetTypography();
 }
 
 async function handleWorksheetSave() {

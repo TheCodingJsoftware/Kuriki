@@ -451,6 +451,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             teacherNotes: "",
             curricularOutcomes: [],
             blocks: [],
+            font: "system",     // "system" | "arial" | "verdana" | "lexend" | "opendyslexic"
+            fontSize: 12
         };
 
         await WorksheetsAPI.post(idKey, worksheetData, []);

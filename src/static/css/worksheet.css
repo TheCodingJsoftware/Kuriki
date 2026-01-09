@@ -40,8 +40,30 @@
     src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-italic.woff') format('woff');
 }
 
+@font-face {
+    font-family: "OpenDyslexic";
+    src: url("/static/fonts/OpenDyslexic-Regular.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "OpenDyslexic";
+    src: url("/static/fonts/OpenDyslexic-Bold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+}
+
+:root {
+    --ws-font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --ws-font-size: 12pt;
+}
+
+/* Apply to the preview output area (adjust selector to match your preview root) */
+
 #preview-pane {
-    font-family: 'Latin Modern Roman', serif;
+    font-family: var(--ws-font-family);
+    font-size: var(--ws-font-size);
 }
 
 .highlight {
@@ -117,6 +139,7 @@
     }
 
     .page-break::after {
+        font-family: sui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         content: "page break";
         position: absolute;
         top: 0;
@@ -140,6 +163,7 @@
     }
 
     .question-space::after {
+        font-family: sui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         content: "space";
         position: absolute;
         top: 0;
@@ -163,6 +187,7 @@
     }
 
     .blank-space::after {
+        font-family: sui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         content: "blank space";
         position: absolute;
         top: 0;
@@ -327,6 +352,18 @@ table :is(thead,
     color: var(--on-secondary-container) !important;
 }
 
+article .handle {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--speed2) ease;
+}
+
+/* Show handle when hovering the block */
+article:hover .handle {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* Preview highlight */
 #preview-pane .worksheet-block.is-active {
     background-color: color-mix(in srgb, var(--surface-variant) 40%, transparent);
@@ -415,6 +452,8 @@ table :is(thead,
 
     #preview-pane {
         width: 100% !important;
+        font-family: var(--ws-font-family);
+        font-size: var(--ws-font-size);
     }
 
     /* Never show editor highlight states in print */

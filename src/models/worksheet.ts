@@ -56,6 +56,8 @@ export interface IWorksheet {
     teacherNotes: string;
     curricularOutcomes: string[];
     blocks: WorksheetBlock[];
+    font: string;
+    fontSize: number;
 }
 
 export class Worksheet implements IWorksheet {
@@ -67,6 +69,8 @@ export class Worksheet implements IWorksheet {
     teacherNotes = "";
     curricularOutcomes: string[] = [];
     blocks: WorksheetBlock[] = [];
+    font: string = "latin";     // "system" | "latin" | "arial" | "verdana" | "lexend" | "opendyslexic"
+    fontSize: number = 12;
 
     constructor(init?: Partial<Worksheet>) {
         Object.assign(this, init);
