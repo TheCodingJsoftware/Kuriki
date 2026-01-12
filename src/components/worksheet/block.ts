@@ -76,33 +76,45 @@ export class Block {
                 </nav>
             </div>
             <div id="${id}-content" class="block-content">
-                <nav class="margin max toolbar round scroll surface-container-high" id="${id}-block-type">
+                <nav class="margin toolbar round fill center" id="${id}-block-type">
                     <a data-ui="#${id}-header">
                         <i>format_h1</i>
-                        <span class="l">Header</span>
+                        <div class="tooltip">
+                            Title
+                        </div>
                     </a>
                     <a data-ui="#${id}-paragraph">
                         <i>text_fields</i>
-                        <span class="l">Text</span>
+                        <div class="tooltip">
+                            Paragraph
+                        </div>
                     </a>
                     <a class="active" data-ui="#${id}-question">
                         <i>help</i>
-                        <span class="l">Question</span>
+                        <div class="tooltip">
+                            Question
+                        </div>
                     </a>
                     <a data-ui="#${id}-divider">
                         <i>horizontal_rule</i>
-                        <span class="l">Divider</span>
+                        <div class="tooltip">
+                            Divider
+                        </div>
                     </a>
                     <a data-ui="#${id}-space">
                         <i>align_space_around</i>
-                        <span class="l">Space</span>
+                        <div class="tooltip">
+                            Blank Space
+                        </div>
                     </a>
                     <a data-ui="#${id}-break">
                         <i>insert_page_break</i>
-                        <span class="l">Break</span>
+                        <div class="tooltip">
+                            Page Break
+                        </div>
                     </a>
                 </nav>
-                <div class="page padding active" id="${id}-question">
+                <div class="page active" id="${id}-question">
                     <div class="grid">
                         <div class="s12 m6 l6 prefix field label border round">
                             <i>star</i>
@@ -125,11 +137,11 @@ export class Block {
                     </label>
                 </div>
 
-                <div class="page padding" id="${id}-paragraph">
+                <div class="page" id="${id}-paragraph">
                     <div id="${id}-paragraph-container"></div>
                 </div>
 
-                <div class="page padding" id="${id}-header">
+                <div class="page" id="${id}-header">
                     <div class="field label suffix border round">
                         <select id="${id}-header-type">
                             <option>Header 1</option>
@@ -148,19 +160,18 @@ export class Block {
                     </div>
                 </div>
 
-                <div class="page padding" id="${id}-divider">
+                <div class="page" id="${id}-divider">
                     <hr class="margin">
                 </div>
 
-                <div class="page padding" id="${id}-space">
+                <div class="page" id="${id}-space">
                     <div class="field label border round no-margin">
                         <input type="number" id="${id}-blank-space-size">
                         <label>Blank Space Size</label>
                     </div>
                 </div>
 
-                <div class="page padding" id="${id}-break">
-                    <div class="page-break-label">Page Break</div>
+                <div class="page" id="${id}-break">
                 </div>
             </div>
         </div>
