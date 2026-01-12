@@ -482,8 +482,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Copy preview markdown
     // -----------------------------
     bindAll("#copy-content", (el) => {
-        el.addEventListener("click", () => {
-            const md = (window as any).preview?.getMarkdown() || "";
+        el.addEventListener("click", async () => {
+            const md = await worksheet.copyAsMarkdown();
             navigator.clipboard.writeText(md);
             new ContentCopiedSnackbar();
         });
