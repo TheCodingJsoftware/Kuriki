@@ -527,6 +527,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         el.addEventListener("click", async () => {
             const newBlock = addNewBlock();
             newBlock.showPage(WorksheetBlockType.Paragraph);
+            newBlock.setBlockType(WorksheetBlockType.Paragraph);
+            newBlock.showPage(`#${newBlock.id}-${WorksheetBlockType.Paragraph}`);
             blocks.push(newBlock);
             if (!worksheetLoaded) return;
             await preview.render();
