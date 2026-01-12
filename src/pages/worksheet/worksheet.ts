@@ -38,6 +38,16 @@ let outcomeSelection = new CurricularOutcomesSection();
 let fontSelect = document.getElementById("worksheet-font") as HTMLSelectElement;
 let fontSizeInput = document.getElementById("worksheet-font-size") as HTMLInputElement;
 
+function updatePageTitle() {
+    if (topicInput.value || nameInput.value) {
+        document.title = nameInput.value + " - " + topicInput.value + " by " + authorInput.value;
+    } else if (nameInput.value) {
+        document.title = nameInput.value + " by " + authorInput.value;
+    } else {
+        document.title = "New Worksheet";
+    }
+}
+
 function resolveFont(value: string): string {
     switch (value) {
         case "latin":
@@ -64,6 +74,7 @@ function applyWorksheetTypography() {
     document.documentElement.style.setProperty("--ws-font-family", resolveFont(fontKey));
     document.documentElement.style.setProperty("--ws-font-size", `${pt}pt`);
 }
+
 fontSelect.addEventListener("change", async () => {
     worksheet.font = fontSelect.value;          // add to model (next section)
     applyWorksheetTypography();
@@ -77,19 +88,23 @@ fontSizeInput.addEventListener("input", async () => {
     if (!worksheetLoaded) return;
     await preview.render();
 });
+
 topicInput.addEventListener("input", async () => {
+    updatePageTitle();
     worksheet.topic = topicInput.value;
     if (!worksheetLoaded) return;
     await preview.render();
 });
 
 nameInput.addEventListener("input", async () => {
+    updatePageTitle();
     worksheet.name = nameInput.value;
     if (!worksheetLoaded) return;
     await preview.render();
 });
 
 authorInput.addEventListener("input", async () => {
+    updatePageTitle();
     worksheet.author = authorInput.value;
     if (!worksheetLoaded) return;
     await preview.render();
@@ -526,7 +541,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     bindAll("#add-block-paragraph", (el) => {
         el.addEventListener("click", async () => {
             const newBlock = addNewBlock();
-            newBlock.showPage(WorksheetBlockType.Paragraph);
             newBlock.setBlockType(WorksheetBlockType.Paragraph);
             newBlock.showPage(`#${newBlock.id}-${WorksheetBlockType.Paragraph}`);
             blocks.push(newBlock);
@@ -612,6 +626,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Remove loading overlay
     document.getElementById("progress")?.remove();
     document.querySelector("main")?.classList.remove("hidden");
+    updatePageTitle();
 });
 
 // -------------------------------
