@@ -148,8 +148,16 @@
         border-radius: 0.5rem;
     }
 
+    .question-space {
+        position: relative;
+        /* required for pseudo-elements */
+        border: 1px dashed var(--outline-variant);
+        border-radius: 0.5rem;
+    }
+
+    /* Center label (you already have this) */
     .question-space::after {
-        font-family: sui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
         content: "space";
         position: absolute;
         top: 0;
@@ -162,15 +170,38 @@
         padding: 0 12px;
 
         text-transform: uppercase;
-
         width: max-content;
         white-space: nowrap;
     }
 
-    .blank-space {
-        border: 1px dashed var(--outline-variant);
-        border-radius: 0.5rem;
+    /* Height indicator */
+    .question-space::before {
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        content: attr(data-height);
+        position: absolute;
+        top: 50%;
+        right: 0.75rem;
+        transform: translateY(-50%);
+
+        padding: 2px 6px;
+        background-color: var(--surface);
+        border: 0.0175rem solid var(--outline-variant);
+        border-radius: 0.375rem;
+
+        font-size: 0.7rem;
+        white-space: nowrap;
     }
+
+    /* Vertical dashed guide line */
+    .question-space .height-line {
+        position: absolute;
+        top: 0.5rem;
+        bottom: 0.5rem;
+        right: 0.25rem;
+        border-right: 1px dashed var(--outline-variant);
+        pointer-events: none;
+    }
+
 
     .blank-space::after {
         font-family: sui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -189,6 +220,35 @@
 
         width: max-content;
         white-space: nowrap;
+    }
+
+
+    /* Height indicator */
+    .blank-space::before {
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        content: attr(data-height);
+        position: absolute;
+        top: 50%;
+        right: 0.75rem;
+        transform: translateY(-50%);
+
+        padding: 2px 6px;
+        background-color: var(--surface);
+        border: 0.0175rem solid var(--outline-variant);
+        border-radius: 0.375rem;
+
+        font-size: 0.7rem;
+        white-space: nowrap;
+    }
+
+    /* Vertical dashed guide line */
+    .blank-space .height-line {
+        position: absolute;
+        top: 0.5rem;
+        bottom: 0.5rem;
+        right: 0.25rem;
+        border-right: 1px dashed var(--outline-variant);
+        pointer-events: none;
     }
 }
 
@@ -457,6 +517,12 @@ article:hover .handle {
 
         /* if you ever used borders for highlight */
         border-color: transparent !important;
+    }
+
+    .question-space::before,
+    .question-space::after,
+    .question-space .height-line {
+        display: none !important;
     }
 
     #preview-pane,

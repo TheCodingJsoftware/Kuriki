@@ -1,5 +1,6 @@
 export enum WorksheetBlockType {
     Question = "question",
+    Paragraph = "paragraph",
     SectionHeader = "header",
     Divider = "divider",
     BlankSpace = "space",
@@ -22,8 +23,9 @@ export interface IWorksheetBlock {
     points?: number;                    // default 5
     questionMarkdown?: string;
     answerMarkdown?: string;
-    showAnswer?: boolean;
+    showSolution?: boolean;
     questionSpaceSize?: number;
+    paragraphMarkdown?: string;
 
     // -------------------------
     // HEADER FIELDS

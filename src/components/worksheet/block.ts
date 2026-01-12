@@ -28,8 +28,9 @@ export class Block {
     questionEditor!: Editor;
     questionSpaceSize!: HTMLInputElement;
     answerEditor!: Editor;
-    showAnswerCheckbox!: HTMLInputElement;
+    showSolutionCheckbox!: HTMLInputElement;
     blankSpaceSize!: HTMLInputElement;
+    paragraphEditor!: Editor;
 
     constructor(block: WorksheetBlock) {
         this.id = block.id;
@@ -65,24 +66,28 @@ export class Block {
                             Delete
                         </div>
                     </button>
-                    <label class="checkbox circle icon small primary small-padding right-round">
+                    <label class="checkbox circle icon small primary small-padding right-round" style="max-width: 32px;">
                         <input type="checkbox" id="${id}-hidden">
                         <span class="on-primary">
-                            <i class="large" style="color: var(--on-primary);">expand_less</i>
-                            <i class="large" style="color: var(--on-primary);">expand_more</i>
+                            <i class="extra" style="color: var(--on-primary); font-size: 24px;">expand_less</i>
+                            <i class="extra" style="color: var(--on-primary); font-size: 24px;">expand_more</i>
                         </span>
                     </label>
                 </nav>
             </div>
             <div id="${id}-content" class="block-content">
                 <nav class="margin max toolbar round scroll surface-container-high" id="${id}-block-type">
-                    <a class="active" data-ui="#${id}-question">
-                        <i>help</i>
-                        <span class="l">Question</span>
-                    </a>
                     <a data-ui="#${id}-header">
                         <i>format_h1</i>
                         <span class="l">Header</span>
+                    </a>
+                    <a data-ui="#${id}-paragraph">
+                        <i>text_fields</i>
+                        <span class="l">Text</span>
+                    </a>
+                    <a class="active" data-ui="#${id}-question">
+                        <i>help</i>
+                        <span class="l">Question</span>
                     </a>
                     <a data-ui="#${id}-divider">
                         <i>horizontal_rule</i>
@@ -110,14 +115,18 @@ export class Block {
                             <label>Question Space Size</label>
                         </div>
                     </div>
-                    <h6>Question</h6>
+                    <div class="large-text top-margin">Question</div>
                     <div id="${id}-question-container"></div>
-                    <h6>Answer (Optional)</h6>
-                    <div id="${id}-answer-container"></div>
+                    <div class="large-text top-margin">Solution</div>
+                    <div id="${id}-solution-container"></div>
                     <label class="checkbox">
-                        <input type="checkbox" id="${id}-show-answer">
-                        <span>Show Answer</span>
+                        <input type="checkbox" id="${id}-show-solution">
+                        <span>Show Solution</span>
                     </label>
+                </div>
+
+                <div class="page padding" id="${id}-paragraph">
+                    <div id="${id}-paragraph-container"></div>
                 </div>
 
                 <div class="page padding" id="${id}-header">
@@ -203,11 +212,11 @@ export class Block {
             this.emitChanged({ title: this.block.title }, "title");
         });
 
-        this.showAnswerCheckbox = this.element.querySelector(`#${this.id}-show-answer`) as HTMLInputElement;
-        this.showAnswerCheckbox.checked = this.block.showAnswer || false;
-        this.showAnswerCheckbox.addEventListener("change", () => {
-            this.block.showAnswer = this.showAnswerCheckbox.checked;
-            this.emitChanged({ showAnswer: this.block.showAnswer }, "showAnswer");
+        this.showSolutionCheckbox = this.element.querySelector(`#${this.id}-show-solution`) as HTMLInputElement;
+        this.showSolutionCheckbox.checked = this.block.showSolution || false;
+        this.showSolutionCheckbox.addEventListener("change", () => {
+            this.block.showSolution = this.showSolutionCheckbox.checked;
+            this.emitChanged({ showSolution: this.block.showSolution }, "showSolution");
         });
 
         this.blankSpaceSize = this.element.querySelector(`#${this.id}-blank-space-size`) as HTMLInputElement;
@@ -265,7 +274,8 @@ export class Block {
         this.setHidden(this.hiddenCheckbox.checked);
 
         const questionEl = this.element.querySelector(`#${this.id}-question-container`) as HTMLElement;
-        const answerEl = this.element.querySelector(`#${this.id}-answer-container`) as HTMLElement;
+        const solutionEl = this.element.querySelector(`#${this.id}-solution-container`) as HTMLElement;
+        const paragraphEl = this.element.querySelector(`#${this.id}-paragraph-container`) as HTMLElement;
 
         // Prevent double-init if Swapy re-attaches elements
         if (!this.questionEditor) {
@@ -287,7 +297,7 @@ export class Block {
 
         if (!this.answerEditor) {
             this.answerEditor = new Editor({
-                el: answerEl,
+                el: solutionEl,
                 previewStyle: "vertical",
                 height: "150px",
                 initialEditType: "wysiwyg",
@@ -301,8 +311,25 @@ export class Block {
             });
             this.answerEditor?.on("focus", () => setPreviewActiveBlock(this.id));
         }
+        if (!this.paragraphEditor) {
+            this.paragraphEditor = new Editor({
+                el: paragraphEl,
+                previewStyle: "vertical",
+                height: "250px",
+                initialEditType: "wysiwyg",
+                usageStatistics: true,
+            });
+            this.paragraphEditor.setMarkdown(this.block.paragraphMarkdown?.replaceAll("$$", "\\$\\$") || "");
+            this.paragraphEditor.on("change", () => {
+                this.block.paragraphMarkdown = this.paragraphEditor.getMarkdown();
+                this.emitChanged({ paragraphMarkdown: this.block.paragraphMarkdown }, "paragraphMarkdown");
+                setPreviewActiveBlock(this.id, false)
+            });
+            this.paragraphEditor?.on("focus", () => setPreviewActiveBlock(this.id));
+        }
 
         this.element.addEventListener("dblclick", () => {
+            if (!this.hiddenCheckbox.checked) return;
             this.hiddenCheckbox.checked = !this.hiddenCheckbox.checked;
             this.setHidden(this.hiddenCheckbox.checked);
         })

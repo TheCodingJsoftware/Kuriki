@@ -15,17 +15,17 @@ export class Preview {
 
         const headerElement = document.createElement("div");
         headerElement.innerHTML = `
-            <nav class="row center-align">
-                <strong>${escapeHtml(this.worksheet.topic)}</strong>
+            <nav class="row bottom-align">
+                <span>${escapeHtml(this.worksheet.topic)}</span>
                 <h6 class="max center-align">${escapeHtml(this.worksheet.name)}</h6>
-                <strong>Due: ${escapeHtml(this.worksheet.date)}</strong>
+                <span>Due: ${escapeHtml(this.worksheet.date)}</span>
             </nav>
             <hr>
             <nav class="row">
-                <div class="worksheet-notes max padding">
+                <div class="worksheet-notes max padding small-text no-line">
                     ${await renderWorksheetMarkdown(this.worksheet.teacherNotes || "")}
                 </div>
-                <div>Name <hr class="small-width"></div>
+                <div class="max">Name <hr></div>
             </nav>
             <hr>
             <nav class="row right-align">
@@ -46,9 +46,7 @@ export class Preview {
                 case WorksheetBlockType.Question: {
                     const space = block.questionSpaceSize ?? 1;
                     const qHtml = await renderWorksheetMarkdown(block.questionMarkdown || "");
-                    const aHtml = block.showAnswer
-                        ? await renderWorksheetMarkdown(block.answerMarkdown || "")
-                        : "";
+                    const sHtml = block.showSolution ? await renderWorksheetMarkdown(block.answerMarkdown || "") : "";
 
                     blockElement.innerHTML = `
                     <div class="row top-align">
@@ -59,19 +57,24 @@ export class Preview {
                             <div class="worksheet-question">
                             ${qHtml || "<span class='italic'>(no question)</span>"}
                             </div>
-
-                            ${block.showAnswer && (block.answerMarkdown || "").trim()
-                            ? `<div class="worksheet-answer">
-                                    <h6>Answer</h6>
-                                    ${aHtml}
-                                </div>`
-                            : ""
-                        }
-                            </div>
                         </div>
-                        <div class="question-space" style="height:${space * 24}px"></div>
+                    </div>
+                    <div class="question-space" style="min-height:${space * 24}px" data-height="${space * 24}px">
+                        ${block.showSolution && (block.answerMarkdown || "").trim()
+                            ? `<div class="worksheet-solution">
+                                    <span class="italic">Solution</span>${sHtml}
+                                </div>`
+                            : ""}
+                        <span class="height-line"></span>
+                    </div>
                     `.trim();
 
+                    break;
+                }
+
+                case WorksheetBlockType.Paragraph: {
+                    const pHtml = await renderWorksheetMarkdown(block.paragraphMarkdown || "");
+                    blockElement.innerHTML = `<div class="worksheet-paragraph">${pHtml}</div>`;
                     break;
                 }
 
@@ -97,8 +100,9 @@ export class Preview {
 
                 case WorksheetBlockType.BlankSpace: {
                     const size = block.size ?? 1;
-                    blockElement.classList.add("blank-space");
-                    blockElement.style.height = `${size * 24}px`;
+                    blockElement.innerHTML = `<div class="blank-space" style="min-height:${size * 24}px" data-height="${size * 24}px">
+                        <span class="height-line"></span>
+                    </div>`
                     break;
                 }
 

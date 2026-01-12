@@ -86,12 +86,19 @@ module.exports = {
             },
         },
         {
+            test: /\.(woff2?|ttf|eot|otf)$/i,
+            type: "asset/resource",
+            generator: {
+                filename: "fonts/[name][ext][query]",
+            },
+        },
+        {
             test: /\.css$/i,
             use: [MiniCssExtractPlugin.loader,
             {
                 loader: "css-loader",
                 options: {
-                    url: false, // <-- do not resolve url(...)
+                    url: true,
                 },
             }],
         },

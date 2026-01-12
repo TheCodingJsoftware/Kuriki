@@ -1,5 +1,6 @@
 import "@utils/theme";
 import "@utils/firebase";
+import "katex/dist/katex.min.css";
 import "@static/css/style.css";
 import "@static/css/worksheet.css";
 import "beercss";
@@ -15,7 +16,6 @@ import { SnackbarComponent } from "@components/common/snackbar/snackbar";
 import { WorksheetsAPI } from "@api/worksheets-api";
 import { Worksheet, WorksheetBlock, WorksheetBlockType } from "@models/worksheet";
 import { Preview } from "@components/worksheet/preview";
-import "katex/dist/katex.min.css";
 import { CurricularOutcomesSection } from "@components/lesson/curricular-outcome-selection";
 
 type ViewMode = "editor-preview" | "editor-only" | "preview-only";
@@ -517,6 +517,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         el.addEventListener("click", async () => {
             const newBlock = addNewBlock();
             newBlock.showPage(WorksheetBlockType.Question);
+            blocks.push(newBlock);
+            if (!worksheetLoaded) return;
+            await preview.render();
+        });
+    });
+
+    bindAll("#add-block-paragraph", (el) => {
+        el.addEventListener("click", async () => {
+            const newBlock = addNewBlock();
+            newBlock.showPage(WorksheetBlockType.Paragraph);
             blocks.push(newBlock);
             if (!worksheetLoaded) return;
             await preview.render();
