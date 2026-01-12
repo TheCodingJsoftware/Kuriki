@@ -1,55 +1,41 @@
 @font-face {
-    font-family: 'Latin Modern Roman';
-    font-weight: normal;
+    font-family: "Latin Modern Roman";
+    src: url("../fonts/lmroman10-regular.woff") format("woff");
+    font-weight: 400;
     font-style: normal;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-regular.woff') format('woff');
 }
 
 @font-face {
-    font-family: 'Latin Modern Roman';
-    font-weight: bold;
+    font-family: "Latin Modern Roman";
+    src: url("../fonts/lmroman10-bold.woff") format("woff");
+    font-weight: 700;
     font-style: normal;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bold.woff') format('woff');
 }
 
 @font-face {
-    font-family: 'Latin Modern Roman';
-    font-weight: normal;
+    font-family: "Latin Modern Roman";
+    src: url("../fonts/lmroman10-italic.woff") format("woff");
+    font-weight: 400;
     font-style: italic;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-italic.woff') format('woff');
 }
 
 @font-face {
-    font-family: 'Latin Modern Roman';
-    font-weight: bold;
+    font-family: "Latin Modern Roman";
+    src: url("../fonts/lmroman10-bolditalic.woff") format("woff");
+    font-weight: 700;
     font-style: italic;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bolditalic.woff') format('woff');
-}
-
-@font-face {
-    font-family: 'Latin Modern Mono';
-    font-weight: normal;
-    font-style: normal;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-regular.woff') format('woff');
-}
-
-@font-face {
-    font-family: 'Latin Modern Mono';
-    font-weight: normal;
-    font-style: italic;
-    src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-italic.woff') format('woff');
 }
 
 @font-face {
     font-family: "OpenDyslexic";
-    src: url("/static/fonts/OpenDyslexic-Regular.otf") format("opentype");
+    src: url("../fonts/OpenDyslexic-Regular.otf") format("opentype");
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
     font-family: "OpenDyslexic";
-    src: url("/static/fonts/OpenDyslexic-Bold.otf") format("opentype");
+    src: url("../fonts/OpenDyslexic-Bold.otf") format("opentype");
     font-weight: 700;
     font-style: normal;
 }
