@@ -1,4 +1,7 @@
-.toastui-editor-ww-container {
+.toastui-editor-ww-container,
+.toastui-editor-md-preview,
+.toastui-editor-md-container,
+.toastui-editor-md-vertical-style {
     background-color: var(--container) !important;
     border-radius: 0 !important;
 }
@@ -8,6 +11,7 @@
 .toastui-editor-md-code-block-line-background {
     background-color: var(--surface-container) !important;
     color: var(--on-surface) !important;
+    border-radius: 0 !important;
 }
 
 .toastui-editor-contents .toastui-editor-ww-code-block:after {
@@ -19,6 +23,11 @@
 
 .toastui-editor-defaultUI-toolbar button {
     border-color: var(--outline) !important;
+}
+
+.toastui-editor-md-preview-highlight,
+.md-preview-highlight {
+    background-color: var(--fill) !important;
 }
 
 .toastui-editor-defaultUI-toolbar button:not(:disabled):hover {
