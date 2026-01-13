@@ -8,6 +8,7 @@ import Editor from "@toast-ui/editor";
 import Viewer from "@toast-ui/editor/dist/toastui-editor-viewer";
 import type { AssessmentRow } from "@models/assessment-row";
 import "@static/css/lesson.css";
+import "@static/css/toastui-editor.css";
 import "flatpickr/dist/themes/dark.css";
 import flatpickr from "flatpickr";
 import "@toast-ui/editor/dist/toastui-editor.css";

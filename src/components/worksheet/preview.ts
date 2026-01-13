@@ -15,11 +15,11 @@ export class Preview {
 
         const headerElement = document.createElement("div");
         headerElement.innerHTML = `
-            <nav class="row bottom-align">
-                <span>${escapeHtml(this.worksheet.topic)}</span>
-                <h6 class="max center-align">${escapeHtml(this.worksheet.name)}</h6>
-                <span>Due: ${escapeHtml(this.worksheet.date)}</span>
-            </nav>
+            <div class="padding bottom-align">
+                <div class="left absolute">${escapeHtml(this.worksheet.topic)}</div>
+                <h6 class="center absolute">${escapeHtml(this.worksheet.name)}</h6>
+                <div class="right absolute">Due: ${escapeHtml(this.worksheet.date)}</div>
+            </div>
             <hr>
             <nav class="row">
                 <div class="worksheet-notes max padding small-text no-line">
@@ -28,9 +28,10 @@ export class Preview {
                 <div class="max">Name <hr></div>
             </nav>
             <hr>
+            ${this.worksheet.getTotalPoints() > 0 ? `
             <nav class="row right-align">
                 <div class="extra extra-margin"><h6>/ ${escapeHtml(String(this.worksheet.getTotalPoints()))} pts</h6></div>
-            </nav>
+            </nav>` : ``}
         `.trim();
 
         this.container.append(headerElement);

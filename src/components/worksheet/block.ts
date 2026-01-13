@@ -326,7 +326,7 @@ export class Block {
             this.paragraphEditor = new Editor({
                 el: paragraphEl,
                 previewStyle: "vertical",
-                height: "250px",
+                height: "500px",
                 initialEditType: "wysiwyg",
                 usageStatistics: true,
             });

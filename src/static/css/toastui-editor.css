@@ -1,0 +1,98 @@
+.toastui-editor-ww-container {
+    background-color: var(--container) !important;
+    border-radius: 0 !important;
+}
+
+.toastui-editor-ww-code-block pre,
+.lang-math,
+.toastui-editor-md-code-block-line-background {
+    background-color: var(--surface-container) !important;
+    color: var(--on-surface) !important;
+}
+
+.toastui-editor-contents .toastui-editor-ww-code-block:after {
+    background-color: color-mix(in srgb,
+            var(--surface-container-high) 60%,
+            transparent) !important;
+    color: var(--on-surface) !important;
+}
+
+.toastui-editor-defaultUI-toolbar button {
+    border-color: var(--outline) !important;
+}
+
+.toastui-editor-defaultUI-toolbar button:not(:disabled):hover {
+    background-color: var(--surface-container-high) !important;
+}
+
+.toastui-editor-dropdown-toolbar {
+    background-color: var(--surface-container-highest) !important;
+    border-color: var(--outline) !important;
+}
+
+
+.toastui-editor-contents h1,
+.toastui-editor-contents h2,
+.toastui-editor-contents h3,
+.toastui-editor-contents h4,
+.toastui-editor-contents h5,
+.toastui-editor-contents h6,
+.toastui-editor-contents li,
+.toastui-editor-ww-container .toastui-editor-contents td p,
+.toastui-editor-ww-container .toastui-editor-contents p,
+.scroll>table,
+table :is(thead,
+    tbody,
+    tfoot,
+    tr,
+    td),
+.toastui-editor-contents p,
+.ProseMirror {
+    color: var(--on-background) !important;
+}
+
+.toastui-editor-contents table th {
+    background-color: var(--surface-container-high) !important;
+}
+
+#preview-pane .toastui-editor-contents table th {
+    background-color: #555 !important;
+}
+
+.toastui-editor-defaultUI-toolbar {
+    background-color: var(--surface-container-highest) !important;
+    border-top-right-radius: 1.5em !important;
+    border-top-left-radius: 1.5em !important;
+}
+
+.toastui-editor-defaultUI {
+    border-color: var(--outline) !important;
+    border-radius: 1.5em !important;
+}
+
+.toastui-editor-mode-switch {
+    border-top: none !important;
+    background-color: var(--fill) !important;
+}
+
+.toastui-editor-mode-switch .tab-item {
+    background-color: var(--fill) !important;
+    color: var(--on-primary) !important;
+}
+
+.toastui-editor-mode-switch .tab-item {
+    background-color: var(--surface-container) !important;
+    color: var(--on-surface-container) !important;
+    border: none !important;
+    border-radius: 1.5em !important;
+    margin: .125rem !important;
+}
+
+.toastui-editor-mode-switch .tab-item:hover {
+    background: var(--active) !important;
+}
+
+.toastui-editor-mode-switch .tab-item.active {
+    background-color: var(--secondary-container) !important;
+    color: var(--on-secondary-container) !important;
+}

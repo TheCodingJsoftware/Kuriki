@@ -3,6 +3,7 @@ import "@utils/firebase";
 import "katex/dist/katex.min.css";
 import "@static/css/style.css";
 import "@static/css/worksheet.css";
+import "@static/css/toastui-editor.css";
 import "beercss";
 import "material-dynamic-colors";
 import "@toast-ui/editor/dist/toastui-editor.css";
@@ -615,7 +616,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initialize UI
     // -----------------------------
     setupEditorPreviewToggle();
-    // setupWorksheetEditorPane();
 
     // -----------------------------
     // Load worksheet from API

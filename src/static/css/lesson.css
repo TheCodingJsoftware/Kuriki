@@ -2,49 +2,40 @@
 	font-family: 'Latin Modern Roman';
 	font-weight: normal;
 	font-style: normal;
-	src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-regular.woff') format('woff');
+	src: url('../fonts/lmroman10-regular.woff') format('woff');
 }
 
 @font-face {
 	font-family: 'Latin Modern Roman';
 	font-weight: bold;
 	font-style: normal;
-	src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bold.woff') format('woff');
+	src: url('../fonts/lmroman10-bold.woff') format('woff');
 }
 
 @font-face {
 	font-family: 'Latin Modern Roman';
 	font-weight: normal;
 	font-style: italic;
-	src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-italic.woff') format('woff');
+	src: url('../fonts/lmroman10-italic.woff') format('woff');
 }
 
 @font-face {
 	font-family: 'Latin Modern Roman';
 	font-weight: bold;
 	font-style: italic;
-	src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmroman10-bolditalic.woff') format('woff');
+	src: url('../fonts/lmroman10-bolditalic.woff') format('woff');
 }
 
-@font-face {
-	font-family: 'Latin Modern Mono';
-	font-weight: normal;
-	font-style: normal;
-	src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-regular.woff') format('woff');
-}
-
-@font-face {
-	font-family: 'Latin Modern Mono';
-	font-weight: normal;
-	font-style: italic;
-	src: url('https://cdn.rawgit.com/AndrewBelt/WiTeX/master/fonts/lmmono10-italic.woff') format('woff');
-}
 
 html,
 body {
 	height: 100%;
 	margin: 0;
 	padding: 0;
+}
+
+#preview-pane .toastui-editor-contents {
+	font-family: 'Latin Modern Roman', serif;
 }
 
 @media (min-width: 601px) {
@@ -106,78 +97,6 @@ body {
 	}
 }
 
-#preview-pane .toastui-editor-contents {
-	font-family: 'Latin Modern Roman', serif;
-}
-
-.toastui-editor-ww-container {
-	background-color: var(--container) !important;
-}
-
-.toastui-editor-contents h1,
-.toastui-editor-contents h2,
-.toastui-editor-contents h3,
-.toastui-editor-contents h4,
-.toastui-editor-contents h5,
-.toastui-editor-contents h6,
-.toastui-editor-contents li,
-.toastui-editor-ww-container .toastui-editor-contents td p,
-.toastui-editor-ww-container .toastui-editor-contents p,
-.scroll>table,
-table :is(thead,
-	tbody,
-	tfoot,
-	tr,
-	td),
-.toastui-editor-contents p {
-	color: var(--on-background) !important;
-}
-
-.toastui-editor-contents table th {
-	background-color: var(--surface-container-high) !important;
-}
-
-#preview-pane .toastui-editor-contents table th {
-	background-color: #555 !important;
-}
-
-.toastui-editor-defaultUI-toolbar {
-	background-color: var(--surface-container-highest) !important;
-	border-top-right-radius: 1.5em !important;
-	border-top-left-radius: 1.5em !important;
-}
-
-.toastui-editor-defaultUI {
-	border-color: var(--outline) !important;
-	border-radius: 1.5em !important;
-}
-
-.toastui-editor-mode-switch {
-	border-top: none !important;
-	background-color: var(--fill) !important;
-}
-
-.toastui-editor-mode-switch .tab-item {
-	background-color: var(--fill) !important;
-	color: var(--on-primary) !important;
-}
-
-.toastui-editor-mode-switch .tab-item {
-	background-color: var(--surface-container) !important;
-	color: var(--on-surface-container) !important;
-	border: none !important;
-	border-radius: 1.5em !important;
-	margin: .125rem !important;
-}
-
-.toastui-editor-mode-switch .tab-item:hover {
-	background: var(--active) !important;
-}
-
-.toastui-editor-mode-switch .tab-item.active {
-	background-color: var(--secondary-container) !important;
-	color: var(--on-secondary-container) !important;
-}
 
 @media print {
 	body {
