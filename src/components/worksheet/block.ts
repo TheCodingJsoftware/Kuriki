@@ -414,7 +414,7 @@ export class Block {
                 return { heading: "Page Break", preview: "Forces a new printed page" };
 
             default:
-                return { heading: type, preview: "—" };
+                return { heading: type, preview: "-" };
         }
     }
 
