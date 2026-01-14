@@ -110,6 +110,14 @@
     /* or omit if default */
 }
 
+button.checkable i {
+    transition: transform var(--speed2) ease;
+}
+
+button.checkable[data-checked="true"] i {
+    transform: rotate(180deg);
+}
+
 .swapy-container {
     display: flex;
     flex-direction: column;
@@ -307,10 +315,6 @@ body {
         /* independent scroll */
         overflow-x: hidden;
         box-sizing: border-box;
-    }
-
-    #editor-container {
-        margin: 1rem;
     }
 
     #preview-container {
