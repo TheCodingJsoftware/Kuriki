@@ -29,7 +29,7 @@
     border-color: var(--outline) !important;
 }
 
-.toastui-editor-contents .toastui-editor-md-preview-highlight::after,
+.toastui-editor-md-preview-highlight::after,
 .md-preview-highlight::after {
     background-color: var(--surface-variant) !important;
     outline: .125rem solid var(--primary);
@@ -38,10 +38,10 @@
 }
 
 .toastui-editor-popup {
-    background-color: var(--surface-container-highest) !important;
+    background-color: var(--surface-container) !important;
     border-color: var(--outline-variant) !important;
     border-radius: 1.5rem !important;
-    box-shadow: var(--elevate2) !important;
+    box-shadow: var(--elevate1) !important;
 }
 
 .toastui-editor-popup div.tab-item,
@@ -63,7 +63,7 @@
 }
 
 .toastui-editor-popup .toastui-editor-table-selection .toastui-editor-table-cell {
-    background-color: var(--surface-container-highest) !important;
+    background-color: var(--surface-container) !important;
     border-color: var(--outline) !important;
 }
 
@@ -130,11 +130,13 @@ table :is(thead,
 }
 
 .toastui-editor-contents table th {
-    background-color: var(--surface-container-high) !important;
+    background-color: var(--surface-variant) !important;
+    color: var(--on-surface) !important;
 }
 
-#preview-pane .toastui-editor-contents table th {
-    background-color: #555 !important;
+.scroll>table,
+table :is(thead, tbody, tfoot, tr, th, td) {
+    border-color: var(--outline) !important
 }
 
 .toastui-editor-defaultUI-toolbar {

@@ -52,7 +52,18 @@ export class Block {
         <div class="handle absolute responsive center center-align" style="max-height: 24px; z-index: 1; width: 60%;" data-swapy-handle><i>drag_handle</i></div>
         <div class="padding">
             <div class="row">
-                <span class="max bold large-text no-line" id="${id}-title">Block</span>
+                <span class="max bold large-text no-line block-title" id="${id}-title">
+                    <span id="${id}-title-text">Block</span>
+                    <div>
+                        <a class="small-text link block-title-type" id="${id}-title-type-link" tabindex="0">
+                            <span id="${id}-title-type-text">(Question)</span>
+                            <div class="tooltip right max block-title-tooltip" id="${id}-title-tooltip">
+                                <div class="bold" id="${id}-tooltip-heading">Question</div>
+                                <div class="small-text" id="${id}-tooltip-preview"> - </div>
+                            </div>
+                        </a>
+                    </div>
+                </span>
                 <nav class="group split">
                     <button id="${id}-duplicate" class="circle left-round small">
                         <i>control_point_duplicate</i>
@@ -364,18 +375,78 @@ export class Block {
         // });
     }
 
-    showPage(selector: string) {
-        this.block.currentType = selector.replace(`#${this.id}-`, "") as WorksheetBlockType;
+    private getTooltipPreview(type: WorksheetBlockType): { heading: string; preview: string } {
+        const clean = (s?: string) =>
+            (s ?? "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 200); // keep tooltip small
 
-        const pages = this.element.querySelectorAll(".page");
-        pages.forEach(p => p.classList.remove("active"));
+        switch (type) {
+            case WorksheetBlockType.Question:
+                return {
+                    heading: "Question",
+                    preview: clean(this.block.questionMarkdown) || "No question text yet.",
+                };
 
-        const target = this.element.querySelector(selector);
-        if (target) target.classList.add("active");
+            case WorksheetBlockType.Paragraph:
+                return {
+                    heading: "Paragraph",
+                    preview: clean(this.block.paragraphMarkdown) || "No paragraph text yet.",
+                };
 
-        const title = this.element.querySelector(`#${this.id}-title`) as HTMLDivElement;
-        title.innerHTML = `Block <div class="small-text">(${this.block.currentType})</div>`;
+            case WorksheetBlockType.SectionHeader:
+                return {
+                    heading: "Title",
+                    preview: clean(this.block.title) || "No title set yet.",
+                };
+
+            case WorksheetBlockType.BlankSpace:
+                return {
+                    heading: "Blank Space",
+                    preview: `Size: ${this.block.size ?? 1}`,
+                };
+
+            case WorksheetBlockType.Divider:
+                return { heading: "Divider", preview: "Horizontal rule" };
+
+            case WorksheetBlockType.PageBreak:
+                return { heading: "Page Break", preview: "Forces a new printed page" };
+
+            default:
+                return { heading: type, preview: "—" };
+        }
     }
+
+    private refreshTitleTooltip() {
+        const tooltipHeading = this.element.querySelector(`#${this.id}-tooltip-heading`) as HTMLElement;
+        const tooltipPreview = this.element.querySelector(`#${this.id}-tooltip-preview`) as HTMLElement;
+
+        const tip = this.getTooltipPreview(this.block.currentType);
+        tooltipHeading.textContent = tip.heading;
+        tooltipPreview.textContent = tip.preview;
+    }
+
+    showPage(selector: string) {
+        const type = selector.replace(`#${this.id}-`, "") as WorksheetBlockType;
+        this.block.currentType = type;
+
+        this.element.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        this.element.querySelector(selector)?.classList.add("active");
+
+        // title bits
+        const typeText = this.element.querySelector(`#${this.id}-title-type-text`) as HTMLElement;
+        const tooltipHeading = this.element.querySelector(`#${this.id}-tooltip-heading`) as HTMLElement;
+        const tooltipPreview = this.element.querySelector(`#${this.id}-tooltip-preview`) as HTMLElement;
+
+        typeText.textContent = `(${type})`;
+
+        const tip = this.getTooltipPreview(type);
+        tooltipHeading.textContent = tip.heading;
+        tooltipPreview.textContent = tip.preview;
+    }
+
+
 
     private emitChanged(patch?: Partial<WorksheetBlock>, reason?: string) {
         const payload: BlockChangedPayload = {
@@ -387,9 +458,8 @@ export class Block {
 
         this.onChanged.emit(payload);
         console.log("emitChanged", reason);
-
+        this.refreshTitleTooltip();
     }
-
 
     destroy() {
         this.onChanged.clear();

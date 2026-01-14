@@ -9,7 +9,7 @@
 }
 
 .resource-list-container.loading::after {
-    content: "Loading resources…";
+    content: "Loading resources...";
     display: block;
     color: var(--outline-variant);
     font-style: italic;
