@@ -21,7 +21,7 @@ export class Block {
 
     public block: WorksheetBlock;
 
-    hiddenCheckbox!: HTMLInputElement;
+    hiddenCheckbox!: HTMLButtonElement;
     pointsInput!: HTMLInputElement;
     headerTypeInput!: HTMLSelectElement;
     headerTitleInput!: HTMLInputElement;
@@ -66,13 +66,9 @@ export class Block {
                             Delete
                         </div>
                     </button>
-                    <label class="checkbox circle icon small primary small-padding right-round" style="max-width: 32px;">
-                        <input type="checkbox" id="${id}-hidden">
-                        <span class="on-primary">
-                            <i class="extra" style="color: var(--on-primary); font-size: 24px;">expand_less</i>
-                            <i class="extra" style="color: var(--on-primary); font-size: 24px;">expand_more</i>
-                        </span>
-                    </label>
+                    <button id="${id}-hidden" class="circle right-round small checkable">
+                        <i>expand_less</i>
+                    </button>
                 </nav>
             </div>
             <div id="${id}-content" class="block-content">
@@ -275,14 +271,20 @@ export class Block {
         this.showPage(`#${this.id}-${this.block.currentType}`);
         this.setBlockType(this.block.currentType);
 
-        this.hiddenCheckbox = this.element.querySelector(`#${this.id}-hidden`) as HTMLInputElement;
-        this.hiddenCheckbox.checked = this.block.hidden || false;
-        this.hiddenCheckbox.addEventListener("change", () => {
-            this.setHidden(this.hiddenCheckbox.checked);
-        });
+        this.hiddenCheckbox = this.element.querySelector(`#${this.id}-hidden`) as HTMLButtonElement;
+        this.hiddenCheckbox.dataset.checked = this.block.hidden ? "true" : "false";
 
-        // Restore UI on mount
-        this.setHidden(this.hiddenCheckbox.checked);
+        // apply initial UI
+        this.setHidden(this.hiddenCheckbox.dataset.checked === "true");
+        this.hiddenCheckbox.addEventListener("click", () => {
+            const next = this.hiddenCheckbox.dataset.checked !== "true"; // toggle
+            this.hiddenCheckbox.dataset.checked = next ? "true" : "false";
+
+            this.setHidden(next);
+
+            // optional (recommended): persist it
+            this.emitChanged({ hidden: next }, "hidden");
+        });
 
         const questionEl = this.element.querySelector(`#${this.id}-question-container`) as HTMLElement;
         const solutionEl = this.element.querySelector(`#${this.id}-solution-container`) as HTMLElement;
@@ -340,9 +342,12 @@ export class Block {
         }
 
         this.element.addEventListener("dblclick", () => {
-            if (!this.hiddenCheckbox.checked) return;
-            this.hiddenCheckbox.checked = !this.hiddenCheckbox.checked;
-            this.setHidden(this.hiddenCheckbox.checked);
+            if (this.hiddenCheckbox.dataset.checked !== "true") return;
+
+            this.hiddenCheckbox.dataset.checked = "false";
+            this.setHidden(false);
+
+            this.emitChanged({ hidden: false }, "hidden");
         })
 
         this.element.addEventListener("pointerenter", () => {
